@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package performancetest;
 
 import java.util.HashMap;
@@ -19,38 +14,27 @@ import net.sourceforge.jFuzzyLogic.rule.Rule;
 import net.sourceforge.jFuzzyLogic.rule.RuleTerm;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
-/**
- *
- * @author mahshidhelalimoghadam
- */
+
+//stress testing. For performance degradation testing, add resource increasing actions.
 public class ReinforcementLearning {
     
     private  stateAction[][] Qtable = new stateAction[24][];
     private  double alpha = 0.1;
     private  double gamma = 0.9; 
-    
+    private dockerResourceManager dockResourceManager = new dockerResourceManager("app");
     
      
     public void InitializingstateActions() {
     for (int x = 0; x < Qtable.length; x++) {
-                Qtable[x] = new stateAction[13];
-                for (int y=0; y< Qtable[x].length ; y++)
-                {  Qtable[x][y]= new stateAction();
-//                   if (x==23)
-//                       if ((y==0)||(y==1)||(y==2)||(y==3)||(y==4)||(7==5)||(y==6)||(y==7)||(y==8)||(y==9))
-//                       Qtable[x][y].Q_value=-1;
-                   
-                   //||(7==10)||(y==11)||(y==12)
-                   
+                Qtable[x] = new stateAction[9];
+                for (int y=0; y< Qtable[x].length ; y++) {
+                    Qtable[x][y]= new stateAction();
                 }
-                
             }
     }
     
     public int Learn (int IndexofCurrentState, VirtualMachine VM, float epsilon)
     {
-        
-        
        //Select An Action
         int action=0;
         boolean Success= false;
@@ -82,7 +66,7 @@ public class ReinforcementLearning {
                  Success =  ApplyAction5(VM);
                  if (Success== true ) System.out.println("Action 5 ");
                 }
-                else if (action==6) {
+                else if (action == 6) {
                     Success= ApplyAction6(VM);
                     if (Success== true ) System.out.println("Action 6 ");
                 } 
@@ -93,24 +77,7 @@ public class ReinforcementLearning {
                 else if (action == 8) {
                  Success = ApplyAction8(VM);
                  if (Success== true )System.out.println("Action 8 ");
-                } 
-                else if (action == 9) {
-                 Success = ApplyAction9(VM);
-                 if (Success== true )System.out.println("Action 9 ");
-                } 
-                else if (action == 10) {
-                 Success = ApplyAction10(VM);
-                 if (Success== true )System.out.println("Action 10 ");
-                } 
-                 else if (action == 11) {
-                 Success = ApplyAction11(VM);
-                 if (Success== true )System.out.println("Action 11 ");
-                 }
-                 else if (action == 12) {
-                 Success = ApplyAction12(VM);
-                 if (Success== true )System.out.println("Action 12 ");
-                 }
-                
+                }
         }
         
         // Detection of new state
@@ -402,8 +369,8 @@ public class ReinforcementLearning {
     public  boolean ApplyAction1(VirtualMachine VM)
     {
         boolean Success= false;
-        if ((VM.VM_CPU_g- 0.25)>0)
-        {VM.VM_CPU_g = VM.VM_CPU_g- 0.25;
+        if ((VM.VM_CPU_g - 1) > 0)
+        {dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g - 1);
         Success = true;
         }
         return Success;
@@ -412,9 +379,9 @@ public class ReinforcementLearning {
     public  boolean ApplyAction2(VirtualMachine VM)
     {
         boolean Success= false;
-        if ((VM.VM_CPU_g- 0.5)>0)
-        {VM.VM_CPU_g = VM.VM_CPU_g- 0.5;
-        Success = true;
+        if ((VM.VM_CPU_g - 3) > 0)
+        {dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g - 3);
+            Success = true;
         }
         return Success;
     }
@@ -422,29 +389,29 @@ public class ReinforcementLearning {
     public  boolean ApplyAction3(VirtualMachine VM)
     {
         boolean Success= false;
-        if ((VM.VM_CPU_g- 0.75)>0)
-        {VM.VM_CPU_g = VM.VM_CPU_g- 0.75;
-        Success = true;
+        if ((VM.VM_CPU_g - 5) > 0)
+        {dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g - 5);
+            Success = true;
         }
         return Success;
     }
     
      public  boolean ApplyAction4(VirtualMachine VM)
-    {
-        boolean Success= false;
-        if ((VM.VM_CPU_g- 1.0)>0)
-        {VM.VM_CPU_g = VM.VM_CPU_g- 1.0;
-        Success = true;
-        }
-        return Success;
-    }
+     {
+         boolean Success= false;
+         if ((VM.VM_Mem_g - 1) > 0)
+         {dockResourceManager.updateContainerMemoryUtil(VM.VM_Mem_g - 1);
+             Success = true;
+         }
+         return Success;
+     }
       
     public  boolean ApplyAction5(VirtualMachine VM)
     {
         boolean Success= false;
-        if ((VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 0.25)>0)
-        {VM.VM_Mem_g = VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 0.25;
-        Success = true;
+        if ((VM.VM_Mem_g - 2) > 0)
+        {dockResourceManager.updateContainerMemoryUtil(VM.VM_Mem_g - 2);
+            Success = true;
         }
         return Success;
     }
@@ -452,80 +419,32 @@ public class ReinforcementLearning {
     public  boolean ApplyAction6(VirtualMachine VM)
     {
         boolean Success= false;
-        
-        if ((VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 0.5)>0)
-        {VM.VM_Mem_g = VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 0.5;
-        Success = true;
+        if ((VM.VM_Disk_g - 1) > 0)
+        {dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g - 1);
+            Success = true;
         }
         return Success;
     }
-       
+    
     public  boolean ApplyAction7(VirtualMachine VM)
     {
         boolean Success= false;
-        
-        if ((VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 0.75)>0)
-        {VM.VM_Mem_g = VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 0.75;
-        Success = true;
+        if ((VM.VM_Disk_g - 2) > 0)
+        {dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g - 2);
+            Success = true;
         }
         return Success;
     }
-    
+
     public  boolean ApplyAction8(VirtualMachine VM)
     {
         boolean Success= false;
-        
-        if ((VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 1.0)>0)
-        {VM.VM_Mem_g = VM.VM_Mem_g - (double)(VM.VM_Mem_g /4.0)* 1.0;
-        Success = true;
+        if ((VM.VM_Disk_g - 3) > 0)
+        {dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g - 3);
+            Success = true;
         }
         return Success;
     }
-    public  boolean ApplyAction9(VirtualMachine VM)
-    {
-        boolean Success= false;
-        
-        if ((VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 0.25)>0)
-        {VM.VM_Disk_g = VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 0.25;
-        Success = true;
-        }
-        return Success;
-    }
-    
-    public  boolean ApplyAction10(VirtualMachine VM)
-    {
-        boolean Success= false;
-        
-         if ((VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 0.5)>0)
-        {VM.VM_Disk_g = VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 0.5;
-        Success = true;
-        }
-        return Success;
-    }
-    
-    public  boolean ApplyAction11(VirtualMachine VM)
-    {
-        boolean Success= false;
-        
-        if ((VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 0.75)>0)
-        {VM.VM_Disk_g = VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 0.75;
-        Success = true;
-        }
-        return Success;
-    }
-    
-     public  boolean ApplyAction12(VirtualMachine VM)
-    {
-        boolean Success= false;
-        
-        if ((VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 1.0)>0)
-        {VM.VM_Disk_g = VM.VM_Disk_g - (double)(VM.VM_Disk_g /4.0)* 1.0;
-        Success = true;
-        }
-        return Success;
-    }
-     
-     
      
     public  Double CalculateReward(VirtualMachine VM)
  {
@@ -641,40 +560,7 @@ public class ReinforcementLearning {
                      System.out.println("Action 8 ");
                      AppliedEffectiveActions.add(8);
                  }
-                } 
-                else if (action == 9) {
-                 Success = ApplyAction9(VM);
-                 if (Success== true )
-                 {
-                     System.out.println("Action 9 ");
-                     AppliedEffectiveActions.add(9);
                  }
-                } 
-                else if (action == 10) {
-                 Success = ApplyAction10(VM);
-                 if (Success== true )
-                 {
-                     System.out.println("Action 10 ");
-                     AppliedEffectiveActions.add(10);
-                 }
-                } 
-                 else if (action == 11) {
-                 Success = ApplyAction11(VM);
-                 if (Success== true )
-                 {
-                     System.out.println("Action 11 ");
-                     AppliedEffectiveActions.add(11);
-                 }
-                 }
-                 else if (action == 12) {
-                 Success = ApplyAction12(VM);
-                 if (Success== true )
-                 {
-                     System.out.println("Action 12 ");
-                     AppliedEffectiveActions.add(12);
-                 }
-                 }
-                
         }
         
         // Detection of new state

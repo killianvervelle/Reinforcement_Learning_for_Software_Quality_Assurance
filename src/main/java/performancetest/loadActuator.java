@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- ** @author vervellekillian
- **/
 
 public class loadActuator {
 

@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 public class nQueenProblem {
     private static final int N = 29; // Size of the chessboard and number of queens
     private static final int TEST_DURATION_SECONDS = 30; // Test duration in seconds
 
     private final List<Long> responseTimes = new ArrayList<>();
     private final AtomicInteger successfulRuns = new AtomicInteger(0);
+    private final Long averageResponseTime = null;
 
     public static void main(String[] args) {
         nQueenProblem benchmark = new nQueenProblem();
