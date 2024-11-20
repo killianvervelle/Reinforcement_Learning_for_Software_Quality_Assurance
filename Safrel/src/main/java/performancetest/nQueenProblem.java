@@ -5,8 +5,8 @@ import java.time.Instant;
 
 
 public class nQueenProblem implements benchmark {
+
     private static final int N = 29;
-    VirtualMachine VM;
 
     @Override
     public double runBenchmark(VirtualMachine VM) {
@@ -48,21 +48,18 @@ public class nQueenProblem implements benchmark {
                 board[i][col] = 0; // BACKTRACK
             }
         }
-
         return false;
     }
 
     private boolean isSafe(int[][] board, int row, int col, int size) {
-        // Check row and previous columns
         for (int i = 0; i < col; i++) if (board[row][i] == 1) return false;
 
-        // Check upper diagonal
         for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) if (board[i][j] == 1) return false;
 
-        // Check lower diagonal
         for (int i = row, j = col; i < size && j >= 0; i++, j--) if (board[i][j] == 1) return false;
 
         return true;
     }
+
 }
 

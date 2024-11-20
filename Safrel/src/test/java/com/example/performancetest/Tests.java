@@ -6,7 +6,9 @@ import performancetest.PerformanceTest;
 
 @SpringBootTest(classes = PerformanceTest.class)
 class PerformanceTests {
+
     @Test
     void contextLoads() {
     }
+
 }

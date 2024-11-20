@@ -17,9 +17,7 @@ public class FibonacciBenchmark implements benchmark {
         try {
             long result = computeFibonacci(FIBONACCI_NUMBER);
             long responseTime = Duration.between(taskStart, Instant.now()).toMillis();
-
             System.out.println("Task completed in: " + responseTime + " ms, Fibonacci result: " + result);
-
             return responseTime;
         } catch (Exception e) {
             System.err.println("Error during Fibonacci computation: " + e.getMessage());
@@ -33,6 +31,7 @@ public class FibonacciBenchmark implements benchmark {
         }
         return computeFibonacci(n - 1) + computeFibonacci(n - 2);
     }
+
 }
 
 

@@ -8,24 +8,22 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+
 public class dockerResourceManager {
 
-    private String containerID; // The name of the container to update
     private final DockerClient dockerClient;
+    private final String containerID;
 
     public dockerResourceManager() throws IOException, InterruptedException {
         DefaultDockerClientConfig config = DefaultDockerClientConfig
                 .createDefaultConfigBuilder()
                 .withDockerHost("tcp://host.docker.internal:2375")
                 .build();
-
-        // Build the Docker Client
         this.dockerClient = DockerClientBuilder.getInstance(config)
                 .build();
-       this.containerID = getContainerId();
-       System.out.println("Container id: " + containerID);
-       Thread.sleep(5000);
-
+        this.containerID = getContainerId();
+        System.out.println("Container id: " + containerID);
+        Thread.sleep(5000);
     }
 
     private String getContainerId() throws IOException {
@@ -41,10 +39,10 @@ public class dockerResourceManager {
         throw new IOException("Container ID not found in " + cgroupFile);
     }
 
-    public void updateContainerCpuUtil(int cpuQuota) {
+    public void updateContainerCpuUtil (int cpuQuota) {
         try {
             dockerClient.updateContainerCmd(containerID)
-                    .withCpuQuota(cpuQuota*1000)
+                    .withCpuQuota(cpuQuota * 1000)
                     .exec();
             System.out.println("Updated CPU utilization to " + cpuQuota + "%");
         } catch (Exception e) {

@@ -13,17 +13,13 @@ public class dummyMemTask implements benchmark {
     @Override
     public double runBenchmark(VirtualMachine VM) {
         System.out.println("Starting memory-heavy task simulation...");
-
         Instant taskStart = Instant.now();
 
         try {
             performMemoryHeavyOperation();
-
             long responseTime = Duration.between(taskStart, Instant.now()).toMillis();
             System.out.println("Task completed in: " + responseTime + " ms");
-
             return responseTime;
-
         } catch (OutOfMemoryError e) {
             System.err.println("Memory overflow during task execution: " + e.getMessage());
             return -1;
@@ -32,13 +28,13 @@ public class dummyMemTask implements benchmark {
 
     private void performMemoryHeavyOperation() {
         double[] largeArray = new double[ARRAY_SIZE];
-
         double sum = 0;
+
         for (int i = 0; i < ARRAY_SIZE; i++) {
             largeArray[i] = RANDOM.nextDouble();
             sum += largeArray[i];
         }
-
         Math.sqrt(sum);
     }
+
 }
