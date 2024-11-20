@@ -11,18 +11,18 @@ VAR_OUTPUT
 END_VAR
 
 FUZZIFY CPUU
-	TERM High := (0, 0) (0.25, 0) (0.75, 1) (1, 1);
-	TERM Low := (0, 1) (0.25, 1) (0.75, 0) (1, 0);
+	TERM High := (0, 1) (0.25, 1) (0.75, 0) (1, 0);
+	TERM Low := (0, 0) (0.25, 0) (0.75, 1) (1, 1);
 END_FUZZIFY
 
 FUZZIFY MemU
-	TERM High := (0, 0) (0.25, 0) (0.75, 1) (1, 1);
-    TERM Low := (0, 1) (0.25, 1) (0.75, 0) (1, 0);
+	TERM High := (0, 1) (0.25, 1) (0.75, 0) (1, 0);
+	TERM Low := (0, 0) (0.25, 0) (0.75, 1) (1, 1);
 END_FUZZIFY
 
 FUZZIFY DiskU
-	TERM High := (0, 0) (0.25, 0) (0.75, 1) (1, 1);
-    TERM Low := (0, 1) (0.25, 1) (0.75, 0) (1, 0);
+	TERM High := (0, 1) (0.25, 1) (0.75, 0) (1, 0);
+	TERM Low := (0, 0) (0.25, 0) (0.75, 1) (1, 1);
 END_FUZZIFY
 
 FUZZIFY RT
@@ -56,8 +56,8 @@ DEFUZZIFY State
 	TERM HHHL := (42,0) (43,1) (44,0);
 	TERM HHHA := (44,0) (45,1) (46,0);
 	TERM HHHH := (46,0) (47,1) (48,0);
-	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method\
-	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)\
+	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
 
 // Inference rules
