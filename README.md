@@ -38,14 +38,6 @@ https://link.springer.com/article/10.1007/s11219-020-09532-z
 * Maven: For dependency management and building the project. 
 * Hardware Requirements: Ensure sufficient system resources for CPU, memory, and disk-intensive testing scenarios.
 
-##### Installation
-1) Clone the repository
-
-2) Build the project using Maven and install all dependencies
-
-3) Update configurations of the respective config files as per your testing environment
-
-
 #### Running SaFReL_v1 or SaFReL_v2
 ```
 git clone https://github.com/killianvervelle/Reinforcement_Learning_for_Software_Quality_Assurance
@@ -88,16 +80,6 @@ https://arxiv.org/pdf/2104.12893
 * Maven: For dependency management and building the project.
 * Apache JMeter: Installed and configured for executing performance tests.
 * Hardware Requirements: Ensure sufficient system resources for CPU, memory, and disk-intensive testing scenarios.
-
-##### Installation
-1) Clone the repository
-
-2) Build the project using Maven and install all dependencies
-
-3) Set up Apache JMeter
-
-4) Update configurations of the respective config files as per your testing environment
-
 
 #### Running Reload
 ```
