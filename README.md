@@ -6,21 +6,6 @@ This repository contains the source code for a smart reinforcement learning (RL)
 
 The framework supports efficient performance testing by learning optimal test case generation policies, which can then be reused in further testing scenarios. It adapts to varying test conditions, offering a cost-effective and intelligent solution for continuous testing activities such as performance regression testing.
 
-### Project structure
-parent-project/
-│
-├── Safrel_v1/          
-│   ├── src/main/java/  
-│   ├── pom.xml         
-│
-├── Safrel_v2/         
-│   ├── src/main/java/ 
-│   ├── pom.xml         
-│
-└── README.md  
-
-
-
 ### SaFReL: Self-Adaptive Fuzzy Reinforcement Learning
 SaFReL is a performance testing agent designed to generate platform-based test cases. It learns 
 to optimally tune resource availability (CPU, memory, disk) to 
