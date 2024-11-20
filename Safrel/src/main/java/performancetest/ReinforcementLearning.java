@@ -1,12 +1,9 @@
 package performancetest;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
+
+import java.util.ArrayList;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.rule.LinguisticTerm;
@@ -21,8 +18,23 @@ public class ReinforcementLearning {
     private  stateAction[][] Qtable = new stateAction[24][];
     private  double alpha = 0.1;
     private  double gamma = 0.9; 
-    private dockerResourceManager dockResourceManager = new dockerResourceManager("app");
-    
+    private dockerResourceManager dockResourceManager = new dockerResourceManager();
+    public int index;
+    List<benchmark> benchmarks = new ArrayList<>();
+
+    public ReinforcementLearning(int index, VirtualMachine VM) throws IOException, InterruptedException {
+        nQueenProblem benchmark_queens = new nQueenProblem();
+        FibonacciBenchmark benchmark_fibonacci = new FibonacciBenchmark();
+        dummyMemTask benchmark_mem = new dummyMemTask();
+
+        benchmarks.add(benchmark_queens);
+        benchmarks.add(benchmark_fibonacci);
+        benchmarks.add(benchmark_mem);
+
+        this.index = index;
+
+        resetContainerUtils(VM);
+    }
      
     public void InitializingstateActions() {
     for (int x = 0; x < Qtable.length; x++) {
@@ -33,8 +45,7 @@ public class ReinforcementLearning {
             }
     }
     
-    public int Learn (int IndexofCurrentState, VirtualMachine VM, float epsilon)
-    {
+    public int Learn (int IndexofCurrentState, VirtualMachine VM, float epsilon) throws InterruptedException {
        //Select An Action
         int action=0;
         boolean Success= false;
@@ -79,14 +90,10 @@ public class ReinforcementLearning {
                  if (Success== true )System.out.println("Action 8 ");
                 }
         }
-        
-        // Detection of new state
-        
+
         List DetectedStates;
         int IndexofDetectedNewState = 0;
         DetectedStates = this.DetectState(VM);
-        
-        // Extracting the Index of state with Max Membership degree
         
         List FinalDetectedState = new LinkedList();
         Double MaxMemdegree=0.0;
@@ -94,8 +101,6 @@ public class ReinforcementLearning {
         
         for (Object StateMember: DetectedStates )
         {
-           
-           
            Double Degree=  Double.valueOf(((String[])StateMember)[1]); 
                if (Degree > MaxMemdegree )
                   { pair[0]=((String[])StateMember)[0];
@@ -156,70 +161,57 @@ public class ReinforcementLearning {
         
         System.out.println("New State after action: "+IndexofDetectedNewState);
         
-         // Calculating The Reward
         Double Reward= 0.00;
         Reward = CalculateReward(VM);
-        
-       
-        
-        //Updating Qvalue
+
        Qtable[IndexofCurrentState][action].Q_value = Double.valueOf(((String[])(FinalDetectedState.get(0)))[1]) *((1 - alpha) * Qtable[IndexofCurrentState][action].Q_value) + alpha * (Reward + gamma * Maximum(IndexofDetectedNewState, false));
        
-       //Setting the Next State as the Current State for the next loop
-        
-        
        return IndexofDetectedNewState;
 
    }
+
+    public boolean runBench(VirtualMachine VM) {
+        boolean success = false;
+        try {
+            benchmark bench = benchmarks.get(this.index);
+            VM.ResponseTime = bench.runBenchmark(VM);
+            success = true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return success;
+    }
     
-    
-    public  List DetectState(VirtualMachine VM)
+    public List DetectState(VirtualMachine VM)
  {
-     
-       VM.CalculateCPUtilImprov();;
-       VM.CalculateMemUtilImprov();
-       VM.CalculateDiskUtilImprov();
-       VM.CalculateVMThroughput_ResponseTime();
-       VM.NormalizeResponseTime();
+     runBench(VM);
+     System.out.println("Required response time: " + VM.Requirement_ResTime + ", Actual Response time: " + VM.ResponseTime);
+     System.out.println("Initial CPU usage: " + VM.VM_CPU_i + ", Updated CPU usage: " + VM.VM_CPU_g);
+     VM.CalculateCPUtilImprov();
+     VM.CalculateMemUtilImprov();
+     VM.CalculateDiskUtilImprov();
+     VM.NormalizeResponseTime();
        
-       List OutputStateDegreePairs= new LinkedList();
-       
-       OutputStateDegreePairs = FuzzyInference (1.0/VM.VM_CPUtil, 1.0/VM.VM_MemUtil, 1.0/VM.VM_DiskUtil, VM.NormalizedResponsetime);
-       return OutputStateDegreePairs;
+     List OutputStateDegreePairs= new LinkedList();
+
+     System.out.println("cpuUil, memUtil, diskUtil, norm responseTime: " + VM.VM_CPUtil + ", " + VM.VM_MemUtil + ", " + VM.VM_DiskUtil + ", " + VM.NormalizedResponsetime);
+     OutputStateDegreePairs = FuzzyInference (VM.VM_CPUtil, VM.VM_MemUtil, VM.VM_DiskUtil, VM.NormalizedResponsetime);
+     System.out.println("PAIRS: " + OutputStateDegreePairs);
+     return OutputStateDegreePairs;
      
  }
     
-    public  List FuzzyInference(Double CPUU, Double MemU, Double DiskU, Double NormalizedRT){
-        
-//        Engine engine = new Engine();
-//        engine.setName("StateDetection");
-//        engine.setDescription("");
-//        
-//        InputVariable CPUtilImprov = new InputVariable();
-//        CPUtilImprov.setName("CPUtilImprovement");
-//        CPUtilImprov.setDescription("");
-//        CPUtilImprov.setEnabled(true);
-//        CPUtilImprov.setRange(0.000, 1.000);
-//        CPUtilImprov.setLockValueInRange(false);
-//        CPUtilImprov.addTerm(new Ramp("Low", 1.000, 0.000));
-//        CPUtilImprov.addTerm(new Ramp("High", 0.000, 1.000));
-//        engine.addInputVariable(CPUtilImprov);
+    public List FuzzyInference(Double CPUU, Double MemU, Double DiskU, Double NormalizedRT){
           
-            // Load from 'FCL' file
-        String fileName = "C://Users//killi//OneDrive//Documents//Projects//Master thesis//demo//src//main//java//performancetest//StateDetection.fcl.rtf";
+        String fileName = "StateDetection.fcl.rtf";
+        //String fileName = "C://Users//killi//OneDrive//Documents//Projects//Master thesis//Reinforcement_Learning_for_Software_Quality_Assurance//src//main//java//performancetest//StateDetection.fcl.rtf";
         FIS fis = FIS.load(fileName,true);
 
-        // Error while loading?
-        if( fis == null ) { 
+        if( fis == null ) {
             System.err.println("Can't load file: '" + fileName + "'");
             return null;
         }
-
-        // Show 
-       
-
         // Set inputs
-        
         fis.setVariable("CPUU", CPUU);
         fis.setVariable("MemU", MemU);
         fis.setVariable("DiskU", DiskU);
@@ -270,7 +262,6 @@ public class ReinforcementLearning {
             String[] strArray =str.split(" ");
             String[] pair = new String [2];
             Double Degree= r.getDegreeOfSupport();
-               
                if (Degree > 0.00 )
                   { pair[0]=strArray[2].toString();
                     pair[1]=Degree.toString();
@@ -358,6 +349,14 @@ public class ReinforcementLearning {
      
     }
     }
+
+    public void resetContainerUtils(VirtualMachine VM)
+    {
+        System.out.println("Reseting container resource utilization thresholds to (cpu/mem/disk: " +VM.VM_CPU_g +" ,"+VM.VM_Mem_g +" ,"+VM.VM_Disk_i);
+        dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g);
+        dockResourceManager.updateContainerMemoryUtil(VM.VM_Mem_g, VM.VM_Mem_g);
+        dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_i);
+    }
     
     public  boolean ApplyAction0(VirtualMachine VM)
     {
@@ -366,83 +365,109 @@ public class ReinforcementLearning {
         return Success;
     }
     
-    public  boolean ApplyAction1(VirtualMachine VM)
-    {
+    public  boolean ApplyAction1(VirtualMachine VM) throws InterruptedException {
         boolean Success= false;
         if ((VM.VM_CPU_g - 1) > 0)
-        {dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g - 1);
-        Success = true;
+        {
+            VM.VM_CPU_g = VM.VM_CPU_g - 1;
+            dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g);
+            Success = true;
         }
+        Thread.sleep(2000);
         return Success;
     }
     
-    public  boolean ApplyAction2(VirtualMachine VM)
-    {
+    public  boolean ApplyAction2(VirtualMachine VM) throws InterruptedException {
         boolean Success= false;
         if ((VM.VM_CPU_g - 3) > 0)
-        {dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g - 3);
+        {
+            VM.VM_CPU_g = VM.VM_CPU_g - 3;
+            dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g);
             Success = true;
         }
+        Thread.sleep(2000);
         return Success;
     }
      
-    public  boolean ApplyAction3(VirtualMachine VM)
-    {
+    public  boolean ApplyAction3(VirtualMachine VM) throws InterruptedException {
         boolean Success= false;
         if ((VM.VM_CPU_g - 5) > 0)
-        {dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g - 5);
+        {
+            VM.VM_CPU_g = VM.VM_CPU_g - 5;
+            dockResourceManager.updateContainerCpuUtil(VM.VM_CPU_g);
             Success = true;
         }
-        return Success;
-    }
-    
-     public  boolean ApplyAction4(VirtualMachine VM)
-     {
-         boolean Success= false;
-         if ((VM.VM_Mem_g - 1) > 0)
-         {dockResourceManager.updateContainerMemoryUtil(VM.VM_Mem_g - 1);
-             Success = true;
-         }
-         return Success;
-     }
-      
-    public  boolean ApplyAction5(VirtualMachine VM)
-    {
-        boolean Success= false;
-        if ((VM.VM_Mem_g - 2) > 0)
-        {dockResourceManager.updateContainerMemoryUtil(VM.VM_Mem_g - 2);
-            Success = true;
-        }
-        return Success;
-    }
-       
-    public  boolean ApplyAction6(VirtualMachine VM)
-    {
-        boolean Success= false;
-        if ((VM.VM_Disk_g - 1) > 0)
-        {dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g - 1);
-            Success = true;
-        }
-        return Success;
-    }
-    
-    public  boolean ApplyAction7(VirtualMachine VM)
-    {
-        boolean Success= false;
-        if ((VM.VM_Disk_g - 2) > 0)
-        {dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g - 2);
-            Success = true;
-        }
+        Thread.sleep(2000);
         return Success;
     }
 
-    public  boolean ApplyAction8(VirtualMachine VM)
-    {
+    public  boolean ApplyAction4(VirtualMachine VM) throws InterruptedException {
         boolean Success= false;
-        if ((VM.VM_Disk_g - 3) > 0)
-        {dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g - 3);
+        if ((VM.VM_Mem_g - 1) > 0)
+        {
+            long swapMemoryInGB = VM.VM_Mem_g;
+            VM.VM_Mem_g = VM.VM_Mem_g - 1;
+            try {
+                dockResourceManager.updateContainerMemoryUtil(VM.VM_Mem_g, swapMemoryInGB); // Update container memory
+                Success = true;
+            } catch (Exception e) {
+                System.err.println("Failed to update container memory: " + e.getMessage());
+            }
+        }
+        Thread.sleep(2000);
+        return Success;
+    }
+      
+    public  boolean ApplyAction5(VirtualMachine VM) throws InterruptedException {
+        boolean Success= false;
+        if ((VM.VM_Mem_g - 2) > 0)
+        {
+            long swapMemoryInGB = VM.VM_Mem_g;
+            VM.VM_Mem_g = VM.VM_Mem_g - 2;
+            try {
+                dockResourceManager.updateContainerMemoryUtil(VM.VM_Mem_g, swapMemoryInGB); // Update container memory
+                Success = true;
+            } catch (Exception e) {
+                System.err.println("Failed to update container memory: " + e.getMessage());
+            }
+        }
+        Thread.sleep(2000);
+        return Success;
+    }
+
+    public  boolean ApplyAction6(VirtualMachine VM) throws InterruptedException {
+        boolean Success= false;
+        if ((VM.VM_Disk_g - 1) > 0)
+        {
+            VM.VM_Disk_g = VM.VM_Disk_g - 1;
+            dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g);
             Success = true;
         }
+        Thread.sleep(2000);
+        return Success;
+    }
+
+    public  boolean ApplyAction7(VirtualMachine VM) throws InterruptedException {
+        boolean Success= false;
+        if ((VM.VM_Disk_g - 2) > 0)
+        {
+            VM.VM_Disk_g = VM.VM_Disk_g - 2;
+            dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g);
+            Success = true;
+        }
+        Thread.sleep(2000);
+        return Success;
+    }
+
+    public  boolean ApplyAction8(VirtualMachine VM) throws InterruptedException {
+        boolean Success= false;
+        if ((VM.VM_Disk_g - 3) > 0)
+        {
+            VM.VM_Disk_g = VM.VM_Disk_g - 3;
+            dockResourceManager.updateContainerDiskUtil(VM.VM_Disk_g);
+            Success = true;
+        }
+        Thread.sleep(2000);
         return Success;
     }
      
@@ -483,8 +508,7 @@ public class ReinforcementLearning {
     
     
     
-    public  int Operate (int IndexofCurrentState, VirtualMachine VM, List AppliedEffectiveActions)
-    {
+    public  int Operate (int IndexofCurrentState, VirtualMachine VM, List AppliedEffectiveActions) throws InterruptedException {
         
        //Select An Action
         int action=0;

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -15,23 +14,23 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class PerformanceTest {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         // Initial VM cap values
         Integer VmsCap_CPU = 50; //%
         Integer VmsCap_Mem= 16; //GB
         Integer VmsCap_Disk= 20; //GB
-        Double VmsCap_ResTime=1000.00; //ms
+        Double VmsCap_ResTime=3000.00; //ms
         Double[] Requirement_ResTimes = {VmsCap_ResTime, VmsCap_ResTime, VmsCap_ResTime};
         Double[] Initial_ResTimes = {333.06, 205.5, 145.2};
 
         List VMList= new LinkedList();
 
+        List SensitivityCollection= new LinkedList();
+
         //Sensitivity values {CPU, Memory, Disk util}
         Double[] SenArray1={0.97, 0.03,0.00};
         Double[] SenArray2={0.95, 0.05,0.00};
         Double[] SenArray3={0.3, 0.7, 0.0};
-
-        List SensitivityCollection= new LinkedList();
 
         SensitivityCollection.add(SenArray1);
         SensitivityCollection.add(SenArray2);
@@ -43,27 +42,27 @@ public class PerformanceTest {
 
         List LearningAgents= new LinkedList();
 
-        //Initializing The Qtable
-        ReinforcementLearning RL1 = new ReinforcementLearning();
-        RL1.InitializingstateActions();
-        System.out.println("Initialized RL agent 1.");
-
         List LearningTrialpEpsilonList = new LinkedList();
 
-        float epsilon =(float) 0.2;
+        float epsilon =(float) 0.8;
         float Targetepsilon =(float) 0.2;
         float DecreaseStep= (float)(epsilon-Targetepsilon)/(100-1);
 
         // Number of iterations set to 100. System expected to converge before.
-        for (int i=0; i<100; i++) {
+        {
+            int i = 0;
 
-            float[] LearningTrailsperEpsilon= new float[2];
-            float learningTrialsVar =0;
+            float[] LearningTrailsperEpsilon = new float[2];
+            float learningTrialsVar = 0;
             float EpsilonVal;
 
-            System.out.println("Initial epsilon value= "+ epsilon);
+            System.out.println("Initial epsilon value= " + epsilon);
 
             VirtualMachine VM = (VirtualMachine) VMList.get(0);
+
+            ReinforcementLearning RL1 = new ReinforcementLearning(0,VM);
+            RL1.InitializingstateActions();
+            System.out.println("Initialized RL agent 1.");
 
             //Detecting the Current State
             List DetectedState_C;
@@ -73,100 +72,105 @@ public class PerformanceTest {
             // Finding the Index of Current State in the QTable
             int IndexofCurrentState = 0;
 
-                List FinalDetectedState = new LinkedList();
+            List FinalDetectedState = new LinkedList();
 
-                Double MaxMemdegree=0.0;
-                String[] pair = new String [2];
+            Double MaxMemdegree = 0.0;
+            String[] pair = new String[2];
 
-                for (Object StateMember: DetectedState_C )
-                {
-                   Double Degree=  Double.valueOf(((String[])StateMember)[1]);
-                       if (Degree > MaxMemdegree )
-                          { pair[0]=((String[])StateMember)[0];
-                            pair[1]=((String[])StateMember)[1];
-                            MaxMemdegree= Degree;
-                          }
+            for (Object StateMember : DetectedState_C) {
+                Double Degree = Double.valueOf(((String[]) StateMember)[1]);
+                if (Degree > MaxMemdegree) {
+                    pair[0] = ((String[]) StateMember)[0];
+                    pair[1] = ((String[]) StateMember)[1];
+                    MaxMemdegree = Degree;
                 }
-                FinalDetectedState.add(pair);
+            }
+            FinalDetectedState.add(pair);
 
-                if (((String[])(FinalDetectedState.get(0)))[0].equals("LLLL"))
-                    IndexofCurrentState =0 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LLLA"))
-                    IndexofCurrentState =1 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LLLH"))
-                    IndexofCurrentState =2 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LLHL"))
-                    IndexofCurrentState =3 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LLHA"))
-                    IndexofCurrentState =4 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LLHH"))
-                    IndexofCurrentState =5 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LHLL"))
-                    IndexofCurrentState =6 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LHLA"))
-                    IndexofCurrentState =7 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LHLH"))
-                    IndexofCurrentState =8 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LHHL"))
-                    IndexofCurrentState =9;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LHHA"))
-                    IndexofCurrentState =10 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("LHHH"))
-                    IndexofCurrentState =11 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HLLL"))
-                    IndexofCurrentState =12 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HLLA"))
-                    IndexofCurrentState =13 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HLLH"))
-                    IndexofCurrentState =14 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HLHL"))
-                    IndexofCurrentState =15 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HLHA"))
-                    IndexofCurrentState =16;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HLHH"))
-                    IndexofCurrentState =17;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HHLL"))
-                    IndexofCurrentState =18;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HHLA"))
-                    IndexofCurrentState =19;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HHLH"))
-                    IndexofCurrentState =20;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HHHL"))
-                    IndexofCurrentState =21 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HHHA"))
-                    IndexofCurrentState =22 ;
-                else if (((String[])(FinalDetectedState.get(0)))[0].equals("HHHH"))
-                    IndexofCurrentState =23;
+            if (((String[]) (FinalDetectedState.get(0)))[0].equals("LLLL"))
+                IndexofCurrentState = 0;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LLLA"))
+                IndexofCurrentState = 1;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LLLH"))
+                IndexofCurrentState = 2;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LLHL"))
+                IndexofCurrentState = 3;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LLHA"))
+                IndexofCurrentState = 4;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LLHH"))
+                IndexofCurrentState = 5;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LHLL"))
+                IndexofCurrentState = 6;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LHLA"))
+                IndexofCurrentState = 7;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LHLH"))
+                IndexofCurrentState = 8;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LHHL"))
+                IndexofCurrentState = 9;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LHHA"))
+                IndexofCurrentState = 10;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("LHHH"))
+                IndexofCurrentState = 11;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HLLL"))
+                IndexofCurrentState = 12;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HLLA"))
+                IndexofCurrentState = 13;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HLLH"))
+                IndexofCurrentState = 14;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HLHL"))
+                IndexofCurrentState = 15;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HLHA"))
+                IndexofCurrentState = 16;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HLHH"))
+                IndexofCurrentState = 17;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HHLL"))
+                IndexofCurrentState = 18;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HHLA"))
+                IndexofCurrentState = 19;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HHLH"))
+                IndexofCurrentState = 20;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HHHL"))
+                IndexofCurrentState = 21;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HHHA"))
+                IndexofCurrentState = 22;
+            else if (((String[]) (FinalDetectedState.get(0)))[0].equals("HHHH"))
+                IndexofCurrentState = 23;
 
-             System.out.println("Current State: "+IndexofCurrentState);
-             VM.ResponseTime= VM.ResponseTime_i;
-            while (VM.Requirement_ResTime > VM.ResponseTime ) {
-                 IndexofCurrentState= RL1.Learn(IndexofCurrentState, VM, epsilon);
-                 learningTrialsVar++;
+            System.out.println("Current State: " + IndexofCurrentState);
+            VM.ResponseTime = VM.ResponseTime_i;
+            while (VM.Requirement_ResTime > VM.ResponseTime) {
+                System.out.println("Required response time: " + VM.Requirement_ResTime + ", Actual Response time: " + VM.ResponseTime);
+                IndexofCurrentState = RL1.Learn(IndexofCurrentState, VM, epsilon);
+                learningTrialsVar++;
+                i++;
             }
 
             EpsilonVal = epsilon;
-            LearningTrailsperEpsilon[1]= (float) learningTrialsVar;
-            LearningTrailsperEpsilon[0]=EpsilonVal;
+            LearningTrailsperEpsilon[1] = (float) learningTrialsVar;
+            LearningTrailsperEpsilon[0] = EpsilonVal;
             LearningTrialpEpsilonList.add(LearningTrailsperEpsilon);
 
-            if (i==99)
-            {
-              System.out.println("The Test agent for VM0 has converged:");
-              System.out.println("Initial external Conditions ->" + " CPU: "+ VM.VM_CPU_i+ " Memory: "+ VM.VM_Mem_i+ " Disk: "+ VM.VM_Disk_i);
-              System.out.println ("Test case: CPU: " + VM.VM_CPU_g + " Mem: " + VM.VM_Mem_g + " Disk: " + VM.VM_Disk_g);
-              System.out.println("**************************************************");
-              java.lang.Thread.sleep(1000);
+            if (i == 99) {
+                System.out.println("The Test agent for VM0 has converged:");
+                System.out.println("Initial external Conditions ->" + " CPU: " + VM.VM_CPU_i + " Memory: " + VM.VM_Mem_i + " Disk: " + VM.VM_Disk_i);
+                System.out.println("Test case: CPU: " + VM.VM_CPU_g + " Mem: " + VM.VM_Mem_g + " Disk: " + VM.VM_Disk_g);
+                System.out.println("**************************************************");
+                java.lang.Thread.sleep(1000);
             }
+
         }
 
-        WriteToExcel (LearningTrialpEpsilonList,1);
+        //WriteToExcel (LearningTrialpEpsilonList,1);
 
         {
-            epsilon =(float) 0.2;
+            epsilon =(float) 0.8;
             Targetepsilon =(float) 0.2;
             DecreaseStep= (float)(epsilon-Targetepsilon)/(VMList.size()-2);
             List LearningTrialpEpsilonList2 = new LinkedList();
+            System.out.println("----------------------------------------");
+            System.out.println("NEW SUT LOADING...");
+            System.out.println("----------------------------------------");
+
 
             for (int i=1; i<VMList.size(); i++) {
     //
@@ -178,14 +182,13 @@ public class PerformanceTest {
 
              // Adaptive Epsilon
 
-
-
                 float[] LearningTrailsperEpsilon2= new float[5];
                 float learningTrialsVar2 =0;
                 float EpsilonVal2;
                 float Similarity1=0;
                 float Similarity2=0;
                 float Similarity3=0;
+                int j = 0;
 
                 VirtualMachine VM2 = new VirtualMachine();
                 VM2.VM_CPU_i = ((VirtualMachine)VMList.get(i)).VM_CPU_i;
@@ -269,7 +272,12 @@ public class PerformanceTest {
 
             //Detecting the Current State
             List DetectedState_C;
-            DetectedState_C = RL1.DetectState(VM2);
+
+            ReinforcementLearning RL2 = new ReinforcementLearning(i, VM2);
+            RL2.InitializingstateActions();
+            System.out.println("Initialized RL agent "+i);
+
+            DetectedState_C = RL2.DetectState(VM2);
 
             // Extracting the Index of state with Max Membership degree
             //Finding the Index of Current State in the QTable
@@ -346,9 +354,10 @@ public class PerformanceTest {
          System.out.println("Current State: "+IndexofCurrentState);
 
          VM2.ResponseTime=((VirtualMachine)VMList.get(i)).ResponseTime_i;
-          while ((1.5 * VM2.Requirement_ResTime) > VM2.ResponseTime ) {
-             IndexofCurrentState= RL1.Learn(IndexofCurrentState, VM2, epsilon);
+          while (VM2.Requirement_ResTime > VM2.ResponseTime ) {
+             IndexofCurrentState= RL2.Learn(IndexofCurrentState, VM2, epsilon);
              learningTrialsVar2++;
+             j++;
 
         }
 
@@ -356,7 +365,13 @@ public class PerformanceTest {
         LearningTrailsperEpsilon2[1]= (float) learningTrialsVar2;
         LearningTrailsperEpsilon2[0]=EpsilonVal2;
 
-
+        if (j == 99) {
+            System.out.println("The Test agent for VM2 has converged:");
+            System.out.println("Initial external Conditions ->" + " CPU: " + VM2.VM_CPU_i + " Memory: " + VM2.VM_Mem_i + " Disk: " + VM2.VM_Disk_i);
+            System.out.println("Test case: CPU: " + VM2.VM_CPU_g + " Mem: " + VM2.VM_Mem_g + " Disk: " + VM2.VM_Disk_g);
+            System.out.println("**************************************************");
+            java.lang.Thread.sleep(1000);
+        }
 
 
         LearningTrialpEpsilonList2.add(LearningTrailsperEpsilon2);
@@ -368,7 +383,7 @@ public class PerformanceTest {
 
             }
 
-            WriteToExcel(LearningTrialpEpsilonList2, 2);
+            //WriteToExcel(LearningTrialpEpsilonList2, 2);
 
         }
 
@@ -396,9 +411,9 @@ public class PerformanceTest {
            VM1.NormalizedResponsetime=0.0;
 
            System.out.println("VM set up with initial CPU util of: " + VM1.VM_CPU_i
-                   + "Mem util of: " + VM1.VM_Mem_i
-                   + "Disk util of: " + VM1.VM_Disk_i
-                   + "and Required Resp Time of: " + Requirement_ResTimes[i]);
+                   + ", Mem util of: " + VM1.VM_Mem_i
+                   + ", Disk util of: " + VM1.VM_Disk_i
+                   + " and Required Response Time of: " + Requirement_ResTimes[i]);
            
            VMList.add(VM1);
                       
