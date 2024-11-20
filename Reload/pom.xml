@@ -197,7 +197,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>my-app</finalName>
+        <finalName>my-reload</finalName>
     </build>
 
 </project>
