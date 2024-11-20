@@ -25,7 +25,7 @@ public class DialogGraph extends JDialog {
 	public static int posy = 0;
 	private static final long serialVersionUID = 1L;
 
-	PanelPaintGraph panel;
+	net.sourceforge.jFuzzyLogic.plot.PanelPaintGraph panel;
 
 	public static DialogGraph execute(JFreeChart chart) {
 		return execute(chart, posx, posy, DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -39,7 +39,7 @@ public class DialogGraph extends JDialog {
 		if (chart == null) return null;
 
 		DialogGraph dg = new DialogGraph(null, false);
-		dg.panel = new PanelPaintGraph(chart);
+		dg.panel = new net.sourceforge.jFuzzyLogic.plot.PanelPaintGraph(chart);
 		dg.setSize(width, height);
 		dg.setLocation(posx, posy);
 		dg.setLayout(new BorderLayout());
@@ -77,7 +77,7 @@ public class DialogGraph extends JDialog {
 		initComponents();
 	}
 
-	public PanelPaintGraph getPanel() {
+	public net.sourceforge.jFuzzyLogic.plot.PanelPaintGraph getPanel() {
 		return panel;
 	}
 

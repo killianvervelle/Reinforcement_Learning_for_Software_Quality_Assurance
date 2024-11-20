@@ -51,7 +51,7 @@ public class LinguisticTerm extends FclObject implements Comparable<LinguisticTe
 		return "Term: " + termName + "\t" + membershipFunction.membership(value) + "\t" + membershipFunction.toString();
 	}
 
-	public String toStringCpp(String className, Variable var) {
+	public String toStringCpp(String className, net.sourceforge.jFuzzyLogic.rule.Variable var) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("double " + className + "::" + toStringCppMethodName(var) + "(double x) {\n");
 		sb.append(membershipFunction.toStringCpp());

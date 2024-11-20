@@ -54,7 +54,7 @@ public abstract class JFuzzyChart {
 	 */
 	public abstract void chart(FIS fis);
 
-	/**
+	/** 
 	 * Show a chart for each variable in a function block 
 	 */
 	public abstract void chart(FunctionBlock fb);

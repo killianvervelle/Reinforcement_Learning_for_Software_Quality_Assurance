@@ -27,9 +27,9 @@ public class Rule extends FclObject implements CompileCpp {
 	public static boolean debug = FIS.debug;
 
 	/** Rule antecedent ('if' part) */
-	RuleExpression antecedents;
+	net.sourceforge.jFuzzyLogic.rule.RuleExpression antecedents;
 	/** Rule consequent ('then' part) */
-	LinkedList<RuleTerm> consequents;
+	LinkedList<net.sourceforge.jFuzzyLogic.rule.RuleTerm> consequents;
 	/** Degree of support */
 	double degreeOfSupport;
 	/** Rule's name */
@@ -37,16 +37,16 @@ public class Rule extends FclObject implements CompileCpp {
 	/** Rule's weight */
 	double weight;
 	/** This rule belongs to ruleBlock */
-	RuleBlock ruleBlock;
+	net.sourceforge.jFuzzyLogic.rule.RuleBlock ruleBlock;
 
 	/**
 	 * Default constructor 
 	 * Default weight: 1.0
 	 * Default connection method: AND (minimum)
 	 */
-	public Rule(String name, RuleBlock ruleBlock) {
-		antecedents = new RuleExpression();
-		consequents = new LinkedList<RuleTerm>();
+	public Rule(String name, net.sourceforge.jFuzzyLogic.rule.RuleBlock ruleBlock) {
+		antecedents = new net.sourceforge.jFuzzyLogic.rule.RuleExpression();
+		consequents = new LinkedList<net.sourceforge.jFuzzyLogic.rule.RuleTerm>();
 		weight = 1.0; // Default weight: 1.0
 		this.name = name;
 		this.ruleBlock = ruleBlock;
@@ -58,9 +58,9 @@ public class Rule extends FclObject implements CompileCpp {
 	 * @param termName : RuleTerm for this condition
 	 * @return this Rule
 	 */
-	public Rule addAntecedent(Variable variable, String termName, boolean negated) {
+	public Rule addAntecedent(net.sourceforge.jFuzzyLogic.rule.Variable variable, String termName, boolean negated) {
 		if (variable.getMembershipFunction(termName) == null) throw new RuntimeException("RuleTerm '" + termName + "' does not exists in variable '" + variable.getName() + "'");
-		RuleTerm fuzzyRuleTerm = new RuleTerm(variable, termName, negated);
+		net.sourceforge.jFuzzyLogic.rule.RuleTerm fuzzyRuleTerm = new net.sourceforge.jFuzzyLogic.rule.RuleTerm(variable, termName, negated);
 		antecedents.add(fuzzyRuleTerm);
 		return this;
 	}
@@ -73,7 +73,7 @@ public class Rule extends FclObject implements CompileCpp {
 	 */
 	public Rule addConsequent(Variable variable, String termName, boolean negated) {
 		if (variable.getMembershipFunction(termName) == null) throw new RuntimeException("RuleTerm '" + termName + "' does not exists in variable '" + variable.getName() + "'");
-		consequents.add(new RuleTerm(variable, termName, negated));
+		consequents.add(new net.sourceforge.jFuzzyLogic.rule.RuleTerm(variable, termName, negated));
 		return this;
 	}
 
@@ -97,17 +97,17 @@ public class Rule extends FclObject implements CompileCpp {
 		//---
 		RuleAccumulationMethod ruleAccumulationMethod = ruleBlock.getRuleAccumulationMethod();
 		if (debug) Gpr.debug("degreeOfSupport:" + degreeOfSupport + "\truleAccumulationMethod:" + ruleAccumulationMethod + "\truleImplicationMethod:" + ruleActivationMethod);
-		for (RuleTerm term : consequents) {
+		for (net.sourceforge.jFuzzyLogic.rule.RuleTerm term : consequents) {
 			if (debug) Gpr.debug("\tfuzzyRuleTerm:" + term);
 			ruleActivationMethod.imply(term, ruleAccumulationMethod, degreeOfSupport);
 		}
 	}
 
-	public RuleExpression getAntecedents() {
+	public net.sourceforge.jFuzzyLogic.rule.RuleExpression getAntecedents() {
 		return antecedents;
 	}
 
-	public LinkedList<RuleTerm> getConsequents() {
+	public LinkedList<net.sourceforge.jFuzzyLogic.rule.RuleTerm> getConsequents() {
 		return consequents;
 	}
 
@@ -119,7 +119,7 @@ public class Rule extends FclObject implements CompileCpp {
 		return name;
 	}
 
-	public RuleBlock getRuleBlock() {
+	public net.sourceforge.jFuzzyLogic.rule.RuleBlock getRuleBlock() {
 		return ruleBlock;
 	}
 
@@ -131,7 +131,7 @@ public class Rule extends FclObject implements CompileCpp {
 		this.antecedents = antecedents;
 	}
 
-	public void setConsequents(LinkedList<RuleTerm> consequents) {
+	public void setConsequents(LinkedList<net.sourceforge.jFuzzyLogic.rule.RuleTerm> consequents) {
 		this.consequents = consequents;
 	}
 
@@ -159,9 +159,9 @@ public class Rule extends FclObject implements CompileCpp {
 		strAnt = antecedents.toString();
 
 		// Show consequents
-		Iterator<RuleTerm> itc = consequents.iterator();
+		Iterator<net.sourceforge.jFuzzyLogic.rule.RuleTerm> itc = consequents.iterator();
 		while (itc.hasNext()) {
-			RuleTerm term = itc.next();
+			net.sourceforge.jFuzzyLogic.rule.RuleTerm term = itc.next();
 			if (strCon.length() > 0) strCon += " , ";
 			strCon += term.toString();
 		}
@@ -181,7 +181,7 @@ public class Rule extends FclObject implements CompileCpp {
 
 		// Accumulate & activate
 		RuleAccumulationMethod ruleAccumulationMethod = ruleBlock.getRuleAccumulationMethod();
-		for (RuleTerm term : consequents)
+		for (net.sourceforge.jFuzzyLogic.rule.RuleTerm term : consequents)
 			sb.append(ruleActivationMethod.toStringCpp(term, ruleAccumulationMethod, dosName) + "\n");
 
 		return sb.toString();

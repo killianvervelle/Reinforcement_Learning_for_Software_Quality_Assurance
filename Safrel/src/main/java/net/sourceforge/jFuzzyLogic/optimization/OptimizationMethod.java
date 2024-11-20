@@ -2,6 +2,8 @@ package net.sourceforge.jFuzzyLogic.optimization;
 
 import java.util.ArrayList;
 
+import net.sourceforge.jFuzzyLogic.optimization.ErrorFunction;
+import net.sourceforge.jFuzzyLogic.optimization.Parameter;
 import net.sourceforge.jFuzzyLogic.rule.RuleBlock;
 
 /**
@@ -17,13 +19,13 @@ public abstract class OptimizationMethod {
 
 	protected boolean verbose = false; // Debug mode?
 	protected int showEvery = 1;
-	protected ErrorFunction errorFunction; // Error function to minimize 
+	protected net.sourceforge.jFuzzyLogic.optimization.ErrorFunction errorFunction; // Error function to minimize
 	protected RuleBlock fuzzyRuleSet; // Fuzzy rule set's whose parameters we are optimizing 
 	protected int maxIterations; // Max number of iterations 
 	protected int maxLineSearchIterations; // Maximum 'line search' number of iterations 
-	protected ArrayList<Parameter> parameterList; // Parameters to optimize 
+	protected ArrayList<net.sourceforge.jFuzzyLogic.optimization.Parameter> parameterList; // Parameters to optimize
 
-	public OptimizationMethod(RuleBlock fuzzyRuleSet, ErrorFunction errorFunction, ArrayList<Parameter> parameterList) {
+	public OptimizationMethod(RuleBlock fuzzyRuleSet, net.sourceforge.jFuzzyLogic.optimization.ErrorFunction errorFunction, ArrayList<net.sourceforge.jFuzzyLogic.optimization.Parameter> parameterList) {
 		this.fuzzyRuleSet = fuzzyRuleSet;
 		this.errorFunction = errorFunction;
 		this.parameterList = parameterList;
@@ -39,7 +41,7 @@ public abstract class OptimizationMethod {
 		return false;
 	}
 
-	public ErrorFunction getErrorFunction() {
+	public net.sourceforge.jFuzzyLogic.optimization.ErrorFunction getErrorFunction() {
 		return errorFunction;
 	}
 
@@ -55,7 +57,7 @@ public abstract class OptimizationMethod {
 		return maxLineSearchIterations;
 	}
 
-	public ArrayList<Parameter> getParameterList() {
+	public ArrayList<net.sourceforge.jFuzzyLogic.optimization.Parameter> getParameterList() {
 		return parameterList;
 	}
 

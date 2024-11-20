@@ -1,5 +1,6 @@
 package net.sourceforge.jFuzzyLogic.defuzzifier;
 
+import net.sourceforge.jFuzzyLogic.defuzzifier.DefuzzifierDiscrete;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 /**

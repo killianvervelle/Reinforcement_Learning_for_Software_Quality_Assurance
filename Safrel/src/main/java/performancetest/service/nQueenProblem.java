@@ -1,4 +1,7 @@
-package performancetest;
+package performancetest.service;
+
+import performancetest.model.VirtualMachine;
+import performancetest.benchmark;
 
 import java.time.Duration;
 import java.time.Instant;

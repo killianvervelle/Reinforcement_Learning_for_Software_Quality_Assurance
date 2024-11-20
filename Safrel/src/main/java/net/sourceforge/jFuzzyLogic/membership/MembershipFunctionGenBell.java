@@ -12,7 +12,7 @@ public class MembershipFunctionGenBell extends MembershipFunctionContinuous {
 	 * @param b : 'b' param
 	 * @param mean : Mean
 	 */
-	public MembershipFunctionGenBell(Value a, Value b, Value mean) {
+	public MembershipFunctionGenBell(net.sourceforge.jFuzzyLogic.membership.Value a, net.sourceforge.jFuzzyLogic.membership.Value b, net.sourceforge.jFuzzyLogic.membership.Value mean) {
 		super();
 
 		// Initialize
@@ -50,7 +50,7 @@ public class MembershipFunctionGenBell extends MembershipFunctionContinuous {
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {

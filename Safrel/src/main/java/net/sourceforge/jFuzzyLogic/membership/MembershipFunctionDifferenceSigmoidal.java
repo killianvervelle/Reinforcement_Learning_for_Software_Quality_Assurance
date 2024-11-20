@@ -1,5 +1,8 @@
 package net.sourceforge.jFuzzyLogic.membership;
 
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionContinuous;
+import net.sourceforge.jFuzzyLogic.membership.Value;
+
 /**
  * Difference sigmoidal membership function
  * @author yuanhao.li@gmail.com
@@ -14,7 +17,7 @@ public class MembershipFunctionDifferenceSigmoidal extends MembershipFunctionCon
 	 * @param a2 : Standard deviation 2
 	 * @param c2 : Mean 2
 	 */
-	public MembershipFunctionDifferenceSigmoidal(Value a1, Value c1, Value a2, Value c2) {
+	public MembershipFunctionDifferenceSigmoidal(net.sourceforge.jFuzzyLogic.membership.Value a1, net.sourceforge.jFuzzyLogic.membership.Value c1, net.sourceforge.jFuzzyLogic.membership.Value a2, net.sourceforge.jFuzzyLogic.membership.Value c2) {
 		super();
 
 		//Initialize
@@ -53,7 +56,7 @@ public class MembershipFunctionDifferenceSigmoidal extends MembershipFunctionCon
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {

@@ -1,5 +1,8 @@
 package net.sourceforge.jFuzzyLogic.membership;
 
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete;
+import net.sourceforge.jFuzzyLogic.membership.Value;
+
 import java.util.Iterator;
 
 /**
@@ -13,13 +16,13 @@ public class MembershipFunctionSingleton extends MembershipFunctionDiscrete {
 	 * @param valueX
 	 * @param valueY
 	 */
-	public MembershipFunctionSingleton(Value valueX) {
+	public MembershipFunctionSingleton(net.sourceforge.jFuzzyLogic.membership.Value valueX) {
 		super();
 
 		// Initialize
-		parameters = new Value[2];
+		parameters = new net.sourceforge.jFuzzyLogic.membership.Value[2];
 		parameters[0] = valueX;
-		parameters[1] = Value.ONE;
+		parameters[1] = net.sourceforge.jFuzzyLogic.membership.Value.ONE;
 
 		// Check parameters
 		StringBuffer errors = new StringBuffer();
@@ -31,7 +34,7 @@ public class MembershipFunctionSingleton extends MembershipFunctionDiscrete {
 	 * @param valueX
 	 * @param valueY
 	 */
-	public MembershipFunctionSingleton(Value valueX, Value valueY) {
+	public MembershipFunctionSingleton(net.sourceforge.jFuzzyLogic.membership.Value valueX, net.sourceforge.jFuzzyLogic.membership.Value valueY) {
 		super();
 
 		// Initialize
@@ -65,7 +68,7 @@ public class MembershipFunctionSingleton extends MembershipFunctionDiscrete {
 	}
 
 	/**
-	 * @see MembershipFunctionDiscrete#iterator()
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete#iterator()
 	 */
 	@Override
 	public Iterator<Double> iterator() {
@@ -86,7 +89,7 @@ public class MembershipFunctionSingleton extends MembershipFunctionDiscrete {
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {
@@ -95,7 +98,7 @@ public class MembershipFunctionSingleton extends MembershipFunctionDiscrete {
 	}
 
 	/**
-	 * @see MembershipFunctionDiscrete#membership(int)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete#membership(int)
 	 */
 	@Override
 	public double membership(int index) {

@@ -2,6 +2,8 @@ package net.sourceforge.jFuzzyLogic.rule;
 
 import net.sourceforge.jFuzzyLogic.fcl.FclObject;
 import net.sourceforge.jFuzzyLogic.membership.MembershipFunction;
+import net.sourceforge.jFuzzyLogic.rule.LinguisticTerm;
+import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 /** 
  * A fuzzy logic term for a 'Rule'. E.g.: "speed IS high"
@@ -14,7 +16,7 @@ public class RuleTerm extends FclObject {
 	/** RuleTerm's name */
 	String termName;
 	/** Varible */
-	Variable variable;
+	net.sourceforge.jFuzzyLogic.rule.Variable variable;
 
 	/**
 	 * Constructor 
@@ -22,7 +24,7 @@ public class RuleTerm extends FclObject {
 	 * @param term
 	 * @param negated
 	 */
-	public RuleTerm(Variable variable, String term, boolean negated) {
+	public RuleTerm(net.sourceforge.jFuzzyLogic.rule.Variable variable, String term, boolean negated) {
 		this.variable = variable;
 		termName = term;
 		this.negated = negated;
@@ -46,7 +48,7 @@ public class RuleTerm extends FclObject {
 		return termName;
 	}
 
-	public Variable getVariable() {
+	public net.sourceforge.jFuzzyLogic.rule.Variable getVariable() {
 		return variable;
 	}
 

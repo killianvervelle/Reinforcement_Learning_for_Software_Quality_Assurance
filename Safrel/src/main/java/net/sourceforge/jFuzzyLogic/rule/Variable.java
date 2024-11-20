@@ -19,7 +19,7 @@ import net.sourceforge.jFuzzyLogic.membership.MembershipFunction;
  * Fuzzy variable
  * @author pcingola@users.sourceforge.net
  */
-public class Variable extends FclObject implements Comparable<Variable>, Iterable<LinguisticTerm>, CompileCpp {
+public class Variable extends FclObject implements Comparable<Variable>, Iterable<net.sourceforge.jFuzzyLogic.rule.LinguisticTerm>, CompileCpp {
 
 	public static final double EPSILON = 1e-6;
 
@@ -29,7 +29,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 	double universeMin; // Universe minimum (range minimum)
 	double value; // Variable's value
 	String name; // Variable name
-	HashMap<String, LinguisticTerm> linguisticTerms; // Terms for this variable
+	HashMap<String, net.sourceforge.jFuzzyLogic.rule.LinguisticTerm> linguisticTerms; // Terms for this variable
 	Defuzzifier defuzzifier; // Defuzzifier class
 	HashMap<Variable, Double> variableValues; // Terms may use variables, we need to keep track of values to know when universe needs to be updated
 
@@ -40,7 +40,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 	public Variable(String name) {
 		if (name == null) throw new RuntimeException("Variable's name can't be null");
 		this.name = name;
-		linguisticTerms = new HashMap<String, LinguisticTerm>();
+		linguisticTerms = new HashMap<String, net.sourceforge.jFuzzyLogic.rule.LinguisticTerm>();
 		defaultValue = Double.NaN;
 		universeMin = Double.NaN;
 		universeMax = Double.NaN;
@@ -57,7 +57,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 	 * @param linguisticTerm : Linguistic term to add
 	 * @return this variable
 	 */
-	public Variable add(LinguisticTerm linguisticTerm) {
+	public Variable add(net.sourceforge.jFuzzyLogic.rule.LinguisticTerm linguisticTerm) {
 		linguisticTerms.put(linguisticTerm.getTermName(), linguisticTerm);
 		variableValues = null; // Reset cache
 		return this;
@@ -93,7 +93,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 		double umax = Double.NEGATIVE_INFINITY;
 
 		if (linguisticTerms.size() > 0) {
-			for (LinguisticTerm lt : this) {
+			for (net.sourceforge.jFuzzyLogic.rule.LinguisticTerm lt : this) {
 				MembershipFunction membershipFunction = lt.getMembershipFunction();
 				membershipFunction.estimateUniverseForce();
 
@@ -117,7 +117,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 	protected Set<Variable> findVariables() {
 		Set<Variable> vars = new HashSet<Variable>();
 
-		for (LinguisticTerm lt : this)
+		for (net.sourceforge.jFuzzyLogic.rule.LinguisticTerm lt : this)
 			vars.addAll(lt.getMembershipFunction().findVariables());
 
 		return vars;
@@ -136,13 +136,13 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 	}
 
 	/** Get 'termName' linguistic term */
-	public LinguisticTerm getLinguisticTerm(String termName) {
-		LinguisticTerm lt = linguisticTerms.get(termName);
+	public net.sourceforge.jFuzzyLogic.rule.LinguisticTerm getLinguisticTerm(String termName) {
+		net.sourceforge.jFuzzyLogic.rule.LinguisticTerm lt = linguisticTerms.get(termName);
 		if (lt == null) throw new RuntimeException("No such linguistic term: '" + termName + "'");
 		return lt;
 	}
 
-	public HashMap<String, LinguisticTerm> getLinguisticTerms() {
+	public HashMap<String, net.sourceforge.jFuzzyLogic.rule.LinguisticTerm> getLinguisticTerms() {
 		return linguisticTerms;
 	}
 
@@ -155,7 +155,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 
 	/** Get 'termName' membershipfunction */
 	public MembershipFunction getMembershipFunction(String termName) {
-		LinguisticTerm lt = linguisticTerms.get(termName);
+		net.sourceforge.jFuzzyLogic.rule.LinguisticTerm lt = linguisticTerms.get(termName);
 		if (lt == null) throw new RuntimeException("No such linguistic term: '" + termName + "'");
 		return lt.getMembershipFunction();
 	}
@@ -187,7 +187,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 	}
 
 	@Override
-	public Iterator<LinguisticTerm> iterator() {
+	public Iterator<net.sourceforge.jFuzzyLogic.rule.LinguisticTerm> iterator() {
 		return linguisticTerms.values().iterator();
 	}
 
@@ -207,8 +207,8 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 	//	}
 
 	/** Get a 'linguisticTerms sorted by name */
-	public List<LinguisticTerm> linguisticTermsSorted() {
-		ArrayList<LinguisticTerm> al = new ArrayList<LinguisticTerm>(linguisticTerms.values());
+	public List<net.sourceforge.jFuzzyLogic.rule.LinguisticTerm> linguisticTermsSorted() {
+		ArrayList<net.sourceforge.jFuzzyLogic.rule.LinguisticTerm> al = new ArrayList<net.sourceforge.jFuzzyLogic.rule.LinguisticTerm>(linguisticTerms.values());
 		Collections.sort(al);
 		return al;
 	}
@@ -279,7 +279,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 		this.latestDefuzzifiedValue = latestDefuzzifiedValue;
 	}
 
-	public void setLinguisticTerms(HashMap<String, LinguisticTerm> linguisticTerms) {
+	public void setLinguisticTerms(HashMap<String, net.sourceforge.jFuzzyLogic.rule.LinguisticTerm> linguisticTerms) {
 		this.linguisticTerms = linguisticTerms;
 	}
 
@@ -311,7 +311,7 @@ public class Variable extends FclObject implements Comparable<Variable>, Iterabl
 		if (!Double.isNaN(defaultValue)) str += "\tDefault value: " + defaultValue + "\n";
 
 		// Show each 'termName' and it's membership function
-		for (LinguisticTerm linguisticTerm : this)
+		for (net.sourceforge.jFuzzyLogic.rule.LinguisticTerm linguisticTerm : this)
 			str += "\t" + linguisticTerm.toString(value) + "\n";
 
 		return str;

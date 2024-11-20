@@ -3,6 +3,8 @@ package net.sourceforge.jFuzzyLogic.membership;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionContinuous;
+import net.sourceforge.jFuzzyLogic.membership.Value;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 /**
@@ -12,9 +14,9 @@ import net.sourceforge.jFuzzyLogic.rule.Variable;
 public class MembershipFunctionPieceWiseLinear extends MembershipFunctionContinuous {
 
 	/** Piece wise linear function values x */
-	Value x[];
+	net.sourceforge.jFuzzyLogic.membership.Value x[];
 	/** Piece wise linear function values y */
-	Value y[];
+	net.sourceforge.jFuzzyLogic.membership.Value y[];
 
 	/**
 	 * Default constructor
@@ -25,7 +27,7 @@ public class MembershipFunctionPieceWiseLinear extends MembershipFunctionContinu
 	 * ordered by x[] (increasing)
 	 * See also 'membership()' for a precise definition.
 	 */
-	public MembershipFunctionPieceWiseLinear(Value x[], Value y[]) {
+	public MembershipFunctionPieceWiseLinear(net.sourceforge.jFuzzyLogic.membership.Value x[], net.sourceforge.jFuzzyLogic.membership.Value y[]) {
 		super();
 
 		// Check parameters
@@ -78,12 +80,12 @@ public class MembershipFunctionPieceWiseLinear extends MembershipFunctionContinu
 		HashSet<Variable> vars = new HashSet<Variable>();
 
 		if (x != null) {
-			for (Value val : x)
-				if (val.getType() == Value.Type.VAR_REFERENCE && val.getVarRef() != null) vars.add(val.getVarRef());
+			for (net.sourceforge.jFuzzyLogic.membership.Value val : x)
+				if (val.getType() == net.sourceforge.jFuzzyLogic.membership.Value.Type.VAR_REFERENCE && val.getVarRef() != null) vars.add(val.getVarRef());
 		}
 
 		if (y != null) {
-			for (Value val : y)
+			for (net.sourceforge.jFuzzyLogic.membership.Value val : y)
 				if (val.getType() == Value.Type.VAR_REFERENCE && val.getVarRef() != null) vars.add(val.getVarRef());
 		}
 
@@ -111,7 +113,7 @@ public class MembershipFunctionPieceWiseLinear extends MembershipFunctionContinu
 	 * 		membership(x) = y[n]											if x >= x[n]  (where n = x.length)
 	 * 		membership(x) = y[i - 1] + (y[i] - y[i - 1]) / (in - x[i])		if x[i-1] < x <= x[i]
 	 *
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {

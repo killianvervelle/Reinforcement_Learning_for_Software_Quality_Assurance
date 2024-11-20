@@ -5,6 +5,7 @@ import java.util.Set;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.fcl.FclObject;
+import net.sourceforge.jFuzzyLogic.membership.Value;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 /**
@@ -17,7 +18,7 @@ public abstract class MembershipFunction extends FclObject {
 	public static boolean debug = FIS.debug;
 
 	boolean discrete;
-	Value parameters[]; // Function's parameters
+	net.sourceforge.jFuzzyLogic.membership.Value parameters[]; // Function's parameters
 	double universeMax; // Universe max (range max)
 	double universeMin; // Universe min (range min)
 
@@ -43,7 +44,7 @@ public abstract class MembershipFunction extends FclObject {
 		HashSet<Variable> vars = new HashSet<Variable>();
 
 		if (parameters != null) {
-			for (Value val : parameters)
+			for (net.sourceforge.jFuzzyLogic.membership.Value val : parameters)
 				if (val.getType() == Value.Type.VAR_REFERENCE && val.getVarRef() != null) vars.add(val.getVarRef());
 		}
 

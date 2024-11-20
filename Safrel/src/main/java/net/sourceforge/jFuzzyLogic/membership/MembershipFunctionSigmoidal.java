@@ -11,7 +11,7 @@ public class MembershipFunctionSigmoidal extends MembershipFunctionContinuous {
 	 * @param gain : Mean 
 	 * @param t0 : Standard deviation
 	 */
-	public MembershipFunctionSigmoidal(Value gain, Value t0) {
+	public MembershipFunctionSigmoidal(net.sourceforge.jFuzzyLogic.membership.Value gain, net.sourceforge.jFuzzyLogic.membership.Value t0) {
 		super();
 
 		// Initialize
@@ -40,7 +40,7 @@ public class MembershipFunctionSigmoidal extends MembershipFunctionContinuous {
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {

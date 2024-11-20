@@ -51,9 +51,9 @@ import org.antlr.runtime.tree.Tree;
  */
 public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Comparable<FunctionBlock>, CompileCpp {
 
-	public static boolean debug = FIS.debug;
+	public static boolean debug = net.sourceforge.jFuzzyLogic.FIS.debug;
 
-	FIS fis; // Which FIS does this FunctionBlock belong to?
+	net.sourceforge.jFuzzyLogic.FIS fis; // Which FIS does this FunctionBlock belong to?
 	String name; // Function block name
 	HashMap<String, RuleBlock> ruleBlocks; // Several RuleBlocks indexed by name
 	HashMap<String, Variable> variablesByName; // Every variable is here (key: VariableName)
@@ -111,8 +111,8 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return : RuleSet's name (or "" if no name)
 	 */
 	public String fclTree(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
-		Gpr.checkRootNode("FUNCTION_BLOCK", tree);
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
+		net.sourceforge.jFuzzyLogic.Gpr.checkRootNode("FUNCTION_BLOCK", tree);
 		ruleBlocks = new HashMap<String, RuleBlock>();
 
 		boolean firstChild = true;
@@ -121,7 +121,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 		// Add every child
 		for (int childNum = 0; childNum < tree.getChildCount(); childNum++) {
 			Tree child = tree.getChild(childNum);
-			if (debug) Gpr.debug("\t\tChild: " + child.toStringTree());
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\t\tChild: " + child.toStringTree());
 			String leaveName = child.getText();
 
 			if (firstChild) name = leaveName;
@@ -153,8 +153,8 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return Variable (old or created)
 	 */
 	private Variable fclTreeDefuzzify(Tree tree) {
-		Gpr.checkRootNode("DEFUZZIFY", tree);
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		net.sourceforge.jFuzzyLogic.Gpr.checkRootNode("DEFUZZIFY", tree);
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		String defuzzificationMethodType = "COG";
 
 		Tree child = tree.getChild(0);
@@ -165,7 +165,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 		if (variable == null) {
 			variable = new Variable(varName);
 			setVariable(varName, variable);
-			if (debug) Gpr.debug("Variable '" + varName + "' does not exist => Creating it");
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Variable '" + varName + "' does not exist => Creating it");
 		}
 
 		//---
@@ -174,7 +174,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 		for (int childNum = 1; childNum < tree.getChildCount(); childNum++) {
 			child = tree.getChild(childNum);
 			String leaveName = child.getText();
-			if (debug) Gpr.debug("\t\tChild: " + child.toStringTree());
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\t\tChild: " + child.toStringTree());
 
 			if (leaveName.equalsIgnoreCase("TERM")) {
 				// Linguistic term
@@ -189,11 +189,11 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 				// Default value
 				String defaultValueStr = child.getChild(0).getText();
 				if (defaultValueStr.equalsIgnoreCase("NC")) variable.setDefaultValue(Double.NaN); // Set it to "No Change"?
-				else variable.setDefaultValue(Gpr.parseDouble(child.getChild(0))); // Set value
+				else variable.setDefaultValue(net.sourceforge.jFuzzyLogic.Gpr.parseDouble(child.getChild(0))); // Set value
 			} else if (leaveName.equalsIgnoreCase("RANGE")) {
 				// Range values (universe min / max)
-				double universeMin = Gpr.parseDouble(child.getChild(0));
-				double universeMax = Gpr.parseDouble(child.getChild(1));
+				double universeMin = net.sourceforge.jFuzzyLogic.Gpr.parseDouble(child.getChild(0));
+				double universeMax = net.sourceforge.jFuzzyLogic.Gpr.parseDouble(child.getChild(1));
 				if (universeMax <= universeMin) throw new RuntimeException("Range's min is grater than range's max! RANGE := ( " + universeMin + " .. " + universeMax + " );");
 				variable.setUniverseMax(universeMax);
 				variable.setUniverseMin(universeMin);
@@ -213,8 +213,8 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return Variable (old or created)
 	 */
 	private Variable fclTreeFuzzify(Tree tree) {
-		Gpr.checkRootNode("FUZZIFY", tree);
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		net.sourceforge.jFuzzyLogic.Gpr.checkRootNode("FUZZIFY", tree);
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Tree child = tree.getChild(0);
 		String varName = child.getText();
 
@@ -223,13 +223,13 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 		if (variable == null) {
 			variable = new Variable(varName);
 			setVariable(varName, variable);
-			if (debug) Gpr.debug("Variable '" + varName + "' does not exist => Creating it");
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Variable '" + varName + "' does not exist => Creating it");
 		}
 
 		// Explore each sibling in this level
 		for (int childNum = 1; childNum < tree.getChildCount(); childNum++) {
 			child = tree.getChild(childNum);
-			if (debug) Gpr.debug("\t\tChild: " + child.toStringTree());
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\t\tChild: " + child.toStringTree());
 			String leaveName = child.getText();
 
 			if (leaveName.equalsIgnoreCase("TERM")) {
@@ -247,12 +247,12 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new LinguisticTerm
 	 */
 	private LinguisticTerm fclTreeFuzzifyTerm(Tree tree, Variable variable) {
-		Gpr.checkRootNode("TERM", tree);
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		net.sourceforge.jFuzzyLogic.Gpr.checkRootNode("TERM", tree);
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		String termName = tree.getChild(0).getText();
 		Tree child = tree.getChild(1);
 		String leaveName = child.getText();
-		if (debug) Gpr.debug("\t\tTermname: " + termName + "\tLeavename: " + leaveName);
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\t\tTermname: " + termName + "\tLeavename: " + leaveName);
 
 		MembershipFunction membershipFunction = null;
 		if (leaveName.equalsIgnoreCase("POINT")) membershipFunction = fclTreeFuzzifyTermPieceWiseLinear(tree);
@@ -281,7 +281,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermCosine(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Value net_max = new Value(tree.getChild(0), this);
 		Value offset = new Value(tree.getChild(1), this);
 		MembershipFunction membershipFunction = new MembershipFunctionCosine(net_max, offset);
@@ -294,7 +294,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermDifferenceSigmoidal(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Value a1 = new Value(tree.getChild(0), this);
 		Value c1 = new Value(tree.getChild(1), this);
 		Value a2 = new Value(tree.getChild(2), this);
@@ -309,7 +309,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermFunction(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		return new MembershipFunctionFuncion(this, tree.getChild(0));
 	}
 
@@ -319,7 +319,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermGauss(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Tree child = tree.getChild(0);
 		Value mean = new Value(child, this);
 		Value stdev = new Value(tree.getChild(1), this);
@@ -333,7 +333,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermGauss2(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Tree child = tree.getChild(0);
 		Value mean = new Value(child, this);
 		Value stdev = new Value(tree.getChild(1), this);
@@ -349,7 +349,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermGenBell(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Tree child = tree.getChild(0);
 		Value a = new Value(child, this);
 		Value b = new Value(tree.getChild(1), this);
@@ -364,22 +364,22 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermPieceWiseLinear(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		int numberOfPoints = tree.getChildCount() - 1;
-		if (debug) Gpr.debug("\tNumber of points: " + numberOfPoints);
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\tNumber of points: " + numberOfPoints);
 
 		Value x[] = new Value[numberOfPoints];
 		Value y[] = new Value[numberOfPoints];
 		for (int childNum = 1; childNum < tree.getChildCount(); childNum++) {
 			Tree child = tree.getChild(childNum);
-			if (debug) Gpr.debug("\t\tChild: " + child.toStringTree());
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\t\tChild: " + child.toStringTree());
 			String leaveName = child.getText();
 
 			// It's a set of points? => Defines a piece-wise linear membership function
 			if (leaveName.equalsIgnoreCase("POINT")) {
 				x[childNum - 1] = new Value(child.getChild(0), this); // Parse and add each point
 				y[childNum - 1] = new Value(child.getChild(1), this);
-				if (debug) Gpr.debug("\t\tParsed point " + childNum + " x=" + x[childNum - 1] + ", y=" + y[childNum - 1]);
+				if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\t\tParsed point " + childNum + " x=" + x[childNum - 1] + ", y=" + y[childNum - 1]);
 				if ((y[childNum - 1].getValue() < 0) || (y[childNum - 1].getValue() > 1)) throw new RuntimeException("\n\tError parsing line " + child.getLine() + " character " + child.getCharPositionInLine() + ": Membership function out of range (should be between 0 and 1). Value: '" + y[childNum - 1] + "'\n\tTree: " + child.toStringTree());
 			} else throw new RuntimeException("Unknown (or unimplemented) option : " + leaveName);
 		}
@@ -392,7 +392,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermSigmoidal(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Value gain = new Value(tree.getChild(0), this);
 		Value t0 = new Value(tree.getChild(1), this);
 		MembershipFunction membershipFunction = new MembershipFunctionSigmoidal(gain, t0);
@@ -405,7 +405,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermSingleton(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Value singleTonValueX = new Value(tree, this);
 		MembershipFunction membershipFunction = new MembershipFunctionSingleton(singleTonValueX);
 		return membershipFunction;
@@ -417,7 +417,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermSingletons(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 
 		// Count number of points
 		int numPoints = 0;
@@ -426,7 +426,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 
 			String leaveName = child.getText();
 			if (leaveName.equalsIgnoreCase("(")) numPoints++;
-			if (debug) Gpr.debug("leaveName : " + leaveName + "\tnumPoints: " + numPoints);
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("leaveName : " + leaveName + "\tnumPoints: " + numPoints);
 		}
 
 		// Parse multiple points (for piece-wise linear)
@@ -440,14 +440,14 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermSingletonsPoints(Tree tree, int numberOfPoints) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 
 		Value x[] = new Value[numberOfPoints];
 		Value y[] = new Value[numberOfPoints];
 		for (int childNum = 0; childNum < tree.getChildCount(); childNum++) {
 			Tree child = tree.getChild(childNum);
 			String leaveName = child.getText();
-			if (debug) Gpr.debug("Sub-Parsing: " + leaveName);
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Sub-Parsing: " + leaveName);
 
 			// It's a set of points? => Defines a piece-wise linear membership function
 			if (leaveName.equalsIgnoreCase("(")) {
@@ -456,7 +456,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 
 				if ((y[childNum].getValue() < 0) || (y[childNum].getValue() > 1)) throw new RuntimeException("\n\tError parsing line " + child.getLine() + " character " + child.getCharPositionInLine() + ": Membership function out of range (should be between 0 and 1). Value: '" + y[childNum] + "'\n\tTree: " + child.toStringTree());
 
-				if (debug) Gpr.debug("Parsed point " + childNum + " x=" + x[childNum] + ", y=" + y[childNum]);
+				if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Parsed point " + childNum + " x=" + x[childNum] + ", y=" + y[childNum]);
 			} else throw new RuntimeException("Unknown (or unimplemented) option : " + leaveName);
 		}
 		return new MembershipFunctionGenericSingleton(x, y);
@@ -468,7 +468,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermTrapetzoidal(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Value min = new Value(tree.getChild(0), this);
 		Value midLow = new Value(tree.getChild(1), this);
 		Value midHigh = new Value(tree.getChild(2), this);
@@ -483,7 +483,7 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @return A new membership function
 	 */
 	private MembershipFunction fclTreeFuzzifyTermTriangular(Tree tree) {
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		Value min = new Value(tree.getChild(0), this);
 		Value mid = new Value(tree.getChild(1), this);
 		Value max = new Value(tree.getChild(2), this);
@@ -496,23 +496,23 @@ public class FunctionBlock extends FclObject implements Iterable<RuleBlock>, Com
 	 * @param tree
 	 */
 	private void fclTreeVariables(Tree tree) {
-		Gpr.checkRootNode("VAR_OUTPUT", "VAR_INPUT", tree);
-		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
+		net.sourceforge.jFuzzyLogic.Gpr.checkRootNode("VAR_OUTPUT", "VAR_INPUT", tree);
+		if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("Tree: " + tree.toStringTree());
 		for (int childNum = 0; childNum < tree.getChildCount(); childNum++) {
 			Tree child = tree.getChild(childNum);
-			if (debug) Gpr.debug("\tChild: " + child.toStringTree());
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\tChild: " + child.toStringTree());
 			String varName = child.getText();
 			Variable variable = new Variable(varName);
-			if (debug) Gpr.debug("\tAdding variable: " + varName);
+			if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\tAdding variable: " + varName);
 
 			// Set range?
 			if (child.getChildCount() > 1) {
 				Tree rangeTree = child.getChild(1);
-				if (debug) Gpr.debug("\tRangeTree: " + rangeTree.toStringTree());
-				double min = Gpr.parseDouble(rangeTree.getChild(0));
-				double max = Gpr.parseDouble(rangeTree.getChild(1));
+				if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\tRangeTree: " + rangeTree.toStringTree());
+				double min = net.sourceforge.jFuzzyLogic.Gpr.parseDouble(rangeTree.getChild(0));
+				double max = net.sourceforge.jFuzzyLogic.Gpr.parseDouble(rangeTree.getChild(1));
 
-				if (debug) Gpr.debug("\tSetting universe to: [ " + min + " , " + max + " ]");
+				if (debug) net.sourceforge.jFuzzyLogic.Gpr.debug("\tSetting universe to: [ " + min + " , " + max + " ]");
 				variable.setUniverseMin(min);
 				variable.setUniverseMax(max);
 			}

@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete;
+import net.sourceforge.jFuzzyLogic.membership.Value;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 /**
@@ -13,16 +15,16 @@ import net.sourceforge.jFuzzyLogic.rule.Variable;
 public class MembershipFunctionGenericSingleton extends MembershipFunctionDiscrete {
 
 	/** Singleton function values x */
-	Value x[];
+	net.sourceforge.jFuzzyLogic.membership.Value x[];
 	/** Singleton function values y */
-	Value y[];
+	net.sourceforge.jFuzzyLogic.membership.Value y[];
 
 	/**
 	 * Constructor for generin (N-values)
 	 * @param x : x[] values array
 	 * @param y : y[] values array
 	 */
-	public MembershipFunctionGenericSingleton(Value x[], Value y[]) {
+	public MembershipFunctionGenericSingleton(net.sourceforge.jFuzzyLogic.membership.Value x[], net.sourceforge.jFuzzyLogic.membership.Value y[]) {
 		discrete = true;
 
 		// Check parameters
@@ -75,12 +77,12 @@ public class MembershipFunctionGenericSingleton extends MembershipFunctionDiscre
 		HashSet<Variable> vars = new HashSet<Variable>();
 
 		if (x != null) {
-			for (Value val : x)
-				if (val.getType() == Value.Type.VAR_REFERENCE && val.getVarRef() != null) vars.add(val.getVarRef());
+			for (net.sourceforge.jFuzzyLogic.membership.Value val : x)
+				if (val.getType() == net.sourceforge.jFuzzyLogic.membership.Value.Type.VAR_REFERENCE && val.getVarRef() != null) vars.add(val.getVarRef());
 		}
 
 		if (y != null) {
-			for (Value val : y)
+			for (net.sourceforge.jFuzzyLogic.membership.Value val : y)
 				if (val.getType() == Value.Type.VAR_REFERENCE && val.getVarRef() != null) vars.add(val.getVarRef());
 		}
 
@@ -103,7 +105,7 @@ public class MembershipFunctionGenericSingleton extends MembershipFunctionDiscre
 	}
 
 	/**
-	 * @see MembershipFunctionDiscrete#iterator()
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete#iterator()
 	 */
 	@Override
 	public Iterator<Double> iterator() {
@@ -128,7 +130,7 @@ public class MembershipFunctionGenericSingleton extends MembershipFunctionDiscre
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {
@@ -141,7 +143,7 @@ public class MembershipFunctionGenericSingleton extends MembershipFunctionDiscre
 	}
 
 	/**
-	 * @see MembershipFunctionDiscrete#membership(int)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete#membership(int)
 	 */
 	@Override
 	public double membership(int index) {

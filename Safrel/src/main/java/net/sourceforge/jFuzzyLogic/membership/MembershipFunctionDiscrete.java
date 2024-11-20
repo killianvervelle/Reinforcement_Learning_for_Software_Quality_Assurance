@@ -1,5 +1,7 @@
 package net.sourceforge.jFuzzyLogic.membership;
 
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunction;
+
 import java.util.Iterator;
 
 /**

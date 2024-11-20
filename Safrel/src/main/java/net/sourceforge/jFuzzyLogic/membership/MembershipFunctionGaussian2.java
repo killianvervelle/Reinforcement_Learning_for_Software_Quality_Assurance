@@ -11,7 +11,7 @@ public class MembershipFunctionGaussian2 extends MembershipFunctionContinuous {
 	 * @param mean : Mean 
 	 * @param stdev : Standardt deviation
 	 */
-	public MembershipFunctionGaussian2(Value meanl, Value stdevl, Value meanr, Value stdevr) {
+	public MembershipFunctionGaussian2(net.sourceforge.jFuzzyLogic.membership.Value meanl, net.sourceforge.jFuzzyLogic.membership.Value stdevl, net.sourceforge.jFuzzyLogic.membership.Value meanr, net.sourceforge.jFuzzyLogic.membership.Value stdevr) {
 		super();
 
 		// Initialize
@@ -53,7 +53,7 @@ public class MembershipFunctionGaussian2 extends MembershipFunctionContinuous {
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {

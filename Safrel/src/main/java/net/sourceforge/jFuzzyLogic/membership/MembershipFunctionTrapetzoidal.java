@@ -1,5 +1,8 @@
 package net.sourceforge.jFuzzyLogic.membership;
 
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionContinuous;
+import net.sourceforge.jFuzzyLogic.membership.Value;
+
 /**
  * Paralelogram membership function
  * @author pcingola@users.sourceforge.net
@@ -13,7 +16,7 @@ public class MembershipFunctionTrapetzoidal extends MembershipFunctionContinuous
 	 * @param midHigh : Higher midium point of trapetzoidal
 	 * @param max : End of trapetzoidal
 	 */
-	public MembershipFunctionTrapetzoidal(Value min, Value midLow, Value midHigh, Value max) {
+	public MembershipFunctionTrapetzoidal(net.sourceforge.jFuzzyLogic.membership.Value min, net.sourceforge.jFuzzyLogic.membership.Value midLow, net.sourceforge.jFuzzyLogic.membership.Value midHigh, net.sourceforge.jFuzzyLogic.membership.Value max) {
 		super();
 
 		// Initialize
@@ -59,7 +62,7 @@ public class MembershipFunctionTrapetzoidal extends MembershipFunctionContinuous
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {

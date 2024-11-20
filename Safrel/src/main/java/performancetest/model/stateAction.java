@@ -1,4 +1,4 @@
-package performancetest;
+package performancetest.model;
 
 
 public class stateAction {

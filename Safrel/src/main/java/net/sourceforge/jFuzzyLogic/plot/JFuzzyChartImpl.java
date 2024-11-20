@@ -63,7 +63,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 		// Plot each variable
 		for (Variable var : fb.variables()) {
 			JFreeChart chart = chartCreate(var, false); // Code adapted by: Carmelo (cswi)
-			DialogGraph.execute(chart);
+			net.sourceforge.jFuzzyLogic.plot.DialogGraph.execute(chart);
 		}
 	}
 
@@ -108,7 +108,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 		if (defuzzifier.isDiscrete()) chart = chartDefuzzifierDiscrete((DefuzzifierDiscrete) defuzzifier, title, false);
 		else chart = chartDefuzzifierContinuous((DefuzzifierContinuous) defuzzifier, title, false);
 
-		if (showIt) DialogGraph.execute(chart);
+		if (showIt) net.sourceforge.jFuzzyLogic.plot.DialogGraph.execute(chart);
 	}
 
 	protected JFreeChart chartCreate(Variable var, boolean showIt) {
@@ -117,7 +117,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 
 		// Sanity check
 		var.estimateUniverse();
-		int numberOfPoints = PlotWindow.DEFAULT_CHART_NUMBER_OF_POINTS;
+		int numberOfPoints = net.sourceforge.jFuzzyLogic.plot.PlotWindow.DEFAULT_CHART_NUMBER_OF_POINTS;
 		double step = (var.getUniverseMax() - var.getUniverseMin()) / (numberOfPoints);
 
 		// Create a data set
@@ -178,7 +178,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 					series.add(membershipFunctionDiscrete.valueX(i), membershipFunctionDiscrete.membership(i));
 			} else {
 				// Continuous case: Add every membershipfunction's point 
-				numberOfPoints = PlotWindow.DEFAULT_CHART_NUMBER_OF_POINTS;
+				numberOfPoints = net.sourceforge.jFuzzyLogic.plot.PlotWindow.DEFAULT_CHART_NUMBER_OF_POINTS;
 				double xx = var.getUniverseMin();
 				for (int i = 0; i < numberOfPoints; i++, xx += step)
 					series.add(xx, membershipFunction.membership(xx));
@@ -235,7 +235,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 		// Create plot and show it
 		JFreeChart chart = ChartFactory.createXYAreaChart(title, "x", "Membership", xyDataset, PlotOrientation.VERTICAL, false, true, false);
 
-		if (showIt) PlotWindow.showIt(title, chart);
+		if (showIt) net.sourceforge.jFuzzyLogic.plot.PlotWindow.showIt(title, chart);
 
 		return chart;
 	}
@@ -259,7 +259,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 
 		// Create plot and show it
 		JFreeChart chart = ChartFactory.createScatterPlot(title, "x", "Membership", xyDataset, PlotOrientation.VERTICAL, false, true, false);
-		if (showIt) PlotWindow.showIt(title, chart);
+		if (showIt) net.sourceforge.jFuzzyLogic.plot.PlotWindow.showIt(title, chart);
 
 		return chart;
 	}
@@ -270,7 +270,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 	 * @param showIt : If true, plot is displayed
 	 */
 	private JFreeChart chartMembershipFunctionContinuous(MembershipFunctionContinuous mf, String title, boolean showIt) {
-		int numberOfPoints = PlotWindow.DEFAULT_CHART_NUMBER_OF_POINTS;
+		int numberOfPoints = net.sourceforge.jFuzzyLogic.plot.PlotWindow.DEFAULT_CHART_NUMBER_OF_POINTS;
 
 		if (title == null) title = mf.getName();
 
@@ -294,7 +294,7 @@ public class JFuzzyChartImpl extends JFuzzyChart {
 
 		// Create plot and show it
 		JFreeChart chart = ChartFactory.createXYLineChart(title, "x", "Membership", xyDataset, PlotOrientation.VERTICAL, false, true, false);
-		if (showIt) PlotWindow.showIt(title, chart);
+		if (showIt) net.sourceforge.jFuzzyLogic.plot.PlotWindow.showIt(title, chart);
 
 		return chart;
 	}

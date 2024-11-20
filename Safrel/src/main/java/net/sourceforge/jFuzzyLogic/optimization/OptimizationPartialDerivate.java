@@ -2,6 +2,9 @@ package net.sourceforge.jFuzzyLogic.optimization;
 
 import java.util.ArrayList;
 
+import net.sourceforge.jFuzzyLogic.optimization.ErrorFunction;
+import net.sourceforge.jFuzzyLogic.optimization.OptimizationMethod;
+import net.sourceforge.jFuzzyLogic.optimization.Parameter;
 import net.sourceforge.jFuzzyLogic.rule.RuleBlock;
 
 /**
@@ -25,7 +28,7 @@ public class OptimizationPartialDerivate extends OptimizationMethod {
 
 	protected int maxLineSearchIterations; // Maximum 'line search' number of iterations 
 
-	public OptimizationPartialDerivate(RuleBlock fuzzyRuleSet, ErrorFunction errorFunction, ArrayList<Parameter> parameterList) {
+	public OptimizationPartialDerivate(RuleBlock fuzzyRuleSet, ErrorFunction errorFunction, ArrayList<net.sourceforge.jFuzzyLogic.optimization.Parameter> parameterList) {
 		super(fuzzyRuleSet, errorFunction, parameterList);
 		maxLineSearchIterations = DEFAULT_MAX_LINE_SEARCH_ITERATIONS;
 	}

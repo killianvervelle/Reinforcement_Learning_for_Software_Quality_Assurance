@@ -3,7 +3,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 COPY target/my-app.jar my-app.jar
-COPY src/main/java/performancetest/StateDetection.fcl.rtf .
+COPY src/main/java/performancetest/util/StateDetection.fcl.rtf .
 
 EXPOSE 8080
 

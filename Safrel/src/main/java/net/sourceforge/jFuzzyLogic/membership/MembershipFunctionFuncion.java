@@ -6,6 +6,8 @@ import java.util.Set;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
 import net.sourceforge.jFuzzyLogic.Gpr;
 import net.sourceforge.jFuzzyLogic.fcl.FclObject;
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete;
+import net.sourceforge.jFuzzyLogic.membership.Value;
 import net.sourceforge.jFuzzyLogic.membership.functions.MffAbs;
 import net.sourceforge.jFuzzyLogic.membership.functions.MffCos;
 import net.sourceforge.jFuzzyLogic.membership.functions.MffDivide;
@@ -42,9 +44,9 @@ public class MembershipFunctionFuncion extends MembershipFunctionDiscrete {
 		super();
 
 		// Add parameters (use first parameter as X vale and second as Y value (same as MembershipFunctionSingleton)
-		parameters = new Value[2];
+		parameters = new net.sourceforge.jFuzzyLogic.membership.Value[2];
 		for (int i = 0; i < parameters.length; i++)
-			parameters[i] = new Value();
+			parameters[i] = new net.sourceforge.jFuzzyLogic.membership.Value();
 
 		//---
 		// Create function tree
@@ -136,7 +138,7 @@ public class MembershipFunctionFuncion extends MembershipFunctionDiscrete {
 	}
 
 	/**
-	 * @see MembershipFunctionDiscrete#iterator()
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete#iterator()
 	 */
 	@Override
 	public Iterator<Double> iterator() {
@@ -161,7 +163,7 @@ public class MembershipFunctionFuncion extends MembershipFunctionDiscrete {
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {
@@ -171,7 +173,7 @@ public class MembershipFunctionFuncion extends MembershipFunctionDiscrete {
 	}
 
 	/**
-	 * @see MembershipFunctionDiscrete#membership(int)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunctionDiscrete#membership(int)
 	 */
 	@Override
 	public double membership(int index) {

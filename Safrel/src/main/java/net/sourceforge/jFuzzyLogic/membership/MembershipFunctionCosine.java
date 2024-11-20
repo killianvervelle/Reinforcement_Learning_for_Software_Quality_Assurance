@@ -13,7 +13,7 @@ public class MembershipFunctionCosine extends MembershipFunctionContinuous {
 	 * @param net_max : max value in x axis
 	 * @param offset: offset in x-axis
 	 */
-	public MembershipFunctionCosine(Value net_max, Value offset) {
+	public MembershipFunctionCosine(net.sourceforge.jFuzzyLogic.membership.Value net_max, net.sourceforge.jFuzzyLogic.membership.Value offset) {
 		super();
 
 		// Initialize

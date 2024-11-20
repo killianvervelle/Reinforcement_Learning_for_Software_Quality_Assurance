@@ -1,9 +1,11 @@
-package performancetest;
+package performancetest.main;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import performancetest.service.ReinforcementLearning;
+import performancetest.model.VirtualMachine;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

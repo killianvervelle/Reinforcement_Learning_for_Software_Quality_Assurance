@@ -1,5 +1,8 @@
 package net.sourceforge.jFuzzyLogic.membership;
 
+import net.sourceforge.jFuzzyLogic.membership.MembershipFunctionContinuous;
+import net.sourceforge.jFuzzyLogic.membership.Value;
+
 /**
  * Triangular membership function
  * @author pcingola@users.sourceforge.net
@@ -12,7 +15,7 @@ public class MembershipFunctionTriangular extends MembershipFunctionContinuous {
 	 * @param mid : Midium of triangular function
 	 * @param max : End of triangular function
 	 */
-	public MembershipFunctionTriangular(Value min, Value mid, Value max) {
+	public MembershipFunctionTriangular(net.sourceforge.jFuzzyLogic.membership.Value min, net.sourceforge.jFuzzyLogic.membership.Value mid, net.sourceforge.jFuzzyLogic.membership.Value max) {
 		super();
 
 		// Initialize
@@ -52,7 +55,7 @@ public class MembershipFunctionTriangular extends MembershipFunctionContinuous {
 	}
 
 	/**
-	 * @see MembershipFunction#membership(double)
+	 * @see net.sourceforge.jFuzzyLogic.membership.MembershipFunction#membership(double)
 	 */
 	@Override
 	public double membership(double in) {

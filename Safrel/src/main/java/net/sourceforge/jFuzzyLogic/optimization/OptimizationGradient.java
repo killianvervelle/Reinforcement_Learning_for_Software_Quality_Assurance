@@ -2,6 +2,9 @@ package net.sourceforge.jFuzzyLogic.optimization;
 
 import java.util.ArrayList;
 
+import net.sourceforge.jFuzzyLogic.optimization.ErrorFunction;
+import net.sourceforge.jFuzzyLogic.optimization.OptimizationPartialDerivate;
+import net.sourceforge.jFuzzyLogic.optimization.Parameter;
 import net.sourceforge.jFuzzyLogic.rule.RuleBlock;
 
 /**
@@ -16,7 +19,7 @@ public class OptimizationGradient extends OptimizationPartialDerivate {
 
 	public static int countGradientNormTooSmall;
 
-	public OptimizationGradient(RuleBlock fuzzyRuleSet, ErrorFunction errorFunction, ArrayList<Parameter> parameterList) {
+	public OptimizationGradient(RuleBlock fuzzyRuleSet, ErrorFunction errorFunction, ArrayList<net.sourceforge.jFuzzyLogic.optimization.Parameter> parameterList) {
 		super(fuzzyRuleSet, errorFunction, parameterList);
 	}
 

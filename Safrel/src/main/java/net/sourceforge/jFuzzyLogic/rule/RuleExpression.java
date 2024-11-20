@@ -16,7 +16,7 @@ import net.sourceforge.jFuzzyLogic.ruleConnectionMethod.RuleConnectionMethodAndM
  * 
  * @author pcingola@users.sourceforge.net
  */
-public class RuleExpression extends FclObject implements Iterable<Variable>, CompileCpp {
+public class RuleExpression extends FclObject implements Iterable<net.sourceforge.jFuzzyLogic.rule.Variable>, CompileCpp {
 
 	/** Is it negated? */
 	boolean negated;
@@ -52,7 +52,7 @@ public class RuleExpression extends FclObject implements Iterable<Variable>, Com
 	 * Add a new term (using default AND method)
 	 * @param fuzzyRuleTerm : term to add
 	 */
-	public void add(RuleTerm fuzzyRuleTerm) {
+	public void add(net.sourceforge.jFuzzyLogic.rule.RuleTerm fuzzyRuleTerm) {
 		// Can add it in term1? => add it
 		if (term1 == null) setTerm1(fuzzyRuleTerm);
 		// Can add it in term2? => add it
@@ -70,14 +70,14 @@ public class RuleExpression extends FclObject implements Iterable<Variable>, Com
 	 * Add every variable to this list
 	 * @param linkedListVariables 
 	 */
-	private void addVariables(LinkedList<Variable> linkedListVariables) {
+	private void addVariables(LinkedList<net.sourceforge.jFuzzyLogic.rule.Variable> linkedListVariables) {
 		// Term1: is it a 'term'? => add variables
-		if (isFuzzyRuleTerm(term1)) linkedListVariables.add(((RuleTerm) term1).getVariable());
+		if (isFuzzyRuleTerm(term1)) linkedListVariables.add(((net.sourceforge.jFuzzyLogic.rule.RuleTerm) term1).getVariable());
 		// Term1: is it an 'expression'? => recurse
 		else if (isFuzzyRuleExpression(term1)) ((RuleExpression) term1).addVariables(linkedListVariables);
 
 		// Term2: is it a 'term'? => add variables
-		if (isFuzzyRuleTerm(term2)) linkedListVariables.add(((RuleTerm) term2).getVariable());
+		if (isFuzzyRuleTerm(term2)) linkedListVariables.add(((net.sourceforge.jFuzzyLogic.rule.RuleTerm) term2).getVariable());
 		// Term2: is it an 'expression'? => recurse
 		else if (isFuzzyRuleExpression(term2)) ((RuleExpression) term2).addVariables(linkedListVariables);
 	}
@@ -96,12 +96,12 @@ public class RuleExpression extends FclObject implements Iterable<Variable>, Com
 
 		// Evaluate term1: if it's an expression => recurse
 		if (isFuzzyRuleExpression(term1)) resTerm1 = ((RuleExpression) term1).evaluate();
-		else if (isFuzzyRuleTerm(term1)) resTerm1 = ((RuleTerm) term1).getMembership();
+		else if (isFuzzyRuleTerm(term1)) resTerm1 = ((net.sourceforge.jFuzzyLogic.rule.RuleTerm) term1).getMembership();
 		else if (term1 == null) resTerm1 = Double.NaN;
 
 		// Evaluate term2: if it's an expression => recurse
 		if (isFuzzyRuleExpression(term2)) resTerm2 = ((RuleExpression) term2).evaluate();
-		else if (isFuzzyRuleTerm(term2)) resTerm2 = ((RuleTerm) term2).getMembership();
+		else if (isFuzzyRuleTerm(term2)) resTerm2 = ((net.sourceforge.jFuzzyLogic.rule.RuleTerm) term2).getMembership();
 		else if (term2 == null) resTerm2 = Double.NaN;
 
 		double result = 0;
@@ -184,8 +184,8 @@ public class RuleExpression extends FclObject implements Iterable<Variable>, Com
 	 * @return a 'variables' iterator
 	 */
 	@Override
-	public Iterator<Variable> iterator() {
-		LinkedList<Variable> llvars = new LinkedList<Variable>();
+	public Iterator<net.sourceforge.jFuzzyLogic.rule.Variable> iterator() {
+		LinkedList<net.sourceforge.jFuzzyLogic.rule.Variable> llvars = new LinkedList<Variable>();
 		addVariables(llvars);
 		return llvars.iterator();
 	}
@@ -222,12 +222,12 @@ public class RuleExpression extends FclObject implements Iterable<Variable>, Com
 
 			// Both terms connected
 			if (isFuzzyRuleExpression(term1)) str += ((RuleExpression) term1).toStringCpp();
-			else if (isFuzzyRuleTerm(term1)) str += ((RuleTerm) term1).toStringCpp();
+			else if (isFuzzyRuleTerm(term1)) str += ((net.sourceforge.jFuzzyLogic.rule.RuleTerm) term1).toStringCpp();
 
 			str += " , ";
 
 			if (isFuzzyRuleExpression(term2)) str += ((RuleExpression) term2).toStringCpp();
-			else if (isFuzzyRuleTerm(term2)) str += ((RuleTerm) term2).toStringCpp();
+			else if (isFuzzyRuleTerm(term2)) str += ((net.sourceforge.jFuzzyLogic.rule.RuleTerm) term2).toStringCpp();
 
 			str += ")";
 		}
@@ -249,7 +249,7 @@ public class RuleExpression extends FclObject implements Iterable<Variable>, Com
 		} else {
 			// Both terms connected
 			if (isFuzzyRuleExpression(term1)) str += "(" + ((RuleExpression) term1).toStringFcl() + ")";
-			else if (isFuzzyRuleTerm(term1)) str += ((RuleTerm) term1).toStringFcl();
+			else if (isFuzzyRuleTerm(term1)) str += ((net.sourceforge.jFuzzyLogic.rule.RuleTerm) term1).toStringFcl();
 
 			str += connector;
 

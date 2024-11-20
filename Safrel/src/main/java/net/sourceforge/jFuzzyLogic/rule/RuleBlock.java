@@ -44,7 +44,7 @@ import org.antlr.runtime.tree.Tree;
  *
  * @author pcingola@users.sourceforge.net
  */
-public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<RuleBlock>, CompileCpp {
+public class RuleBlock extends FclObject implements Iterable<net.sourceforge.jFuzzyLogic.rule.Rule>, Comparable<RuleBlock>, CompileCpp {
 
 	/** Debug mode? */
 	public static boolean debug = FIS.debug;
@@ -53,7 +53,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	String name;
 	RuleAccumulationMethod ruleAccumulationMethod; // Rule accumulation method: How results of the rules are combined to obtain an overall result (e.g. MAX: maximum, BSUM: bounded sum, etc.)
 	RuleActivationMethod ruleActivationMethod; // Rule activation (implication) method: How the 'if' activates the 'then' (e.g. MIN: minimum, PROD: product)
-	ArrayList<Rule> rules; // All the rules
+	ArrayList<net.sourceforge.jFuzzyLogic.rule.Rule> rules; // All the rules
 
 	public static boolean isDebug() {
 		return debug;
@@ -66,7 +66,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	public RuleBlock(FunctionBlock functionBlock) {
 		name = "";
 		this.functionBlock = functionBlock;
-		rules = new ArrayList<Rule>();
+		rules = new ArrayList<net.sourceforge.jFuzzyLogic.rule.Rule>();
 		ruleActivationMethod = new RuleActivationMethodMin(); // Default activation method: Min
 	}
 
@@ -75,7 +75,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 * @param fuzzyRule : Rule to add
 	 * @return this
 	 */
-	public RuleBlock add(Rule fuzzyRule) {
+	public RuleBlock add(net.sourceforge.jFuzzyLogic.rule.Rule fuzzyRule) {
 		rules.add(fuzzyRule);
 		return this;
 	}
@@ -107,7 +107,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 */
 	public void evaluate() {
 		// Apply each rule
-		for (Rule rule : rules) {
+		for (net.sourceforge.jFuzzyLogic.rule.Rule rule : rules) {
 			if (debug) Gpr.debug("Evaluating rule: " + rule);
 			rule.evaluate();
 		}
@@ -213,7 +213,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 */
 	private void fclTreeRuleBlockRule(Tree tree, RuleConnectionMethod and, RuleConnectionMethod or) {
 		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
-		Rule fuzzyRule = new Rule(tree.getChild(0).getText(), this);
+		net.sourceforge.jFuzzyLogic.rule.Rule fuzzyRule = new net.sourceforge.jFuzzyLogic.rule.Rule(tree.getChild(0).getText(), this);
 
 		for (int childNum = 1; childNum < tree.getChildCount(); childNum++) {
 			Tree child = tree.getChild(childNum);
@@ -233,12 +233,12 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 * Parse rule 'IF' (or rule's weight)
 	 * @param tree : Tree to parse
 	 */
-	private RuleExpression fclTreeRuleBlockRuleIf(Tree tree, RuleConnectionMethod and, RuleConnectionMethod or) {
+	private net.sourceforge.jFuzzyLogic.rule.RuleExpression fclTreeRuleBlockRuleIf(Tree tree, RuleConnectionMethod and, RuleConnectionMethod or) {
 		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
 		String ifConnector = tree.getText();
 
 		// Create a new expresion
-		RuleExpression fuzzyRuleExpression = new RuleExpression();
+		net.sourceforge.jFuzzyLogic.rule.RuleExpression fuzzyRuleExpression = new RuleExpression();
 
 		if (ifConnector.equalsIgnoreCase("AND")) {
 			fuzzyRuleExpression.setRuleConnectionMethod(and);
@@ -266,8 +266,8 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 				lingTerm = tree.getChild(1).getText();
 				negate = true;
 			}
-			Variable variable = getVariable(varName);
-			RuleTerm fuzzyRuleTerm = new RuleTerm(variable, lingTerm, negate);
+			net.sourceforge.jFuzzyLogic.rule.Variable variable = getVariable(varName);
+			net.sourceforge.jFuzzyLogic.rule.RuleTerm fuzzyRuleTerm = new net.sourceforge.jFuzzyLogic.rule.RuleTerm(variable, lingTerm, negate);
 			fuzzyRuleExpression.add(fuzzyRuleTerm);
 		}
 		return fuzzyRuleExpression;
@@ -277,7 +277,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 * Parse rule 'THEN' (or rule's weight)
 	 * @param tree : Tree to parse
 	 */
-	private void fclTreeRuleBlockRuleThen(Tree tree, Rule fuzzyRule) {
+	private void fclTreeRuleBlockRuleThen(Tree tree, net.sourceforge.jFuzzyLogic.rule.Rule fuzzyRule) {
 		if (debug) Gpr.debug("Tree: " + tree.toStringTree());
 
 		for (int childNum = 0; childNum < tree.getChildCount(); childNum++) {
@@ -286,7 +286,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 			String thenVariable = child.getText();
 
 			String thenValue = child.getChild(0).getText();
-			Variable variable = getVariable(thenVariable);
+			net.sourceforge.jFuzzyLogic.rule.Variable variable = getVariable(thenVariable);
 			if (variable == null) throw new RuntimeException("Variable " + thenVariable + " does not exist");
 			fuzzyRule.addConsequent(variable, thenValue, false);
 		}
@@ -296,7 +296,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 * Parse rule 'WITH' (or rule's weight)
 	 * @param tree : Tree to parse
 	 */
-	private void fclTreeRuleBlockRuleWith(Tree tree, Rule fuzzyRule) {
+	private void fclTreeRuleBlockRuleWith(Tree tree, net.sourceforge.jFuzzyLogic.rule.Rule fuzzyRule) {
 		if (debug) Gpr.debug("Parsing: " + tree.getChild(0).getText());
 		fuzzyRule.setWeight(Gpr.parseDouble(tree.getChild(0)));
 	}
@@ -317,16 +317,16 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 		return ruleActivationMethod;
 	}
 
-	public List<Rule> getRules() {
+	public List<net.sourceforge.jFuzzyLogic.rule.Rule> getRules() {
 		return rules;
 	}
 
-	public Variable getVariable(String name) {
+	public net.sourceforge.jFuzzyLogic.rule.Variable getVariable(String name) {
 		return functionBlock.getVariable(name);
 	}
 
 	@Override
-	public Iterator<Rule> iterator() {
+	public Iterator<net.sourceforge.jFuzzyLogic.rule.Rule> iterator() {
 		return rules.iterator();
 	}
 
@@ -335,7 +335,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 * @param fuzzyRule : Rule to remove
 	 * @return this
 	 */
-	public RuleBlock remove(Rule fuzzyRule) {
+	public RuleBlock remove(net.sourceforge.jFuzzyLogic.rule.Rule fuzzyRule) {
 		rules.remove(fuzzyRule);
 		return this;
 	}
@@ -345,21 +345,21 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 	 * Also create 'variables' list (if needed)
 	 */
 	public void reset() {
-		HashMap<Variable, Variable> resetted = new HashMap<Variable, Variable>();
+		HashMap<net.sourceforge.jFuzzyLogic.rule.Variable, net.sourceforge.jFuzzyLogic.rule.Variable> resetted = new HashMap<net.sourceforge.jFuzzyLogic.rule.Variable, net.sourceforge.jFuzzyLogic.rule.Variable>();
 
 		//---
 		// Reset every consequent variable on every rule
 		//---
-		for (Rule fr : rules) {
+		for (net.sourceforge.jFuzzyLogic.rule.Rule fr : rules) {
 			// Reset rule's degree of support
 			fr.setDegreeOfSupport(0);
 
 			//---
 			// Reset every consequent variable (and add it to variables list if needed)
 			//---
-			LinkedList<RuleTerm> llc = fr.getConsequents();
+			LinkedList<net.sourceforge.jFuzzyLogic.rule.RuleTerm> llc = fr.getConsequents();
 			for (RuleTerm term : llc) {
-				Variable var = term.getVariable();
+				net.sourceforge.jFuzzyLogic.rule.Variable var = term.getVariable();
 				// Not already resetted?
 				if (resetted.get(var) == null) {
 					// Sanity check
@@ -373,7 +373,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 			//---
 			// Reset every antecedent's variable  (and add it to variables list if needed)
 			//---
-			for (Variable var : fr.getAntecedents())
+			for (net.sourceforge.jFuzzyLogic.rule.Variable var : fr.getAntecedents())
 				// Not already resetted?
 				if (resetted.get(var) == null) {
 					// var.reset(true); // Reset variable
@@ -399,8 +399,8 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 		ruleActivationMethod = ruleImplicationMethod;
 	}
 
-	public void setRules(List<Rule> rules) {
-		this.rules = new ArrayList<Rule>();
+	public void setRules(List<net.sourceforge.jFuzzyLogic.rule.Rule> rules) {
+		this.rules = new ArrayList<net.sourceforge.jFuzzyLogic.rule.Rule>();
 		this.rules.addAll(rules);
 	}
 
@@ -426,7 +426,7 @@ public class RuleBlock extends FclObject implements Iterable<Rule>, Comparable<R
 
 		// Show rules
 		int ruleNum = 1;
-		for (Rule rule : rules) {
+		for (net.sourceforge.jFuzzyLogic.rule.Rule rule : rules) {
 			// Rule name/number
 			String name = rule.getName();
 			if ((name == null) || (name.equals(""))) name = Integer.toString(ruleNum);

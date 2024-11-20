@@ -1,4 +1,4 @@
-package performancetest;
+package performancetest.service;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DefaultDockerClientConfig;

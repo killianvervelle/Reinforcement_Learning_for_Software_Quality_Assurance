@@ -1,7 +1,5 @@
 package net.sourceforge.jFuzzyLogic.plot;
 
-import net.sourceforge.jFuzzyLogic.FIS;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -9,6 +7,9 @@ import java.awt.Toolkit;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.plot.JPanelFis;
 
 /**
  * Dialog window where you can see all variables

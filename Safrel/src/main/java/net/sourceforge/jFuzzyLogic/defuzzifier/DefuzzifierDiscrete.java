@@ -3,6 +3,7 @@ package net.sourceforge.jFuzzyLogic.defuzzifier;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.sourceforge.jFuzzyLogic.defuzzifier.Defuzzifier;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 /**

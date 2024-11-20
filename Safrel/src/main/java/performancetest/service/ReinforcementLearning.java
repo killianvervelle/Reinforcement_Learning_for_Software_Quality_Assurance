@@ -1,9 +1,12 @@
-package performancetest;
+package performancetest.service;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.rule.LinguisticTerm;
 import net.sourceforge.jFuzzyLogic.rule.Rule;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
+import performancetest.model.VirtualMachine;
+import performancetest.benchmark;
+import performancetest.model.stateAction;
 
 import java.io.IOException;
 import java.util.*;

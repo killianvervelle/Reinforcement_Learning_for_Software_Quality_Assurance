@@ -23,7 +23,7 @@ public class OptimizationDeltaJump extends OptimizationMethod {
 	/** Maximum 'line search' number of iterations */
 	protected int maxLineSearchIterations;
 
-	public OptimizationDeltaJump(RuleBlock fuzzyRuleSet, ErrorFunction errorFunction, ArrayList<Parameter> parameterList) {
+	public OptimizationDeltaJump(RuleBlock fuzzyRuleSet, ErrorFunction errorFunction, ArrayList<net.sourceforge.jFuzzyLogic.optimization.Parameter> parameterList) {
 		super(fuzzyRuleSet, errorFunction, parameterList);
 		maxLineSearchIterations = DEFAULT_MAX_LINE_SEARCH_ITERATIONS;
 	}
@@ -35,7 +35,7 @@ public class OptimizationDeltaJump extends OptimizationMethod {
 	 * @return
 	 */
 	private double jump(int parameterNumber, double error0) {
-		Parameter param = parameterList.get(parameterNumber);
+		net.sourceforge.jFuzzyLogic.optimization.Parameter param = parameterList.get(parameterNumber);
 		double epsilon = param.getEpsilon();
 		double paramValue = param.get();
 		double error1;
