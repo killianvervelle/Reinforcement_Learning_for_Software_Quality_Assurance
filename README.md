@@ -46,19 +46,22 @@ https://link.springer.com/article/10.1007/s11219-020-09532-z
 * Docker: Version 23.0 or higher.
 
 #### Running SaFReL_v1 or SaFReL_v2
+
+Install IntelliJ IDEA
+
+Clone the repository locally:
 ```
-# Install IntelliJ IDEA
-
-# Clone the repository locally
 git clone https://github.com/killianvervelle/Reinforcement_Learning_for_Software_Quality_Assurance
-
-# Build the project using Maven and install all dependencies
+```
+Build the project using Maven and install all dependencies:
+```
 cd Safrel
 mvn clean install
+```
+Optional: open Docker
 
-# Optional: open Docker
-
-# Run the project JAR file 
+Run the project JAR file:
+```
 java -jar <path-to-project-jar>
 ```
 
@@ -116,7 +119,7 @@ Set up your cloud environment (here AWS). Launch 3 EC2 instances (1 controller, 
 - Instance Type: t2.medium
 - OS: Ubuntu 22.4 
 - Number of vCPUs: 2
-- Volume size: 16 GB
+- Volume size: 16GB
 
 Set up the security group for your controller. Allow inbound connections on ports 1099, 50000, and 22:
 <div align="center">
@@ -146,7 +149,8 @@ On the controller node, edit the jmeter.properties file located in the bin direc
 cd apache-jmeter-5.6.3/bin
 nano jmeter-server.properties
 ```
-- Set remote_hosts=<worker1-private-IP>, <worker2-private-IP>   
+
+- Set remote_hosts=<worker1-private-IP>, <worker2-private-IP>
 - Set client.rmi.localport=50000  
 - Set client.tries=3  
 - Set client.retries_delay=1000
