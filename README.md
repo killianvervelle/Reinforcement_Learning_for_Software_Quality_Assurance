@@ -149,8 +149,6 @@ On the controller node, edit the jmeter.properties file located in the bin direc
 cd apache-jmeter-5.6.3/bin
 nano jmeter-server.properties
 ```
-- Set remote_hosts=<worker1-private-IP>, <worker2-private-IP>
-- remote_hosts="<worker1-private-IP>, <worker2-private-IP>"
 - remote_hosts=\<worker1-private-IP\>\, \<worker2-private-IP\>
 - Set client.rmi.localport=50000  
 - Set client.tries=3  
