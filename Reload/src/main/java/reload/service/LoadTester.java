@@ -29,7 +29,7 @@ public class LoadTester {
     private final String JMETER_PROPERTY_PATH = "/home/ubuntu/apache-jmeter/bin/jmeter.properties";
     private final String JMETER_LOG_FILE_PATH = "/home/ubuntu/apache-jmeter/bin/transactions_rubis/all_transactions_local_server.jtl";
     private final String JMX_FILES_PATH = "/home/ubuntu/apache-jmeter/bin/TestUser.jmx";
-    private final String[] remoteHosts = {"172.31.10.74", "172.31.4.179"};  //set them up here or in jmeter.properties file
+    private final String[] remoteHosts = {"1XX.XX.XX.XX", "1XX.XX.X.XXX"};  //set them up here or in jmeter.properties file
 
     public LoadTester() {
         checkRemoteConnectivity();
