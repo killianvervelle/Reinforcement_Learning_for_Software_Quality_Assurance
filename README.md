@@ -45,7 +45,7 @@ https://link.springer.com/article/10.1007/s11219-020-09532-z
 * Hardware Requirements: Ensure sufficient system resources for CPU, memory, and disk-intensive testing scenarios.
 * Docker: Version 23.0 or higher.
 
-#### Running SaFReL_v1 or SaFReL_v2
+##### Running SaFReL_v1 or SaFReL_v2
 ```
 # Install IntelliJ IDEA
 
@@ -110,7 +110,7 @@ https://jmeter.apache.org/
 * Apache JMeter: Installed and configured for executing performance tests.
 * Hardware Requirements: Ensure sufficient system resources for CPU, memory, and disk-intensive testing scenarios.
 
-#### Running Reload
+##### Running Reload
 
 Set up your cloud environment (here AWS). Launch 3 EC2 instances (1 controller, 2 workers)
 - Instance Type: t2.medium
