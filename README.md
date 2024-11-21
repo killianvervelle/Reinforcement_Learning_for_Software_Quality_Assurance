@@ -24,9 +24,9 @@ test cases.
 - Efficiently identifies resource configurations to meet testing objectives. 
 
 #### Versions:
-##### Safrel_v1: Theoretical Response Time Estimation
+#### Safrel_v1: Theoretical Response Time Estimation
 Safrel_v1 estimates the response time of a process using a theoretical model. It calculates the expected performance based on predefined parameters such as system resources, workload intensity, and known performance metrics. By leveraging mathematical formulas or simulation techniques, this version predicts how changes in actions—like adjusting resources—would influence the response time without deploying actual changes. The primary advantage is speed, as it avoids the need for real-world experimentation.
-##### Safrel_v2: Dynamic Tuning via Real-World Measurements
+#### Safrel_v2: Dynamic Tuning via Real-World Measurements
 Safrel_v2 dynamically applies actions to a running Docker instance hosting the reinforcement learning process. It adjusts the system's resources in real time, such as CPU, memory, or other configurations, to observe the actual impact on the process's response time. By directly measuring the outcomes, this approach provides high fidelity in understanding the real behavior of the system. It is especially useful for environments where theoretical models may fall short in capturing complex, unpredictable dynamics.
 
 #### How it works:
@@ -39,13 +39,13 @@ For detailed insights into SaFReL’s structure and mechanism, refer to the publ
 https://link.springer.com/article/10.1007/s11219-020-09532-z
 
 #### Setting Up the Framework
-##### Prerequisites
+#### Prerequisites
 * Java: Version 17 or higher. 
 * Maven: For dependency management and building the project. 
 * Hardware Requirements: Ensure sufficient system resources for CPU, memory, and disk-intensive testing scenarios.
 * Docker: Version 23.0 or higher.
 
-##### Running SaFReL_v1 or SaFReL_v2
+#### Running SaFReL_v1 or SaFReL_v2
 ```
 # Install IntelliJ IDEA
 
@@ -104,13 +104,13 @@ For the official implementation of Apache Jmeter, refer to:
 https://jmeter.apache.org/
 
 #### Setting Up the Framework
-##### Prerequisites
+#### Prerequisites
 * Java: Version 17 or higher.
 * Maven: For dependency management and building the project.
 * Apache JMeter: Installed and configured for executing performance tests.
 * Hardware Requirements: Ensure sufficient system resources for CPU, memory, and disk-intensive testing scenarios.
 
-##### Running Reload
+#### Running Reload
 
 Set up your cloud environment (here AWS). Launch 3 EC2 instances (1 controller, 2 workers)
 - Instance Type: t2.medium
