@@ -1,14 +1,15 @@
-import os
-from pydantic import BaseSettings
+from pydantic import AnyUrl, BaseSettings
+from typing import Union
 
 
 class Settings(BaseSettings):
-    app_name: str = "A2C-RL"
-    app_version: str = "1.0.0"
-    debug: bool = True
+    APP_NAME: str = "A2C-RL"
+    API_V1_STR: str = "/api/v1"
+    ENV_FILE = "../.env"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    BACKEND_CORS_ORIGINS: Union[
+        list[AnyUrl] | str
+        ] = []
+    
 
-settings = Settings
+settings = Settings(BACKEND_CORS_ORIGINS=["http://localhost:8080", "http://localhost:3000"])
