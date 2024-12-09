@@ -8,8 +8,8 @@ class Utilities:
         pass
 
     # Method to convert a numpy array to a tensor
-    def arr_to_tensor(self, input: np.ndarray):
-        tensor = torch.stack(tuple(input), 0)
+    def arr_to_tensor(self, input):
+        tensor = torch.tensor(input)
         return tensor
 
 utilities = Utilities()

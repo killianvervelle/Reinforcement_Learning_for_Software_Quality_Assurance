@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from a2c.src.models import modelRequest, modelResponse
+from a2c.src.api.models import modelRequest, modelResponse
 
 
 router = APIRouter(prefix="/model", tags=["model"])
