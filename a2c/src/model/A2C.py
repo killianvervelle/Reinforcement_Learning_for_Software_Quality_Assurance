@@ -19,7 +19,7 @@ class A2C(nn.Module):
         self.env = env
         self.gamma = gamma
         self.hidden_size = hidden_size
-        self.in_size = len(self.env.observation_space.sample())   
+        self.in_size = len(self.env.observation_space.sample())
         self.out_size = self.env.action_space.n
 
         self.actor = nn.Sequential(
@@ -37,11 +37,11 @@ class A2C(nn.Module):
         # Weight initlization
         self.actor.apply(self.init_xavier_weights)
         self.critic.apply(self.init_xavier_weights)
-    
+
     def train_model(self, render=False):
         """
         Trains the agent by adjusting its policy.
-        
+
         Returns: 
             tuple: rewards, tensor(critic_values), tensor(actor_probs), total_reward
         """
@@ -51,14 +51,15 @@ class A2C(nn.Module):
 
         observation = self.env.reset()
         print("Observation: ", observation)
-        
+
         terminated = False
         while not terminated:
-            observation_array = np.array(list(observation.values()), dtype=np.float32)
+            observation_array = np.array(
+                list(observation.values()), dtype=np.float32)
 
             if render:
                 self.env.render()
-    
+
             observation = torch.from_numpy(observation_array).double()
             print("Training with new observation: ", observation)
 
@@ -68,8 +69,14 @@ class A2C(nn.Module):
             action_logits = torch.clamp(action_logits, min=-1000, max=1000)
 
             print("ACTION LOGIT", action_logits)
-            action = Categorical(logits=action_logits).sample()
+            # action = Categorical(logits=action_logits).sample()
+            # action_probs = action_logits[action]
+
+            # Choose the action with the highest logit
+            action = torch.argmax(action_logits).item()
             action_probs = action_logits[action]
+
+            print("ACTION CHOSEN", action, action_probs, action_logits)
 
             actor_probs.append(action_probs)
 
@@ -78,14 +85,14 @@ class A2C(nn.Module):
             critic_values.append(pred)
 
             # Run action in environment and get rewards, next state
-            observation, reward, terminated, _, _ = self.env.step(action.item())
+            observation, reward, terminated, _, _ = self.env.step(action)
 
             rewards.append(torch.tensor(reward).double())
 
         total_reward = sum(rewards)
 
         print("TOTAL REWARD", total_reward)
-        
+
         for eps in range(len(rewards)):
             cum_reward = 0
             for step in range(eps, len(rewards)):
@@ -97,10 +104,11 @@ class A2C(nn.Module):
         rewards = self.arr_to_tensor(rewards)
 
         # Zero-mean standardization of rewards
-        rewards = (rewards - torch.mean(rewards)) / (torch.std(rewards) + .0000000001)
+        rewards = (rewards - torch.mean(rewards)) / \
+            (torch.std(rewards) + .0000000001)
 
         return rewards, self.arr_to_tensor(critic_values), self.arr_to_tensor(actor_probs), total_reward
-    
+
     def test_model(self, render="rgb_array"):
         """
         Evaluates the agent's performance on the learned policy.
@@ -112,44 +120,46 @@ class A2C(nn.Module):
 
         observation = self.env.reset()
         print("Testing with new observation: ", observation)
-        
+
         terminated = False
         while not terminated:
             time.sleep(0.5)
 
-            observation_array = np.array(list(observation.values()), dtype=np.float32)
+            observation_array = np.array(
+                list(observation.values()), dtype=np.float32)
 
             observation = torch.from_numpy(observation_array).double()
 
             # Get action from Actor
             action_logits = self.actor(observation)
             action = Categorical(logits=action_logits).sample()
-            
+
             # Exploit the learned policy, get rewards and new states
-            observation, reward, terminated, _, _ = self.env.step(action.item())
+            observation, reward, terminated, _, _ = self.env.step(
+                action.item())
             rewards.append(reward)
 
             if render:
                 self.env.render()
 
         return sum(rewards)
-    
+
     def arr_to_tensor(self, input):
         return torch.stack(tuple(input), 0)
-    
+
     def init_xavier_weights(self, m):
         if isinstance(m, nn.Linear):
             nn.init.xavier_uniform_(m.weight)
-            nn.init.zeros_(m.bias) 
-    
+            nn.init.zeros_(m.bias)
+
     @staticmethod
     def compute_loss(
         actor_probs,
-        actual_returns, 
+        actual_returns,
         expected_returns,
         critic_loss_fn=nn.SmoothL1Loss(),
         entropy_weight=0.001
-        ):
+    ):
         """
         Computes the combined loss for Actor-Critic.
 
@@ -170,8 +180,9 @@ class A2C(nn.Module):
         actual_returns = torch.clamp(actual_returns, -1e4, 1e4)
         expected_returns = torch.clamp(expected_returns, -1e4, 1e4)
 
-        
         advantage = actual_returns - expected_returns.detach()
+
+        advantage = torch.clamp(advantage, -10, 10)
 
         print("advtange", advantage)
 
@@ -179,11 +190,12 @@ class A2C(nn.Module):
 
         print("expected returns", expected_returns)
 
-        entropy = -torch.sum(actor_probs * torch.log(actor_probs + 1e-8), dim=-1).mean()
+        entropy = -torch.sum(actor_probs *
+                             torch.log(actor_probs + 1e-8), dim=-1).mean()
 
         print("ENTROPY", entropy)
 
-        actor_loss = -(torch.sum(actor_probs * advantage)) -  entropy_weight * entropy
+        actor_loss = -(torch.sum(actor_probs * advantage)) - \
+            entropy_weight * entropy
 
-        return actor_loss, critic_loss_fn(actual_returns, expected_returns)
-    
+        return actor_loss, critic_loss_fn.forward(actual_returns, expected_returns)

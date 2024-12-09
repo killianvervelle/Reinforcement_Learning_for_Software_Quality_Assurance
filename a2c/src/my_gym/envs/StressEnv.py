@@ -114,7 +114,7 @@ class StressingEnvironment(gym.Env):
         self.window_size = 500
 
         self.vm = vm
-        self.start_decay = 1500 # ms
+        self.start_decay = 1500  # ms
 
         self.observation_space = Space.Dict(
             {
@@ -126,12 +126,11 @@ class StressingEnvironment(gym.Env):
         self.action_space = Space.Discrete(3)
 
         # mapping actions to the adjustement we will make to the allocated resources
-        self.action_to_adjustement = {
-            0: [-1, 0, 0],
-            1: [0, -1, 0],
-            2: [0, 0, -1]
-        }
-
+        self.action_to_adjustement = [
+            (-1, 0, 0),  # reverse CPU adjustment
+            (0, -1, 0),  # reverse memory adjustment
+            (0, 0, -1),  # reverse disk adjustment
+        ]
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
 
@@ -141,17 +140,17 @@ class StressingEnvironment(gym.Env):
         self.clock = None
 
     def get_obs(self):
-        return {"agent": self.vm.ResponseTime, 
+        return {"agent": self.vm.ResponseTime,
                 "target": self.vm.Requirement_ResTime
                 }
-    
+
     def get_info(self):
         return {
             "cpu": self.vm.VM_CPU_g,
             "memory": self.vm.VM_Mem_g,
             "disk": self.vm.VM_Disk_g,
             "response_time": self.vm.ResponseTime
-            }
+        }
 
     def step(self, action):
         """
@@ -164,8 +163,9 @@ class StressingEnvironment(gym.Env):
 
         print("adjustement", cpu_adjustment, mem_adjustment, disk_adjustment)
 
-        assert any([cpu_adjustment, mem_adjustment, disk_adjustment]), "Invalid action: all adjustments are zero."
-        
+        assert any([cpu_adjustment, mem_adjustment, disk_adjustment]
+                   ), "Invalid action: all adjustments are zero."
+
         if cpu_adjustment != 0:
             self.vm.VM_CPU_g = max(1, self.vm.VM_CPU_g + cpu_adjustment)
         if mem_adjustment != 0:
@@ -173,11 +173,10 @@ class StressingEnvironment(gym.Env):
         if disk_adjustment != 0:
             self.vm.VM_Disk_g = max(1, self.vm.VM_Disk_g + disk_adjustment)
 
-        ResponseTime_g_prev = self.vm.ResponseTime
-        
         self.vm.calculate_throughput_response_time()
 
-        print("new VM params", self.vm.VM_CPU_g, self.vm.VM_Mem_g, self.vm.VM_Disk_g)
+        print("new VM params", self.vm.VM_CPU_g,
+              self.vm.VM_Mem_g, self.vm.VM_Disk_g)
 
         observation = self.get_obs()
 
@@ -188,35 +187,25 @@ class StressingEnvironment(gym.Env):
         info = self.get_info()
 
         terminated = np.bool(
-            self.vm.ResponseTime >= 1.1 * self.vm.Requirement_ResTime
-            or self.vm.VM_CPU_g == 1
-            or self.vm.VM_CPU_g > self.vm.VM_CPU_i
-            or self.vm.VM_Mem_g == 1
-            or self.vm.VM_Mem_g > self.vm.VM_Mem_i
-            or self.vm.VM_Disk_g == 1
-            or self.vm.VM_Disk_g > self.vm.VM_Disk_i
-            )
-        
-        print("terminated", terminated, observation["agent"], observation["target"])
-        
-        if terminated:
-            reward = -10.0
+            self.vm.ResponseTime >= self.vm.Requirement_ResTime or
+            self.vm.VM_CPU_g == 1 or
+            self.vm.VM_Mem_g == 1 or
+            self.vm.VM_Disk_g == 1
+        )
 
+        print("terminated", terminated,
+              observation["agent"], observation["target"])
+
+        if terminated:
+            reward = -100.0
         else:
-            # Response time penalty
-            response_penalty = -abs(self.vm.ResponseTime - self.vm.Requirement_ResTime) / self.vm.Requirement_ResTime
-            
-            # Resource usage penalty
-            resource_penalty = (self.vm.VM_CPU_g / self.vm.VM_CPU_i 
-                                + self.vm.VM_Mem_g / self.vm.VM_Mem_i 
-                                + self.vm.VM_Disk_g / self.vm.VM_Disk_i) * 0.1 
-            
-            # Reward for being within acceptable range
             if 0.9 * self.vm.Requirement_ResTime <= self.vm.ResponseTime <= 1.1 * self.vm.Requirement_ResTime:
-                reward = 2.0 + response_penalty - resource_penalty
-            else:
-                reward = response_penalty - resource_penalty 
-  
+                reward = 100
+            elif self.vm.ResponseTime <= self.vm.Requirement_ResTime:
+                distance_penalty = abs(
+                    self.vm.ResponseTime - self.vm.Requirement_ResTime) / self.vm.Requirement_ResTime
+                reward = 1 - distance_penalty
+
         return observation, reward, terminated, False, info
 
     def render(self):
@@ -226,7 +215,8 @@ class StressingEnvironment(gym.Env):
     def render_frame(self):
         if self.window is None:
             pygame.init()
-            self.window = pygame.display.set_mode((self.window_size, self.window_size))
+            self.window = pygame.display.set_mode(
+                (self.window_size, self.window_size))
             self.clock = pygame.time.Clock()
 
         if self.render_mode == "rgb_array":
@@ -240,21 +230,22 @@ class StressingEnvironment(gym.Env):
                 y_cord=self.window_size / 2,
                 thickness=30,
                 radius=150,
-                circle_colour=(128,128,128),
+                circle_colour=(128, 128, 128),
                 glow=False
             )
 
-            percent = (self.vm.ResponseTime / int(1.1 * self.vm.Requirement_ResTime)) * 100
+            percent = (self.vm.ResponseTime /
+                       int(1.1 * self.vm.Requirement_ResTime)) * 100
             my_gauge.draw(percent)
 
             pygame.display.flip()
             self.clock.tick(self.metadata["render_fps"])
-    
+
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
 
         self.vm.ResponseTime = self.vm.ResponseTime_i
-        self.vm.VM_CPU_g =  self.vm.VM_CPU_i
+        self.vm.VM_CPU_g = self.vm.VM_CPU_i
         self.vm.VM_Mem_g = self.vm.VM_Mem_i
         self.vm.VM_Disk_g = self.vm.VM_Disk_i
 

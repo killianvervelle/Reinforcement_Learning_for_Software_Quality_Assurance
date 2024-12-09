@@ -12,4 +12,5 @@ class Utilities:
         tensor = torch.tensor(input)
         return tensor
 
+
 utilities = Utilities()

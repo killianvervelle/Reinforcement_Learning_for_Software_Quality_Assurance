@@ -9,7 +9,8 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: Union[
         list[AnyUrl] | str
-        ] = []
-    
+    ] = []
 
-settings = Settings(BACKEND_CORS_ORIGINS=["http://localhost:8080", "http://localhost:3000"])
+
+settings = Settings(BACKEND_CORS_ORIGINS=[
+                    "http://localhost:8080", "http://localhost:3000"])

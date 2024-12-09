@@ -6,5 +6,6 @@ class modelRequest(BaseModel):
     learning_rate: float | None = 0.01
     data: list
 
+
 class modelResponse(BaseModel):
-     response: list
+    response: list

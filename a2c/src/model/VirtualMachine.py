@@ -17,11 +17,13 @@ class VirtualMachine:
     def calculate_throughput_response_time(self):
         part1 = (self.VM_CPU_g / self.VM_CPU_i) * self.VM_SensitivityValues[0]
         part2 = (self.VM_Mem_g / self.VM_Mem_i) * self.VM_SensitivityValues[1]
-        part3 = (self.VM_Disk_g / self.VM_Disk_i) * self.VM_SensitivityValues[2]
+        part3 = (self.VM_Disk_g / self.VM_Disk_i) * \
+            self.VM_SensitivityValues[2]
         part4 = sum(self.VM_SensitivityValues)
 
         # Calculate throughput
-        self.Throughput = ((part1 + part2 + part3) / part4) * 1000.0 / self.ResponseTime_i
+        self.Throughput = ((part1 + part2 + part3) / part4) * \
+            1000.0 / self.ResponseTime_i
 
         # Calculate response time
         self.ResponseTime = round((1000.0 / self.Throughput) * 100.0) / 100.0
