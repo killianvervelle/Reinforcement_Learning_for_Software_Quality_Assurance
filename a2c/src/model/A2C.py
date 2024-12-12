@@ -24,14 +24,20 @@ class A2C(nn.Module):
 
         self.actor = nn.Sequential(
             nn.Linear(self.in_size, hidden_size),
-            nn.LeakyReLU(0.01),
-            nn.Linear(hidden_size, self.out_size)
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+            nn.Dropout(p=0.2),
+            nn.Linear(hidden_size, self.out_size),
         ).double()
 
         self.critic = nn.Sequential(
             nn.Linear(self.in_size, hidden_size),
-            nn.LeakyReLU(0.01),
-            nn.Linear(hidden_size, 1)
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+            nn.Dropout(p=0.2),
+            nn.Linear(hidden_size, 1),
         ).double()
 
         # Weight initlization
@@ -54,6 +60,7 @@ class A2C(nn.Module):
 
         terminated = False
         while not terminated:
+            # time.sleep(0.5)
             observation_array = np.array(
                 list(observation.values()), dtype=np.float32)
 
@@ -69,12 +76,12 @@ class A2C(nn.Module):
             action_logits = torch.clamp(action_logits, min=-1000, max=1000)
 
             print("ACTION LOGIT", action_logits)
-            # action = Categorical(logits=action_logits).sample()
-            # action_probs = action_logits[action]
+            action = Categorical(logits=action_logits).sample()
+            action_probs = action_logits[action]
 
             # Choose the action with the highest logit
-            action = torch.argmax(action_logits).item()
-            action_probs = action_logits[action]
+            # action = torch.argmax(action_logits).item()
+            # action_probs = action_logits[action]
 
             print("ACTION CHOSEN", action, action_probs, action_logits)
 
@@ -123,7 +130,6 @@ class A2C(nn.Module):
 
         terminated = False
         while not terminated:
-            time.sleep(0.5)
 
             observation_array = np.array(
                 list(observation.values()), dtype=np.float32)
@@ -158,7 +164,7 @@ class A2C(nn.Module):
         actual_returns,
         expected_returns,
         critic_loss_fn=nn.SmoothL1Loss(),
-        entropy_weight=0.001
+        entropy_weight=0.1
     ):
         """
         Computes the combined loss for Actor-Critic.

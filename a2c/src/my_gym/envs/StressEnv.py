@@ -12,10 +12,10 @@ class StressingEnvironment(gym.Env):
     """
     <--- Description --->
 
-    This Reinforcement Learning environment is designed for stress testing software systems by 
-    dynamically adjusting resource usage (CPU, memory , and disk). The environment is built using 
-    OpenAI Gym. The goal of this environment is to allow an RL agent to learn how to manage system 
-    resources to avoid performance degradation, prevent failure, and identify the system's breaking 
+    This Reinforcement Learning environment is designed for stress testing software systems by
+    dynamically adjusting resource usage (CPU, memory , and disk). The environment is built using
+    OpenAI Gym. The goal of this environment is to allow an RL agent to learn how to manage system
+    resources to avoid performance degradation, prevent failure, and identify the system's breaking
     point under various stress conditions.
 
     <--- Observation Space --->
@@ -29,7 +29,7 @@ class StressingEnvironment(gym.Env):
 
     <--- Action Space --->
 
-    The action is an ndarray with shape (9,), where each element corresponds to the change in resource 
+    The action is an ndarray with shape (9,), where each element corresponds to the change in resource
     utilization for CPU, memory, and disk, respectively. The actions represent:
 
     | Num | Action                                | Value |    Unit    |
@@ -48,16 +48,16 @@ class StressingEnvironment(gym.Env):
 
     Given an action, the system updates its state as follows:
 
-    CPU, Memory, and Disk Usage: The system resources change based on the agent’s action. For instance, 
-    if the agent chooses to increase CPU usage, the CPU usage increases by a fixed amount (e.g., 5%) and 
+    CPU, Memory, and Disk Usage: The system resources change based on the agent’s action. For instance,
+    if the agent chooses to increase CPU usage, the CPU usage increases by a fixed amount (e.g., 5%) and
     similarly for memory and disk.
 
     CPU_t+1 = CPU_t - action[0]
     Memory_t+1 = Memory_t - action[2]
     Disk_t+1 = Disk_t - action[4]
 
-    Response Time: The response time increases as system resources are consumed, typically represented by 
-    a function that models the stress on the system as resources are exhausted. The response time threshold 
+    Response Time: The response time increases as system resources are consumed, typically represented by
+    a function that models the stress on the system as resources are exhausted. The response time threshold
     is set to 3000 ms, with a reward decay between 1500 and 3000ms.
 
     The theoritical calculation of the response time is done as follows:
@@ -67,18 +67,19 @@ class StressingEnvironment(gym.Env):
         double Part2 = (this.VM_Mem_g / this.VM_Mem_i) * this.VM_SensitivityValues[1];
         double Part3 = (this.VM_Disk_g / this.VM_Disk_i) * this.VM_SensitivityValues[2];
         double Part4 = this.VM_SensitivityValues[0] + this.VM_SensitivityValues[1] + this.VM_SensitivityValues[2];
-        this.Throughput = ((Part1 + Part2 + Part3) / Part4) * 1000.0 / this.ResponseTime_i;
+        this.Throughput = ((Part1 + Part2 + Part3) / Part4) * \
+                           1000.0 / this.ResponseTime_i;
         this.ResponseTime = (double) Math.round((1000.0 / this.Throughput) * 100.0) / 100.0;
     }
 
     <--- Reward --->
 
-    Penalizing Reward: A positive reward of 1 is given at each timestep if the response time hasn't increase and is still 
-    bellow the targeted threshold.However, negative reward of 10 and 30 are given if the response time exceeds the threshold 
+    Penalizing Reward: A positive reward of 1 is given at each timestep if the response time hasn't increase and is still
+    bellow the targeted threshold.However, negative reward of 10 and 30 are given if the response time exceeds the threshold
     or if the system fails.
 
-    Adaptive Reward: The reward decays as the response time starts increasing beyond 1500 ms towards 
-    the critical threshold of 3000 ms. As the system gets closer to failure, the reward is progressively 
+    Adaptive Reward: The reward decays as the response time starts increasing beyond 1500 ms towards
+    the critical threshold of 3000 ms. As the system gets closer to failure, the reward is progressively
     reduced, incentivizing the agent to reduce system load before performance exceeds acceptable limits.
 
     <--- Starting State --->
@@ -123,13 +124,14 @@ class StressingEnvironment(gym.Env):
             }
         )
 
-        self.action_space = Space.Discrete(3)
+        self.action_space = Space.Discrete(4)
 
         # mapping actions to the adjustement we will make to the allocated resources
         self.action_to_adjustement = [
-            (-1, 0, 0),  # reverse CPU adjustment
-            (0, -1, 0),  # reverse memory adjustment
-            (0, 0, -1),  # reverse disk adjustment
+            (-1, 0, 0),
+            (0, -1, 0),
+            (1, 0, 0),
+            (0, 1, 0),
         ]
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
@@ -170,8 +172,8 @@ class StressingEnvironment(gym.Env):
             self.vm.VM_CPU_g = max(1, self.vm.VM_CPU_g + cpu_adjustment)
         if mem_adjustment != 0:
             self.vm.VM_Mem_g = max(1, self.vm.VM_Mem_g + mem_adjustment)
-        if disk_adjustment != 0:
-            self.vm.VM_Disk_g = max(1, self.vm.VM_Disk_g + disk_adjustment)
+        # if disk_adjustment != 0:
+            # self.vm.VM_Disk_g = max(1, self.vm.VM_Disk_g + disk_adjustment)
 
         self.vm.calculate_throughput_response_time()
 
@@ -187,7 +189,10 @@ class StressingEnvironment(gym.Env):
         info = self.get_info()
 
         terminated = np.bool(
-            self.vm.ResponseTime >= self.vm.Requirement_ResTime or
+            self.vm.ResponseTime >= 1.1 * self.vm.Requirement_ResTime or
+            self.vm.VM_CPU_g == 30 or
+            self.vm.VM_Mem_g == 30 or
+            self.vm.VM_Disk_g == 200 or
             self.vm.VM_CPU_g == 1 or
             self.vm.VM_Mem_g == 1 or
             self.vm.VM_Disk_g == 1
@@ -200,12 +205,10 @@ class StressingEnvironment(gym.Env):
             reward = -100.0
         else:
             if 0.9 * self.vm.Requirement_ResTime <= self.vm.ResponseTime <= 1.1 * self.vm.Requirement_ResTime:
-                reward = 100
+                reward = 1000
             elif self.vm.ResponseTime <= self.vm.Requirement_ResTime:
-                distance_penalty = abs(
-                    self.vm.ResponseTime - self.vm.Requirement_ResTime) / self.vm.Requirement_ResTime
-                reward = 1 - distance_penalty
 
+                reward = -1
         return observation, reward, terminated, False, info
 
     def render(self):

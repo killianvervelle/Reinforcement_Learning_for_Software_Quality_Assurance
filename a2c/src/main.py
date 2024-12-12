@@ -9,6 +9,8 @@ from model.A2C import A2C
 
 from my_gym.envs.StressEnv import StressingEnvironment
 
+import matplotlib.pyplot as plt
+
 
 class StressTesting:
     """
@@ -16,15 +18,15 @@ class StressTesting:
     """
 
     def __init__(self):
-        self.learning_rate = 1
-        self.maximum_episodes = 100
+        self.learning_rate = 0.1
+        self.maximum_episodes = 500
 
     def main(self):
         """
-        Main method for stress testing. 
+        Main method for stress testing.
 
-        This method configures and initializes a set of Virtual Machines (VMs) with various 
-        resource limits, response time requirements, and sensitivity values. It serves as the 
+        This method configures and initializes a set of Virtual Machines (VMs) with various
+        resource limits, response time requirements, and sensitivity values. It serves as the
         entry point for setting up the environment for stress testing.
 
         Steps:
@@ -46,15 +48,15 @@ class StressTesting:
         ]
 
         vms = self.initialize_vms(
-            10, 100, 100, 100, requirement_res_times, sensitivity_collection)
+            10, 30, 30, 100, requirement_res_times, sensitivity_collection)
         print(f"Initialized {len(vms)} VMs.")
 
         # Running the stress test on the first VM.
         vm = vms[0]
-        agent = A2C(hidden_size=64,
+        agent = A2C(hidden_size=128,
                     gamma=0.99,
                     vm=vm,
-                    random_seed=None)
+                    random_seed=42)
 
         actor_optim = optim.Adam(
             agent.actor.parameters(), lr=self.learning_rate)
@@ -92,16 +94,61 @@ class StressTesting:
             l_critic.append(loss_critic)
 
             # smoothing randomness in reward fluctuations
-            if i % 50 == 0 and i > 0:
-                reward_subset = r[i-50:i]  # Get the last 50 rewards
+            if i % 5 == 0 and i > 0:
+                reward_subset = r[i-5:i]  # Get the last 50 rewards
                 average_reward = sum(reward_subset) / len(reward_subset)
                 avg_r.append(average_reward)
                 print(
-                    f"Average reward during episodes {i-50}-{i} is {average_reward}.")
+                    f"Average reward during episodes {i-5}-{i} is {average_reward}.")
+        print("r", r)
+        print("avg_r", avg_r)
+        print("l_actor", l_actor)
+        print("l_critic", l_critic)
 
         for _ in range(20):
             time.sleep(0.5)
             agent.test_model(render=True)
+
+        episodes = range(self.maximum_episodes)
+
+        plt.figure(figsize=(12, 8))
+
+        # Plot total rewards
+        plt.subplot(2, 2, 1)
+        plt.plot(episodes, r, label='Total Reward', color='blue')
+        plt.xlabel('Episodes')
+        plt.ylabel('Total Reward')
+        plt.title('Total Rewards Over Episodes')
+        plt.grid(True)
+
+        # Plot average rewards (smoothed)
+        plt.subplot(2, 2, 2)
+        plt.plot(range(len(avg_r)), avg_r,
+                 label='Average Reward (50 episodes)', color='green')
+        plt.xlabel('Episodes (Smoothed)')
+        plt.ylabel('Average Reward')
+        plt.title('Average Reward Over Episodes')
+        plt.grid(True)
+
+        """# Plot actor loss
+        plt.subplot(2, 2, 3)
+        plt.plot(episodes, l_actor, label='Actor Loss', color='red')
+        plt.xlabel('Episodes')
+        plt.ylabel('Loss')
+        plt.title('Actor Loss Over Episodes')
+        plt.grid(True)
+
+        # Plot critic loss
+        plt.subplot(2, 2, 4)
+        plt.plot(episodes, l_critic, label='Critic Loss', color='purple')
+        plt.xlabel('Episodes')
+        plt.ylabel('Loss')
+        plt.title('Critic Loss Over Episodes')
+        plt.grid(True)"""
+
+        # Adjust layout and show plot
+        plt.tight_layout()
+        plt.show()
 
     @staticmethod
     def normalize(tensor, epsilon=1e-8):
@@ -113,21 +160,21 @@ class StressTesting:
     @staticmethod
     def initialize_vms(n, vms_cap_cpu, vms_cap_mem, vms_cap_disk, requirement_res_times, sensitivity_collection):
         """
-        Initializes a set of Virtual Machines (VMs) for stress testing.
+        Initializes a set of Virtual Machines(VMs) for stress testing.
 
-        This function creates `n` Virtual Machine objects, each with randomized capacities for CPU, memory, 
-        and disk usage, as well as specific sensitivity values and response time requirements. These VMs 
+        This function creates `n` Virtual Machine objects, each with randomized capacities for CPU, memory,
+        and disk usage, as well as specific sensitivity values and response time requirements. These VMs
         are configured with both initial and current resource utilization and response time values.
 
         Args:
-            n (int): The number of Virtual Machines to initialize.
-            vms_cap_cpu (float): The upper capacity limit for VM CPU.
-            vms_cap_mem (float): The upper capacity limit for VM memory.
-            vms_cap_disk (float): The upper capacity limit for VM disk.
-            requirement_res_times (list of float): A list of possible response time requirements.
-            sensitivity_collection (list of list of float): A collection of sensitivity values 
+            n(int): The number of Virtual Machines to initialize.
+            vms_cap_cpu(float): The upper capacity limit for VM CPU.
+            vms_cap_mem(float): The upper capacity limit for VM memory.
+            vms_cap_disk(float): The upper capacity limit for VM disk.
+            requirement_res_times(list of float): A list of possible response time requirements.
+            sensitivity_collection(list of list of float): A collection of sensitivity values
                                                             for CPU, memory, and disk for each VM.
-            vm_list (list of VirtualMachine): The list where initialized VirtualMachine objects are added.
+            vm_list(list of VirtualMachine): The list where initialized VirtualMachine objects are added.
 
         Returns:
             None: The function populates the `vm_list` provided as an argument with initialized VirtualMachine objects.
@@ -135,9 +182,9 @@ class StressTesting:
         vm_list = []
 
         for i in range(n):
-            vm_cpu = random.randint(60, int(vms_cap_cpu))
-            vm_mem = random.randint(60, int(vms_cap_mem))
-            vm_disk = random.randint(60, int(vms_cap_disk))
+            vm_cpu = random.randint(10, int(vms_cap_cpu))
+            vm_mem = random.randint(10, int(vms_cap_mem))
+            vm_disk = random.randint(10, int(vms_cap_disk))
             vm_sensitivity_index = random.randint(
                 0, len(sensitivity_collection) - 1)
             vm_required_res_time_index = random.randint(
