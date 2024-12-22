@@ -21,9 +21,7 @@ class VirtualMachine:
             self.VM_SensitivityValues[2]
         part4 = sum(self.VM_SensitivityValues)
 
-        # Calculate throughput
         self.Throughput = ((part1 + part2 + part3) / part4) * \
             1000.0 / self.ResponseTime_i
 
-        # Calculate response time
         self.ResponseTime = round((1000.0 / self.Throughput) * 100.0) / 100.0

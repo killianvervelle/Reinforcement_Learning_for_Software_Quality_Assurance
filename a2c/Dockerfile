@@ -2,6 +2,6 @@ FROM python:3.11
 
 WORKDIR /app/
 
-COPY ./api /app/api
+COPY ./src /app/src
 
-CMD ["fastapi", "run", "api/main.py"]
+CMD ["fastapi", "run", "src/main.py"]
