@@ -33,7 +33,7 @@ class Simulate:
         )
 
     def main(self):
-        requirement_res_times = [3000, 3050, 3100, 3150]
+        requirement_res_times = [3000, 3050, 3100, 3100]
         sensitivity_collection = [
             [0.79, 0.19, 0.01],
             [0.74, 0.24, 0.01],
