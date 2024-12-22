@@ -43,5 +43,5 @@ python src/main.py
 #### Visualization of Results
 Graphs and metrics summarizing the agent's performance can be visualized using TensorBoard or the custom plotting script in the main file.
 <div align="center">
-  <img src="../img/a2cresult.png" alt="Alt text" width="2000">
+  <img src="../img/a2cresults.png" alt="Alt text" width="2000">
 </div>
