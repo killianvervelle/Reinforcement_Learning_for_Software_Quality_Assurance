@@ -23,7 +23,7 @@ effective for continuous testing scenarios, such as:
 - Testing under dynamic workload requirements.
 
 <div align="center">
-  <img src="../img/distributed.png" alt="Alt text" width="550">
+  <img src="../img/distributed.png" alt="Alt text" width="450">
 </div>
 
 #### Reference: 
