@@ -134,3 +134,10 @@ For running custom logic with RELOAD:
 ```
 java -jar <path-to-project-jar>
 ```
+
+### License
+Reload and Safrel are open-source and distributed under:  
+```
+Copyright (c) 2021, mahshidhelali
+All rights reserved.
+```

@@ -1,7 +1,7 @@
 ### A2C Framework: Advantage Actor-Critic for Reinforcement Learning
 The A2C Framework implements the Advantage Actor-Critic algorithm, a reinforcement learning approach designed to balance exploration and exploitation. The algorithm utilizes two neural networks: an actor to determine actions and a critic to estimate value functions, optimizing the agent's performance in a custom environment. 
 <div align="center">
-  <img src="../img/a2c.png" alt="Alt text" width="500">
+  <img src="../img/a2c_diag.png" alt="Alt text" width="300">
 </div>
 
 #### Key Features:
@@ -23,8 +23,7 @@ https://paperswithcode.com/method/a2c
 * Dependencies: Install the required libraries.
 * Hardware: A GPU is recommended for faster training but is not required.
 
-
-#### Running SaFReL_v1 or SaFReL_v2
+#### Running the Framework
 
 Clone the repository locally:
 ```
@@ -43,5 +42,8 @@ python src/main.py
 #### Visualization of Results
 Graphs and metrics summarizing the agent's performance can be visualized using TensorBoard or the custom plotting script in the main file.
 <div align="center">
-  <img src="../img/a2cresult.png" alt="Alt text" width="2000">
+  <img src="../img/a2c_train.png" alt="Alt text" width="500">
+  <img src="../img/a2c_test.png" alt="Alt text" width="498">
+  <br><br>
+  <img src="../img/a2c_loss.png" alt="Alt text" width="500">
 </div>

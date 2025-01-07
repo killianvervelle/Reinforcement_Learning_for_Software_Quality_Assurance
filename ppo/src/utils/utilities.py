@@ -4,8 +4,8 @@ from torch import nn
 class Utilities:
     """
     Purpose:
-        This class contains utility functions used during the training of reinforcement learning models. 
-        These utilities include methods for initializing network weights, clipping gradients, and normalizing rewards. 
+        This class contains utility functions used during the training of reinforcement learning models.
+        These utilities include methods for initializing network weights, clipping gradients, and normalizing rewards.
         They help stabilize and improve the convergence of the learning process.
 
     Notes:
