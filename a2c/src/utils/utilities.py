@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 
@@ -15,9 +16,10 @@ class Utilities:
         - Entropy Coefficient: Used as regularization to encourage exploration, preventing the policy from becoming deterministic too early.
 
     Methods:
-        init_xavier_weights: Applies Xavier uniform initialization to the weights of linear layers.
-        clip_grad_norm_: Clips gradients during backpropagation to prevent exploding gradients.
-        normalize_rewards: Normalizes a batch of rewards by subtracting the mean and dividing by the standard deviation.
+        - init_xavier_weights: Applies Xavier uniform initialization to the weights of linear layers.
+        - clip_grad_norm_: Clips gradients during backpropagation to prevent exploding gradients.
+        - clip_logits: Clips logits to a specific range. 
+        - normalize_rewards: Normalizes a batch of rewards by subtracting the mean and dividing by the standard deviation.
     """
 
     def __init__(self):
@@ -32,8 +34,19 @@ class Utilities:
 
     @staticmethod
     def clip_grad_norm_(module, max_grad_norm):
-        total_norm = nn.utils.clip_grad_norm_(
-            [p for g in module.param_groups for p in g["params"]], max_grad_norm)
+        params = [p for g in module.param_groups for p in g["params"]
+                  if p.grad is not None]
+        """print("Gradients before clipping:")
+        for i, p in enumerate(params):
+            print(f"Parameter {i}: Norm = {p.grad.norm():.6f}")"""
+        total_norm = nn.utils.clip_grad_norm_(params, max_grad_norm)
+        """print("\nGradients after clipping:")
+        for i, p in enumerate(params):
+            print(f"Parameter {i}: Norm = {p.grad.norm():.6f}")"""
+
+    @staticmethod
+    def clip_logits(logits, clip_value):
+        return torch.clamp(logits, -clip_value, clip_value)
 
     @staticmethod
     def normalize_rewards(r):

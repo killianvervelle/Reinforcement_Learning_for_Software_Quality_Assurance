@@ -4,8 +4,8 @@ from torch import nn
 class Utilities:
     """
     Purpose:
-        This class contains utility functions used during the training of reinforcement learning models.
-        These utilities include methods for initializing network weights, clipping gradients, and normalizing rewards.
+        This class contains utility functions used during the training of reinforcement learning models. 
+        These utilities include methods for initializing network weights, clipping gradients, and normalizing rewards. 
         They help stabilize and improve the convergence of the learning process.
 
     Notes:
@@ -32,8 +32,19 @@ class Utilities:
 
     @staticmethod
     def clip_grad_norm_(module, max_grad_norm):
-        total_norm = nn.utils.clip_grad_norm_(
-            [p for g in module.param_groups for p in g["params"]], max_grad_norm)
+        params = [p for g in module.param_groups for p in g["params"]
+                  if p.grad is not None]
+        """print("Gradients before clipping:")
+        for i, p in enumerate(params):
+            print(f"Parameter {i}: Norm = {p.grad.norm():.6f}")"""
+        total_norm = nn.utils.clip_grad_norm_(params, max_grad_norm)
+        """print("\nGradients after clipping:")
+        for i, p in enumerate(params):
+            print(f"Parameter {i}: Norm = {p.grad.norm():.6f}")"""
+
+    @staticmethod
+    def clip_logits(logits, clip_value):
+        return torch.clamp(logits, -clip_value, clip_value)
 
     @staticmethod
     def normalize_rewards(r):
