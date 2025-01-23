@@ -6,14 +6,20 @@
   "containerDefinitions": [
     {
       "name": "my-app",
-      "image": "my-app:latest",
+      "image": "",
       "cpu": 1000,
       "memory": 2000,
+      "restartPolicy": {
+        "enabled": true,
+        "ignoredExitCodes": [0],
+        "restartAttemptPeriod": 180
+      },
       "essential": true,
       "portMappings": [
         {
           "containerPort": 8000,
-          "hostPort": 8000
+          "hostPort": 8000,
+          "protocol": "tcp"
         }
       ],
       "logConfiguration": {
