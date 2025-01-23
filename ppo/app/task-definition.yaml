@@ -7,8 +7,8 @@
     {
       "name": "my-app",
       "image": "my-app:latest",
-      "cpu": 1024,
-      "memory": 1024,
+      "cpu": 1000,
+      "memory": 2000,
       "essential": true,
       "portMappings": [
         {
@@ -24,26 +24,12 @@
           "awslogs-stream-prefix": "ecs"
         }
       },
-      "command": ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
-      "mountPoints": [
-        {
-          "sourceVolume": "my-volume",
-          "containerPath": "/mnt/data"
-        }
-      ]
-    }
-  ],
-  "volumes": [
-    {
-      "name": "my-volume",
-      "host": {
-        "sourcePath": "/mnt/data"
-      }
+      "command": ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
     }
   ],
   "requiresCompatibilities": ["FARGATE"],
-  "cpu": "1024",
-  "memory": "1024",
+  "cpu": "1000",
+  "memory": "2000",
   "tags": [
     {
       "key": "Name",
