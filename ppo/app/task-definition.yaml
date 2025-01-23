@@ -1,45 +1,58 @@
 {
-  "family": "my-ecs-task",
-  "networkMode": "awsvpc",
-  "executionRoleArn": "arn:aws:iam::222656491673:role/my-execution-role",
-  "taskRoleArn": "arn:aws:iam::222656491673:role/my-task-role",
-  "containerDefinitions": [
-    {
-      "name": "my-app",
-      "image": "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:latest",
-      "cpu": 1024,
-      "memory": 2048,
-      "restartPolicy": {
-        "enabled": true,
-        "ignoredExitCodes": [0],
-        "restartAttemptPeriod": 180
-      },
-      "essential": true,
-      "portMappings": [
+    "family": "my-ecs-task",
+    "containerDefinitions": [
         {
-          "containerPort": 8000,
-          "hostPort": 8000,
-          "protocol": "tcp"
+            "name": "my-app",
+            "image": "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:latest",
+            "cpu": 1024,
+            "memory": 2048,
+            "portMappings": [
+                {
+                    "name": "my-app-8000-tcp",
+                    "containerPort": 8000,
+                    "hostPort": 8000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "environment",
+                    "value": "production"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/my-ecs-task",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "eu-west-3",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
         }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/my-task-logs",
-          "awslogs-region": "eu-west-3",
-          "awslogs-stream-prefix": "ecs"
-        }
-      },
-      "command": ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-    }
-  ],
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "1024",
-  "memory": "2048",
-  "tags": [
-    {
-      "key": "Name",
-      "value": "my-ecs-task"
-    }
-  ]
+    ],
+    "executionRoleArn": "arn:aws:iam::222656491673:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "enableFaultInjection": false
 }
