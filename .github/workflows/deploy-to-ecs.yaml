@@ -10,7 +10,7 @@ env:
   ECR_REPOSITORY: my_ecr_repository           
   ECS_SERVICE: my_ecr_service                 
   ECS_CLUSTER: my_ecr_cluster                 
-  ECS_TASK_DEFINITION: ppo/app/task-definition.yaml   
+  ECS_TASK_DEFINITION: my-ecs-task:2   
 
   CONTAINER_NAME: my-app
 
@@ -56,7 +56,7 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ppo/app/task-definition.yaml
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
