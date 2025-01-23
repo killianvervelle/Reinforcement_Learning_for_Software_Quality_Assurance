@@ -11,3 +11,5 @@ COPY ppo/app/src/main.py /app/
 RUN touch /app/response_times.csv
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
