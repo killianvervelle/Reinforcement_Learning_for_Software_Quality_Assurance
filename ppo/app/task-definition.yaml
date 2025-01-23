@@ -8,8 +8,7 @@
       "name": "my-app",
       "image": "my-app:latest",
       "cpu": 1024,
-      "memory": 2048,
-      "memoryReservation": 1024,
+      "memory": 1024,
       "essential": true,
       "portMappings": [
         {
@@ -26,19 +25,12 @@
         }
       },
       "command": ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
-      "volumes": [
+      "mountPoints": [
         {
-          "name": "my-volume",
-          "host": {
-            "sourcePath": "/mnt/data"
-          }
+          "sourceVolume": "my-volume",
+          "containerPath": "/mnt/data"
         }
-      ],
-      "cpuPeriod": 100000,  // CPU period for limiting CPU usage
-      "cpuQuota": 50000,  // CPU quota (e.g., 50% of CPU)
-      "memLimit": "1024m",  // Memory limit for the container
-      "memSwapLimit": "2048m",  // Swap memory limit for the container
-      "oomKillDisable": true  // Prevents OOM kill (Out-Of-Memory)
+      ]
     }
   ],
   "volumes": [
@@ -51,7 +43,7 @@
   ],
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "1024",
-  "memory": "1024m",
+  "memory": "1024",
   "tags": [
     {
       "key": "Name",
