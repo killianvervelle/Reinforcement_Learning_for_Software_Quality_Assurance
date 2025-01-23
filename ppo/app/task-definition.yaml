@@ -1,0 +1,61 @@
+{
+  "family": "my-ecs-task",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::222656491673:role/my-execution-role",
+  "taskRoleArn": "arn:aws:iam::222656491673:role/my-task-role",
+  "containerDefinitions": [
+    {
+      "name": "my-app",
+      "image": "my-app:latest",
+      "cpu": 1024,
+      "memory": 2048,
+      "memoryReservation": 1024,
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-task-logs",
+          "awslogs-region": "eu-west-3",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "command": ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+      "volumes": [
+        {
+          "name": "my-volume",
+          "host": {
+            "sourcePath": "/mnt/data"
+          }
+        }
+      ],
+      "cpuPeriod": 100000,  // CPU period for limiting CPU usage
+      "cpuQuota": 50000,  // CPU quota (e.g., 50% of CPU)
+      "memLimit": "1024m",  // Memory limit for the container
+      "memSwapLimit": "2048m",  // Swap memory limit for the container
+      "oomKillDisable": true  // Prevents OOM kill (Out-Of-Memory)
+    }
+  ],
+  "volumes": [
+    {
+      "name": "my-volume",
+      "host": {
+        "sourcePath": "/mnt/data"
+      }
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "1024m",
+  "tags": [
+    {
+      "key": "Name",
+      "value": "my-ecs-task"
+    }
+  ]
+}

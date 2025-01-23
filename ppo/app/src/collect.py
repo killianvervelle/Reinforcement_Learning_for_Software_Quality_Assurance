@@ -45,7 +45,10 @@ def log_to_csv(data: Dict[str, Any]) -> None:
                          data["response_time_mems"]])
 
 
-def adjust_container_resources(client: docker.DockerClient, container: docker.models.containers.Container, cpu_quota: int, memory: int) -> None:
+def adjust_container_resources(client: docker.DockerClient,
+                               container: docker.models.containers.Container,
+                               cpu_quota: int,
+                               memory: int) -> None:
     try:
         logger.info("Stopping the container...")
         container.stop()

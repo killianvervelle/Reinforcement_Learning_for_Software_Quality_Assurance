@@ -89,13 +89,6 @@ class Agent:
 
         return advantages
 
-    def calculate_a2c_losses(self, log_prob, advantages, value_pred, returns, entropy, entropy_coefficient):
-        entropy_bonus = entropy_coefficient * entropy
-        policy_loss = -(log_prob * advantages.detach() + entropy_bonus).sum()
-        value_loss = F.smooth_l1_loss(value_pred, returns).sum()
-
-        return policy_loss, value_loss, entropy_bonus
-
     def init_training(self):
         states = []
         actions = []
@@ -138,6 +131,13 @@ class Agent:
         advantages = self.calculate_advantages(returns, values)
 
         return episode_reward, states, actions, actions_log_probability, advantages, returns
+
+    def calculate_a2c_losses(self, log_prob, advantages, value_pred, returns, entropy, entropy_coefficient):
+        entropy_bonus = entropy_coefficient * entropy
+        policy_loss = -(log_prob * advantages.detach() + entropy_bonus).sum()
+        value_loss = F.smooth_l1_loss(value_pred, returns).sum()
+
+        return policy_loss, value_loss, entropy_bonus
 
     def update_policy(
             self,
