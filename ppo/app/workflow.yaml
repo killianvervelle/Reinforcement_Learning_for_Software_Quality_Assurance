@@ -21,6 +21,9 @@ jobs:
     environment: production
 
     steps:
+      - name: Debug: List files in root directory
+        run: ls -la 
+
       - name: Checkout
         uses: actions/checkout@v4
 
