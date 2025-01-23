@@ -10,7 +10,7 @@ env:
   ECR_REPOSITORY: my_ecr_repository           
   ECS_SERVICE: my_ecr_service                 
   ECS_CLUSTER: my_ecr_cluster                 
-  ECS_TASK_DEFINITION: my-ecs-task
+  ECS_TASK_DEFINITION: ppo/app/task-definition.yaml
 
   CONTAINER_NAME: my-app
 
@@ -63,7 +63,7 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
