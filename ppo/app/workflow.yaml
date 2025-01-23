@@ -21,9 +21,6 @@ jobs:
     environment: production
 
     steps:
-      - name: List files in root directory
-        run: ls -la 
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -43,6 +40,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+        working-directory: ./app
         run: |
           # Build a docker container and
           # push it to ECR so that it can
