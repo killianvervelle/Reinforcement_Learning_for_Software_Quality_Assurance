@@ -8,8 +8,8 @@ on:
 env:
   AWS_REGION: eu-west-3
   ECR_REPOSITORY: my_ecr_repository           
-  ECS_SERVICE: my_ecr_service                 
-  ECS_CLUSTER: my_ecr_cluster                 
+  ECS_SERVICE: my_ecs_service                 
+  ECS_CLUSTER: my_ecs_cluster                 
   ECS_TASK_DEFINITION: ppo/app/task-definition.json
 
   CONTAINER_NAME: my-app
