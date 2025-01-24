@@ -14,7 +14,7 @@
                     "protocol": "tcp",
                     "appProtocol": "http"
                 }
-            ],
+            ], 
             "essential": true,
             "environment": [
                 {
