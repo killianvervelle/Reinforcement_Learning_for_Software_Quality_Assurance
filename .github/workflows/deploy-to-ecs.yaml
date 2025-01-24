@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: eu-west-3
-  ECR_REPOSITORY: my-ecr-repository           
+  ECR_REPOSITORY: my_ecr_repository           
   ECS_SERVICE: my-ecs-service                 
   ECS_CLUSTER: my_ecs_cluster                 
   ECS_TASK_DEFINITION: ppo/app/task-definition.json
