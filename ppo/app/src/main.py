@@ -44,6 +44,11 @@ def perform_cpu_task() -> float:
         return float('inf')
 
 
+@app.get("/")
+def read_root():
+    return {"message": "Health check successfull."}
+
+
 @app.post("/compute_testing/")
 def adjust_resources(cpu_quota: int, memory: str):
     try:
