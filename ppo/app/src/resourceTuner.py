@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 ECS_CLIENT = boto3.client('ecs', region_name='eu-west-3')
 ECR_CLIENT = boto3.client('ecr', region_name='eu-west-3')
-API_URL = "http://Your-Private-IPv4/"  # update this variable
+API_URL = "myLoadBalancer-851677411.eu-west-3.elb.amazonaws.com/"
 REPOSITORY = "my_ecr_repository"
 CONTAINER_NAME = "my-app"
 IMG_TAG = "latest"
