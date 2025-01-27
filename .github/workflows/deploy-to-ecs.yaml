@@ -34,19 +34,15 @@ jobs:
       - name: Set up Python environment
         run: |
           python3 -m venv venv
-          ls -a
           source ./venv/bin/activate
       
       - name: Install dependencies
         run: |
           pip install -r ppo/requirements.txt
-      
-      - name: Verify boto3 installation
-        run: |
-          pip list
               
       - name: Run script to collect and save dataset to S3
         run: |
+          pwd
           python ppo/app/src/resourceTuner.py  
 
       - name: Run script to train and save the model to S3
