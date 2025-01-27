@@ -30,15 +30,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.11
-
-      - name: Install dependencies
+      
+      - name: Set up Python environment
         run: |
-          python -m pip install --upgrade pip
+          python -m venv venv
+          source venv/bin/activate
           pip install -r ppo/requirements.txt
-
+              
       - name: Run script to collect and save dataset to S3
         run: |
-          python ppo/app/src/resourceTuner.py  
+          cd /ppo
+          python app/src/resourceTuner.py  
 
       - name: Run script to train and save the model to S3
         run: |
@@ -46,6 +48,6 @@ jobs:
 
       - name: Run the PPO framework
         run: |
-          python ppo/src/main.py
+          python ppo/app/src/main.py
 
 
