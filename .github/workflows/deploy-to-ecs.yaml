@@ -38,11 +38,14 @@ jobs:
           source ./venv/bin/activate
           python3 -m pip install --upgrade pip
           pip install -r ppo/requirements.txt
+      
+      - name: Verify boto3 installation
+        run: |
+          pip list
               
       - name: Run script to collect and save dataset to S3
         run: |
-          cd ppo
-          python app/src/resourceTuner.py  
+          python ppo/app/src/resourceTuner.py  
 
       - name: Run script to train and save the model to S3
         run: |
