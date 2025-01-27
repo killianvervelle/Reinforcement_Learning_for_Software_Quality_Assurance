@@ -39,7 +39,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r ppo/requirements.txt
-              
+      
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd):$PYTHONPATH" >> $GITHUB_ENV
+  
       - name: Run script to collect and save dataset to S3
         run: |
           pwd
