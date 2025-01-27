@@ -39,7 +39,7 @@ jobs:
               
       - name: Run script to collect and save dataset to S3
         run: |
-          cd /ppo
+          cd ppo
           python app/src/resourceTuner.py  
 
       - name: Run script to train and save the model to S3
