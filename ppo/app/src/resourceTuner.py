@@ -1,8 +1,8 @@
 import logging
 import random
-import pandas as pd
 import boto3
 import requests
+import pandas as pd
 
 from ppo.app.src.utilities import Utilities
 
