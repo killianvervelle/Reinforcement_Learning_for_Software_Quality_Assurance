@@ -17,7 +17,8 @@ ECR_CLIENT = boto3.client('ecr', region_name='eu-west-3')
 API_URL = "http://myLoadBalancer-851677411.eu-west-3.elb.amazonaws.com/"
 REPOSITORY = "my_ecr_repository"
 CONTAINER_NAME = "my-app"
-IMG_TAG = "latest"
+CLUSTER_NAME = "my_ecs_cluster"
+IMG_NAME = f"{ECR_CLIENT.meta.endpoint_url}/{REPOSITORY}:latest"
 
 
 def generate_samples(num_samples: int):
@@ -30,50 +31,48 @@ def generate_samples(num_samples: int):
     ]
 
 
-def get_latest_img_tag():
-    try:
-        response = ECR_CLIENT.list_images(repositoryName=REPOSITORY)
-        image_ids = response.get('imageIds', [])
+def get_latest_task():
+    response = ECS_CLIENT.list_tasks(
+        cluster=CLUSTER_NAME,
+        desiredStatus='RUNNING'
+    )
 
-        if not image_ids:
-            logger.error("No images found in the repository.")
-            return ""
+    task_arns = response.get('taskArns', [])
 
-        describe_response = ECR_CLIENT.describe_images(
-            repositoryName=REPOSITORY,
-            imageIds=image_ids
-        )
-        image_details = describe_response.get('imageDetails', [])
+    if not task_arns:
+        print("No running tasks found.")
+        return None
 
-        if not image_details:
-            logger.error("No image details available.")
-            return ""
-
-        sorted_images = sorted(
-            image_details,
-            key=lambda img: img.get('imagePushedAt', 0),
-            reverse=True
-        )
-
-        latest_image = sorted_images[0]
-        image_tag = latest_image.get('imageTags', [])
-        return image_tag[0]
-
-    except Exception as e:
-        logger.error(f"Error fetching the latest image tag: {e}")
-        return ""
+    latest_task_arn = task_arns[-1]
+    return latest_task_arn
 
 
-def adjust_container(cpu_quota: int, memory: int) -> bool:
+def get_container_id(last_task):
+    response = ECS_CLIENT.describe_tasks(
+        cluster=CLUSTER_NAME,
+        tasks=[last_task]
+    )
+
+    containers = response.get('tasks', [])[0].get('containers', [])
+
+    if not containers:
+        print(f"No containers found in task {last_task}.")
+        return None
+
+    container_id = containers[0].get('runtimeId')
+    return container_id
+
+
+def adjust_container(cpu_quota: int, memory: int, container: str, image_name: str) -> bool:
     """Adjust container resources using an API."""
     try:
         response = requests.post(
             f"{API_URL}adjust_container/",
             params={
-                "container": CONTAINER_NAME,
                 "cpu_quota": cpu_quota,
                 "memory": memory,
-                "img_tag": IMG_TAG
+                "container": container,
+                "img_name": image_name
             }
         )
         response.raise_for_status()
@@ -96,9 +95,11 @@ def simulate_cpu_task() -> float:
 
 
 def build_dataset() -> pd.DataFrame:
-    latest_img_tag = get_latest_img_tag()
-    if not latest_img_tag:
-        logger.error("No valid image tag found. Aborting dataset creation.")
+    last_task = get_latest_task()
+
+    container_id = get_container_id(last_task)
+    if not container_id:
+        logger.error("No active container found. Aborting dataset creation.")
         return pd.DataFrame()
 
     samples = generate_samples(100)
@@ -109,7 +110,7 @@ def build_dataset() -> pd.DataFrame:
         memory = sample["memory"]
 
         # Adjust container resources
-        if not adjust_container(cpu_quota, memory):
+        if not adjust_container(cpu_quota, memory, container_id, IMG_NAME):
             logger.error("Failed to adjust container. Skipping sample.")
             continue
 

@@ -37,11 +37,12 @@ def perform_cpu_task() -> float:
 
 
 @app.post("/adjust_container/")
-def adjust_resource_quotas(container: str,
-                           cpu_quota: int,
+def adjust_resource_quotas(cpu_quota: int,
                            memory: int,
-                           img_tag: str) -> None:
+                           container: str,
+                           img_name: str) -> None:
     client = docker.from_env()
+    container = client.containers.get(container)
     try:
         logger.info("Stopping the container...")
         container.stop()
@@ -53,7 +54,7 @@ def adjust_resource_quotas(container: str,
             "Container removed. Updating resources and restarting...")
 
         new_container = client.containers.run(
-            img_tag,
+            img_name,
             ports={'8000/tcp': 8000},
             name=container,
             cpu_period=100000,
