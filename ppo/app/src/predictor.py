@@ -1,3 +1,4 @@
+import logging
 from io import BytesIO
 
 from sklearn.svm import SVR
@@ -9,6 +10,11 @@ from sklearn.metrics import mean_squared_error, r2_score
 import torch
 
 from ppo.app.src.utilities import Utilities
+
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def train_model(df):
@@ -45,7 +51,7 @@ def train_model(df):
 
 
 if __name__ == "__main__":
-    utilities = Utilities()
+    utilities = Utilities(logger)
 
     data = utilities.load_data()
 
