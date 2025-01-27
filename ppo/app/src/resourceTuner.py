@@ -18,7 +18,7 @@ API_URL = "http://myLoadBalancer-851677411.eu-west-3.elb.amazonaws.com/"
 REPOSITORY = "my_ecr_repository"
 CONTAINER_NAME = "my-app"
 CLUSTER_NAME = "my_ecs_cluster"
-IMG_NAME = f"{ECR_CLIENT.meta.endpoint_url}/{REPOSITORY}:latest"
+IMG_NAME = "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:latest"
 
 
 def generate_samples(num_samples: int):
