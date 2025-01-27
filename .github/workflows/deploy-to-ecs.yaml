@@ -66,6 +66,7 @@ jobs:
           wait-for-service-stability: true
       
   run_rl_agent:
+    needs: deploy
     runs-on: ubuntu-latest
     environment: production
         
