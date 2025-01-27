@@ -17,6 +17,7 @@ ECR_CLIENT = boto3.client('ecr', region_name='eu-west-3')
 API_URL = "http://Your-Private-IPv4/"  # update this variable
 REPOSITORY = "my_ecr_repository"
 CONTAINER_NAME = "my-app"
+IMG_TAG = "latest"
 
 
 def generate_samples(num_samples: int):
@@ -48,15 +49,22 @@ def get_latest_img_tag():
             logger.error("No image details available.")
             return ""
 
-        latest_image = describe_response['imageDetails'][0]
-        return latest_image.get('imageTag', None)
+        sorted_images = sorted(
+            image_details,
+            key=lambda img: img.get('imagePushedAt', 0),
+            reverse=True
+        )
+
+        latest_image = sorted_images[0]
+        image_tag = latest_image.get('imageTags', [])
+        return image_tag[0]
 
     except Exception as e:
         logger.error(f"Error fetching the latest image tag: {e}")
         return ""
 
 
-def adjust_container(cpu_quota: int, memory: int, img_tag: str) -> bool:
+def adjust_container(cpu_quota: int, memory: int) -> bool:
     """Adjust container resources using an API."""
     try:
         response = requests.post(
@@ -65,7 +73,7 @@ def adjust_container(cpu_quota: int, memory: int, img_tag: str) -> bool:
                 "container": CONTAINER_NAME,
                 "cpu_quota": cpu_quota,
                 "memory": memory,
-                "img_tag": img_tag
+                "img_tag": IMG_TAG
             }
         )
         response.raise_for_status()
