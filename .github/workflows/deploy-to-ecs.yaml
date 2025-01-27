@@ -14,7 +14,7 @@ env:
 
   CONTAINER_NAME: my-app
 
-jobs: 
+jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
@@ -64,9 +64,9 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
-              
-  run_rl_agent:
 
+  run_rl_agent:
+    needs: deploy
     runs-on: ubuntu-latest
     environment: production
         
