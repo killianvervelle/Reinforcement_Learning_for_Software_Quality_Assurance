@@ -35,6 +35,7 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
+          python -m pip install --upgrade pip
           pip install -r ppo/requirements.txt
               
       - name: Run script to collect and save dataset to S3
