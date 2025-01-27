@@ -120,7 +120,7 @@ def build_dataset() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    utilities = Utilities()
+    utilities = Utilities(logger)
 
     logger.info("Starting dataset creation...")
     dataset = build_dataset()
