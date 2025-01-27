@@ -33,10 +33,11 @@ jobs:
       
       - name: Set up Python environment
         run: |
-          python -m venv venv
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r ppo/requirements.txt
+          python3 -m venv venv
+          ls -a
+          source ./venv/bin/activate
+          python3 -m pip3 install --upgrade pip
+          pip3 install -r ppo/requirements.txt
               
       - name: Run script to collect and save dataset to S3
         run: |

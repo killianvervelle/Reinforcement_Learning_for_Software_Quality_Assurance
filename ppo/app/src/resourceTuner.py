@@ -126,7 +126,7 @@ if __name__ == "__main__":
     dataset = build_dataset()
 
     if not dataset.empty:
-        logger.info("Saving dataset to storage...")
+        logger.info("Saving dataset to storage..")
         utilities.save_data(dataset)
         logger.info("Dataset saved successfully.")
     else:
