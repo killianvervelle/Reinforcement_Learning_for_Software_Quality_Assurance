@@ -12,8 +12,7 @@ env:
   ECS_CLUSTER: my_ecs_cluster                 
   ECS_TASK_DEFINITION: ppo/app/task-definition.json
 
-  CONTAINER_SUT: my-sut
-  CONTAINER_API: my-api
+  CONTAINER_NAME: my-app
 
   PORT_SUT: 8001
   PORT_API: 8000
@@ -58,7 +57,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_SUT }}
+          container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
           port: ${{ env.PORT_SUT }}
 
@@ -111,7 +110,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_API }}
+          container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
           port: ${{ env.PORT_API }}
 
