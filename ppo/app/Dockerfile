@@ -1,10 +1,12 @@
 FROM python:3.9-slim
 
+RUN pip install --upgrade pip
+
 WORKDIR /app
 
-COPY requirements.txt /app/
+COPY requirements.txt .
 
-RUN pip install -r /app/requirements.txt
+RUN pip install -r requirements.txt
 
 COPY ppo/app/src/main.py /app/
 
