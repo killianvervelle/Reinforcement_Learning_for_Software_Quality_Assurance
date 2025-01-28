@@ -4,7 +4,7 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY ppo/app/requirements.txt .
 
 RUN pip install -r requirements.txt
 
