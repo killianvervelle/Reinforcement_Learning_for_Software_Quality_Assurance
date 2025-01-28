@@ -4,7 +4,7 @@ import boto3
 import requests
 import pandas as pd
 
-from ppo.app.src.utilities import Utilities
+from utilities import Utilities
 
 
 logging.basicConfig(level=logging.INFO,
@@ -100,6 +100,7 @@ def build_dataset() -> pd.DataFrame:
     last_task = get_latest_task()
     print("last_task", last_task)
     container_id = get_container_id(last_task)
+    print("container_id", container_id)
     if not container_id:
         logger.error("No active container found. Aborting dataset creation.")
         return pd.DataFrame()
