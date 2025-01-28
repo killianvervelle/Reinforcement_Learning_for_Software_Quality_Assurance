@@ -41,9 +41,33 @@ def adjust_resource_quotas(cpu_quota: int,
                            memory: int,
                            container: str,
                            img_name: str) -> None:
-    client = docker.from_env()
-    container = client.containers.get(container)
     try:
+        client = docker.from_env()
+        container = client.containers.get(container)
+        logger.info(f"Container {container} found. Updating resources...")
+
+        container.update(
+            cpu_period=100000,
+            cpu_quota=cpu_quota,
+            mem_limit=f"{memory}m",
+            memswap_limit=f"{memory * 2}m",
+            oom_kill_disable=True,
+            detach=True
+        )
+
+        container.reload()
+
+        logger.info(
+            f"Container resources updated: CPU quota={cpu_quota}, Memory={memory}MB")
+    except docker.errors.NotFound:
+        logger.error(f"Container {container} not found.")
+        raise HTTPException(status_code=404, detail="Container not found")
+    except docker.errors.APIError as e:
+        logger.error(f"Failed to update container: {e}")
+        raise HTTPException(
+            status_code=500, detail="Failed to update container")
+
+    """try:
         logger.info("Stopping the container...")
         container.stop()
         time.sleep(8)
@@ -73,4 +97,4 @@ def adjust_resource_quotas(cpu_quota: int,
     except docker.errors.DockerException as e:
         logger.error(f"Error adjusting container resources: {e}")
         raise HTTPException(
-            status_code=500, detail="Error adjusting container resources")
+            status_code=500, detail="Error adjusting container resources")"""
