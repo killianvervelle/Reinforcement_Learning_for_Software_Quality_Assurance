@@ -2,7 +2,9 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt 
+COPY requirements.txt /app/requirements.txt
+
+RUN pip install -r /app/requirements.txt
 
 COPY ppo/app/src/main.py /app/
 
