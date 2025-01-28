@@ -2,9 +2,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-RUN pip install fastapi uvicorn docker
-
-RUN apt-get update && apt-get install -y docker.io && apt-get clean
+RUN pip install -r ppo/app/requirements.txt
 
 COPY ppo/app/src/main.py /app/
 
