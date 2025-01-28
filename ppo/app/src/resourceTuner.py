@@ -55,6 +55,8 @@ def get_container_id(last_task):
 
     containers = response.get('tasks', [])[0].get('containers', [])
 
+    print("containers", containers)
+
     if not containers:
         print(f"No containers found in task {last_task}.")
         return None
@@ -96,7 +98,7 @@ def simulate_cpu_task() -> float:
 
 def build_dataset() -> pd.DataFrame:
     last_task = get_latest_task()
-
+    print("last_task", last_task)
     container_id = get_container_id(last_task)
     if not container_id:
         logger.error("No active container found. Aborting dataset creation.")
