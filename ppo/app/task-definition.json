@@ -2,15 +2,15 @@
     "family": "my-ecs-task",
     "containerDefinitions": [
         {
-            "name": "my-app",
+            "name": "api-container",
             "image": "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
-            "cpu": 1024,
+            "cpu": 512,
             "memory": 1024,
             "portMappings": [
                 {
                     "name": "my-app-${PORT}-tcp",
-                    "containerPort": "${PORT}",
-                    "hostPort": "${PORT}",
+                    "containerPort": 8000,
+                    "hostPort": 8000,
                     "protocol": "tcp",
                     "appProtocol": "http"
                 }
@@ -21,8 +21,7 @@
                     "name": "environment",
                     "value": "production"
                 }
-            ], 
-            "environmentFiles": [],
+            ],
             "mountPoints": [
                 {
                     "sourceVolume": "docker-socket",
@@ -41,10 +40,50 @@
                     "max-buffer-size": "25m",
                     "awslogs-region": "eu-west-3",
                     "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": [] 
-            },
-            "systemControls": []
+                } 
+            }
+        },
+        {
+            "name": "sut-container",
+            "image": "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
+            "cpu": 1024,
+            "memory": 1024,
+            "portMappings": [
+                {
+                    "name": "my-app-${PORT}-tcp",
+                    "containerPort": 8001,
+                    "hostPort": 8001,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ], 
+            "essential": true,
+            "environment": [
+                {
+                    "name": "environment",
+                    "value": "production"
+                }
+            ], 
+            "mountPoints": [
+                {
+                    "sourceVolume": "docker-socket",
+                    "containerPath": "/var/run/docker.sock",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/my-ecs-task",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "eu-west-3",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
         }
     ],
     "executionRoleArn": "arn:aws:iam::222656491673:role/ecsTaskExecutionRole",
@@ -58,8 +97,8 @@
         }
     ],
     "placementConstraints": [],
-    "cpu": "1024",  
-    "memory": "1024",
+    "cpu": "1536",  
+    "memory": "2048",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"

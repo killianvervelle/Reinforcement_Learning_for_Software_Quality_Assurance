@@ -18,7 +18,7 @@ env:
   PORT_API: 8000
 
 jobs:
-  deploySUT:
+  deploy:
     runs-on: ubuntu-latest
     environment: production
 
@@ -37,91 +37,69 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
+      - name: Build, tag, and push SUT image to Amazon ECR
+        id: build-sut-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: sut
         run: |
-          # Build a docker container and push it to ECR
-          docker build -f ppo/app/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PORT=$env.PORT_SUT ppo/
+          docker build -f ppo/app/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            --build-arg PORT=$PORT_SUT ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
- 
-      - name: Debug Image Output
+      
+      - name: Debug SUT Image Output
         run: |
-          echo "Built image: ${{ steps.build-image.outputs.image }}"
+          echo "SUT image: ${{ steps.build-sut-image.outputs.image }}"
 
-      - name: Update ECS task definition with the new image
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
-          port: ${{ env.PORT_SUT }}
-
-
-      - name: Deploy the updated ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
-
-  deployAPI:
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
+      - name: Build, tag, and push API image to Amazon ECR
+        id: build-api-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: api
-          
         run: |
-          # Build a docker container and push it to ECR
-          docker build -f ppo/app/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PORT=$env.PORT_API ppo/
+          docker build -f ppo/app/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            --build-arg PORT=$PORT_API ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
- 
-      - name: Debug Image Output
+
+      - name: Debug API Image Output
         run: |
-          echo "Built image: ${{ steps.build-image.outputs.image }}"
+          echo "API image: ${{ steps.build-api-image.outputs.image }}"
 
-      - name: Update ECS task definition with the new image
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
-          port: ${{ env.PORT_API }}
+      - name: Update ECS task definition
+        id: update-task-def
+        run: |
+          # Copy the original task definition
+          cp ${{ env.ECS_TASK_DEFINITION }} updated-task-definition.json
 
-      - name: Deploy the updated ECS task definition
+          # Update SUT container image and port
+          jq --arg IMAGE "${{ steps.build-sut-image.outputs.image }}" \
+              --argjson PORT ${{ env.PORT_SUT }} \
+              '(.containerDefinitions[] | select(.name == "sut-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].containerPort) = $PORT' \
+              updated-task-definition.json > updated-sut-task.json
+
+          # Update API container image and port
+          jq --arg IMAGE "${{ steps.build-api-image.outputs.image }}" \
+              --argjson PORT ${{ env.PORT_API }} \
+              '(.containerDefinitions[] | select(.name == "api-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = $PORT' \
+              updated-sut-task.json > final-task-definition.json
+
+          # Output the final task definition for debugging
+          cat final-task-definition.json
+
+      - name: Deploy updated ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: final-task-definition.json
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
 
- 
+
 
 
