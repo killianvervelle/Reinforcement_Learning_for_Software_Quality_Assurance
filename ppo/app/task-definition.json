@@ -49,7 +49,14 @@
     ],
     "executionRoleArn": "arn:aws:iam::222656491673:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "volumes": [],
+    "volumes": [
+        {
+            "name": "docker-socket",  
+            "host": {
+                "sourcePath": "/var/run/docker.sock" 
+            }
+        }
+    ],
     "placementConstraints": [],
     "cpu": "1024",  
     "memory": "2048",
