@@ -4,9 +4,9 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY ppo/app/src/main.py /app/
+COPY app/src/main.py /app/
 
-COPY ppo/app/requirements.txt /app/
+COPY app/requirements.txt /app/
 
 RUN pip install -r requirements.txt
 
