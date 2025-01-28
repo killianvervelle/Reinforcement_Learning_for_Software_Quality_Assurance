@@ -111,8 +111,9 @@ def build_dataset() -> pd.DataFrame:
         cpu_quota = sample["cpu_quota"]
         memory = sample["memory"]
 
-        # Adjust container resources
-        if not adjust_container(cpu_quota, memory, container_id, IMG_NAME):
+        try:
+            adjust_container(cpu_quota, memory, container_id, IMG_NAME)
+        except:
             logger.error("Failed to adjust container. Skipping sample.")
             continue
 

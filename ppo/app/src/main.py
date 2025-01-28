@@ -55,10 +55,13 @@ def adjust_resource_quotas(cpu_quota: int,
             detach=True
         )
 
+        time.sleep(5)
+
         container.reload()
 
         logger.info(
             f"Container resources updated: CPU quota={cpu_quota}, Memory={memory}MB")
+
     except docker.errors.NotFound:
         logger.error(f"Container {container} not found.")
         raise HTTPException(status_code=404, detail="Container not found")
