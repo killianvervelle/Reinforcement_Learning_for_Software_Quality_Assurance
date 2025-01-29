@@ -42,8 +42,7 @@ jobs:
           docker build -f ppo/app/src/sut/Dockerfile \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=SUT_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "SUT_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "SUT_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
       
       - name: Use API image in ECS task definition
         run: |
@@ -78,8 +77,7 @@ jobs:
           docker build -f ppo/app/src/api/Dockerfile \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=API_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "API_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "API_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
       
       - name: Use API image in ECS task definition
         run: |
@@ -91,9 +89,7 @@ jobs:
     environment: production
     needs: [build-sut-image, build-api-image] 
     env:
-      SUT_IMAGE: ${{ needs.build-sut-image.outputs.image }}
       PORT_SUT: 8001
-      API_IMAGE: ${{ needs.build-api-image.outputs.image }}
       PORT_API: 8000
 
     steps:
@@ -106,6 +102,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Echo sut and api images
+        run: |
+          echo "SUT image: ${{ env.SUT_IMAGE }} \ 
+          API image: ${{ env.API_IMAGE }}"
 
       - name: Update ECS task definition
         id: update-task-def
