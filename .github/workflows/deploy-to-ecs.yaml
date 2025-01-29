@@ -44,6 +44,10 @@ jobs:
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "SUT_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+      
+      - name: Use API image in ECS task definition
+        run: |
+          echo "SUT image: $SUT_IMAGE"
 
   build-api-image:
     runs-on: ubuntu-latest
@@ -73,6 +77,11 @@ jobs:
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "API_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+      
+      - name: Use API image in ECS task definition
+        run: |
+          echo "API image: $API_IMAGE"
+          
 
   deploy-ecs:
     runs-on: ubuntu-latest
@@ -95,14 +104,14 @@ jobs:
         run: |
           cp ${{ env.ECS_TASK_DEFINITION }} updated-task-definition.json
 
-          jq --arg IMAGE "$SUT_IMAGE" \
+          jq --arg IMAGE "${{ env.SUT_IMAGE }}" \
              --argjson PORT ${{ env.PORT_SUT }} \
              '(.containerDefinitions[] | select(.name == "sut-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].name) = "sut"' \
              updated-task-definition.json > updated-sut-task.json
 
-          jq --arg IMAGE "$API_IMAGE" \
+          jq --arg IMAGE "${{ env.API_IMAGE }}" \
              --argjson PORT ${{ env.PORT_API }} \
              '(.containerDefinitions[] | select(.name == "api-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = $PORT |
