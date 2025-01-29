@@ -16,7 +16,6 @@ ECS_CLIENT = boto3.client('ecs', region_name='eu-west-3')
 ECR_CLIENT = boto3.client('ecr', region_name='eu-west-3')
 API_URL = "http://myLoadBalancer-851677411.eu-west-3.elb.amazonaws.com/"
 REPOSITORY = "my_ecr_repository"
-CONTAINER_NAME = "my-app"
 CLUSTER_NAME = "my_ecs_cluster"
 IMG_NAME = "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:latest"
 
