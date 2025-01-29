@@ -13,7 +13,42 @@ env:
   ECS_TASK_DEFINITION: ppo/app/task-definition.json
 
 jobs:
+  build-sut-image:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+        IMAGE_TAG: sut
+    outputs:
+      output: ${{ steps.build-sut.outputs.sut_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push SUT image to Amazon ECR
+        id: build-sut
+        env:
+          IMAGE_TAG: sut
+        run: |
+          docker build --no-cache -f ppo/app/src/sut/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "sut_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sut_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      
+      - name: Use SUT image in ECS task definition
+        run: |
+          echo "SUT image: $sut_image" 
 
   build-api-image:
     runs-on: ubuntu-latest
@@ -54,9 +89,9 @@ jobs:
   deploy-ecs:
     runs-on: ubuntu-latest
     environment: production
-    needs: build-api-image
+    needs: [build-sut-image, build-api-image] 
     env:
-
+      PORT_SUT: 8001
       PORT_API: 8000
 
     steps:
@@ -83,14 +118,19 @@ jobs:
           SUT_IMAGE="${{ needs.build-sut-image.outputs.output }}"
           API_IMAGE="${{ needs.build-api-image.outputs.output }}"
 
-    
+          jq --arg IMAGE "$ECR_REGISTRY/$SUT_IMAGE" \
+             --argjson PORT ${{ env.PORT_SUT }} \
+             '(.containerDefinitions[] | select(.name == "sut-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].containerPort) = $PORT |
+              (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].name) = "sut"' \
+             updated-task-definition.json > updated-sut-task.json
 
           jq --arg IMAGE "$ECR_REGISTRY/$API_IMAGE" \
              --argjson PORT ${{ env.PORT_API }} \
              '(.containerDefinitions[] | select(.name == "api-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].name) = "api"' \
-             updated-task-definition.json > final-task-definition.json
+             updated-sut-task.json > final-task-definition.json
 
           # Output the final task definition for debugging
           cat final-task-definition.json
