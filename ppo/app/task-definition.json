@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "api-container",
-            "image": "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
+            "image": "****.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
             "cpu": 512,
             "memory": 1024,
             "portMappings": [
@@ -45,7 +45,7 @@
         },
         {
             "name": "sut-container",
-            "image": "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
+            "image": "****.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
             "cpu": 1024,
             "memory": 1024,
             "portMappings": [
