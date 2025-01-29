@@ -40,8 +40,8 @@ jobs:
           IMAGE_TAG: sut
         run: |
           
-          echo "sut_image=hi" >> $GITHUB_ENV
-          echo "sut_image=hi" >> $GITHUB_OUTPUT
+          echo "sut_image=${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
+          echo "sut_image=${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}" >> $GITHUB_OUTPUT
       
       - name: Use API image in ECS task definition
         run: |
@@ -74,8 +74,8 @@ jobs:
           IMAGE_TAG: api
         run: |
           
-          echo "api_image=$hi" >> $GITHUB_ENV
-          echo "api_image=$hi" >> $GITHUB_OUTPUT
+          echo "api_image=${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
+          echo "api_image=${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}" >> $GITHUB_OUTPUT
       
       - name: Use API image in ECS task definition
         run: |
