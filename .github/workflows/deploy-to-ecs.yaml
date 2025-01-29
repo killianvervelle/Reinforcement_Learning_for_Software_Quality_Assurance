@@ -12,13 +12,12 @@ env:
   ECS_CLUSTER: my_ecs_cluster                 
   ECS_TASK_DEFINITION: ppo/app/task-definition.json
 
-  PORT_SUT: 8001
-  PORT_API: 8000
-
 jobs:
   build-sut-image:
     runs-on: ubuntu-latest
     environment: production
+    outputs:
+      image: ${{ steps.build-sut.outputs.SUT_IMAGE }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,6 +51,8 @@ jobs:
   build-api-image:
     runs-on: ubuntu-latest
     environment: production
+    outputs:
+      image: ${{ steps.build-api.outputs.API_IMAGE }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -87,6 +88,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: [build-sut-image, build-api-image] 
+    env:
+      SUT_IMAGE: ${{ needs.build-sut-image.outputs.image }}
+      PORT_SUT: 8001
+      API_IMAGE: ${{ needs.build-api-image.outputs.image }}
+      PORT_API: 8000
 
     steps:
       - name: Checkout repository
