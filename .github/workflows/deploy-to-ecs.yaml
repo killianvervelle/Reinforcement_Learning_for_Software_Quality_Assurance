@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     outputs:
-      output: ${{ steps.build-sut.outputs.sutimage }}
+      output: ${{ steps.build-sut.outputs.sut_image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,21 +39,19 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: sut
         run: |
-          docker build -f ppo/app/src/sut/Dockerfile \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "sutimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-          echo "sutimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          echo "sut_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sut_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       
       - name: Use API image in ECS task definition
         run: |
-          echo "SUT image: $sutimage"
+          echo "SUT image: $sut_image"
 
   build-api-image:
     runs-on: ubuntu-latest
     environment: production
     outputs:
-      output: ${{ steps.build-api.outputs.apiimage }}
+      output: ${{ steps.build-api.outputs.api_image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -75,15 +73,13 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: api
         run: |
-          docker build -f ppo/app/src/api/Dockerfile \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "apiimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-          echo "apiimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          echo "api_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "api_image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       
       - name: Use API image in ECS task definition
         run: |
-          echo "API image: $apiimage"
+          echo "API image: $api_image"
           
 
   deploy-ecs:
