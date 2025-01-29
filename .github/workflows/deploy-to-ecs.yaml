@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     outputs:
-      output: ${{ steps.build-sut.outputs.image }}
+      output: ${{ steps.build-sut.outputs.sutimage }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,7 +42,8 @@ jobs:
           docker build -f ppo/app/src/sut/Dockerfile \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "sutimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sutimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       
       - name: Use API image in ECS task definition
         run: |
@@ -52,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     outputs:
-      output: ${{ steps.build-api.outputs.image }}
+      output: ${{ steps.build-api.outputs.apiimage }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -77,7 +78,8 @@ jobs:
           docker build -f ppo/app/src/api/Dockerfile \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "apiimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "apiimage=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       
       - name: Use API image in ECS task definition
         run: |
