@@ -47,7 +47,7 @@ jobs:
       
       - name: Use API image in ECS task definition
         run: |
-          echo "SUT image: $sut_image"
+          echo "SUT image: $sutimage"
 
   build-api-image:
     runs-on: ubuntu-latest
@@ -83,7 +83,7 @@ jobs:
       
       - name: Use API image in ECS task definition
         run: |
-          echo "API image: $api_image"
+          echo "API image: $apiimage"
           
 
   deploy-ecs:
@@ -107,8 +107,8 @@ jobs:
       
       - name: Echo sut and api images
         run: |
-          echo "SUT image: ${{ needs.build-sut-image.outputs.output }} \ 
-          API image: ${{ needs.build-api-image.outputs.output }}"
+          echo "SUT image: ${{ needs.build-sut-image.outputs.* }} \ 
+          API image: ${{ needs.build-api-image.outputs.* }}"
 
       - name: Update ECS task definition
         id: update-task-def
