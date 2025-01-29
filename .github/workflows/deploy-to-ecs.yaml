@@ -16,6 +16,8 @@ jobs:
   build-sut-image:
     runs-on: ubuntu-latest
     environment: production
+    env:
+        IMAGE_TAG: sut
     outputs:
       output: ${{ steps.build-sut.outputs.sut_image }}
     steps:
@@ -36,12 +38,10 @@ jobs:
       - name: Build, tag, and push SUT image to Amazon ECR
         id: build-sut
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: sut
-          IMAGE_URI: "$ECR_REGISTRY/${{env.ECR_REPOSITORY}}:$IMAGE_TAG"
         run: |
-          echo "sut_image=$IMAGE_URI" >> $GITHUB_ENV
-          echo "sut_image=$IMAGE_URI" >> $GITHUB_OUTPUT
+          echo "api_image="${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG"" >> $GITHUB_ENV
+          echo "api_image="${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG"" >> $GITHUB_OUTPUT
       
       - name: Use SUT image in ECS task definition
         run: |
@@ -50,6 +50,8 @@ jobs:
   build-api-image:
     runs-on: ubuntu-latest
     environment: production
+    env:
+        IMAGE_TAG: api
     outputs:
       output: ${{ steps.build-api.outputs.api_image }}
     steps:
@@ -69,14 +71,10 @@ jobs:
 
       - name: Build, tag, and push API image to Amazon ECR
         id: build-api
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: api
-          IMAGE_URI: "$ECR_REGISTRY/${{env.ECR_REPOSITORY}}:$IMAGE_TAG"
         run: |
           
-          echo "api_image=$IMAGE_URI" >> $GITHUB_ENV
-          echo "api_image=$IMAGE_URI" >> $GITHUB_OUTPUT
+          echo "api_image="${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG"" >> $GITHUB_ENV
+          echo "api_image="${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG"" >> $GITHUB_OUTPUT
       
       - name: Use API image in ECS task definition
         run: |
