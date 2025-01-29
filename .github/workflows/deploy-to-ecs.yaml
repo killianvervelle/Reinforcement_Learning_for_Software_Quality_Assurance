@@ -103,8 +103,8 @@ jobs:
       
       - name: Echo sut and api images
         run: |
-          echo "SUT image: ${{ needs.build-sut-image.outputs.* }} \ 
-          API image: ${{ needs.build-api-image.outputs.* }}"
+          echo "SUT image: ${{ needs.build-sut-image.outputs.output }} \ 
+          API image: ${{ needs.build-api-image.outputs.output}}"
 
       - name: Update ECS task definition
         id: update-task-def
