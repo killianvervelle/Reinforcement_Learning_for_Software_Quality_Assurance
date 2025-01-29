@@ -43,7 +43,7 @@ jobs:
           echo "sut_image=$IMAGE_URI" >> $GITHUB_ENV
           echo "sut_image=$IMAGE_URI" >> $GITHUB_OUTPUT
       
-      - name: Use API image in ECS task definition
+      - name: Use SUT image in ECS task definition
         run: |
           echo "SUT image: $sut_image"
 
