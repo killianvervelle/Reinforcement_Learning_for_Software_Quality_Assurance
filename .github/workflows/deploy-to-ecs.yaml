@@ -111,19 +111,20 @@ jobs:
 
           jq --arg IMAGE "${{ needs.build-sut-image.outputs.output }}" \
              --argjson PORT ${{ env.PORT_SUT }} \
-             '(.containerDefinitions[] | select(.name == "sut-container") | .image) = ${{ steps.login-ecr.outputs.registry }}/$IMAGE |
+             '(.containerDefinitions[] | select(.name == "sut-container") | .image) \
+                          = ${{ steps.login-ecr.outputs.registry }}/${{ needs.build-sut-image.outputs.output }} |
               (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].name) = "sut"' \
              updated-task-definition.json > updated-sut-task.json
 
           jq --arg IMAGE "${{ needs.build-api-image.outputs.output }}" \
              --argjson PORT ${{ env.PORT_API }} \
-             '(.containerDefinitions[] | select(.name == "api-container") | .image) = ${{ steps.login-ecr.outputs.registry }}/$IMAGE |
+             '(.containerDefinitions[] | select(.name == "api-container") | .image) \
+                          = ${{ steps.login-ecr.outputs.registry }}/${{ needs.build-api-image.outputs.output}} |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].name) = "api"' \
              updated-sut-task.json > final-task-definition.json
 
-          # Output the final task definition for debugging
           cat final-task-definition.json
 
       - name: Deploy updated ECS task definition
