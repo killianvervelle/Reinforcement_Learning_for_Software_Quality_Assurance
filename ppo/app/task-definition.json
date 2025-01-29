@@ -8,7 +8,7 @@
             "memory": 1024,
             "portMappings": [
                 {
-                    "name": "my-app-${PORT}-tcp",
+                    "name": "app",
                     "containerPort": 8000,
                     "hostPort": 8000,
                     "protocol": "tcp",
