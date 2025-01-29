@@ -38,14 +38,14 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: sut
-          IMAGE_URI: ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}
+          IMAGE_URI: "${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}"
         run: |
           echo "sut_image=$IMAGE_URI" >> $GITHUB_ENV
           echo "sut_image=$IMAGE_URI" >> $GITHUB_OUTPUT
       
       - name: Use SUT image in ECS task definition
         run: |
-          echo "SUT image: $sut_image"
+          echo "SUT image: $sut_image" 
 
   build-api-image:
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: api
-          IMAGE_URI: ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}
+          IMAGE_URI: "${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}"
         run: |
           
           echo "api_image=$IMAGE_URI" >> $GITHUB_ENV
