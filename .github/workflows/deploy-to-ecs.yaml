@@ -42,7 +42,8 @@ jobs:
           docker build -f ppo/app/src/sut/Dockerfile \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "SUT_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "::set-output name=SUT_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "SUT_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
       
       - name: Use API image in ECS task definition
         run: |
@@ -77,7 +78,8 @@ jobs:
           docker build -f ppo/app/src/api/Dockerfile \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "API_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "::set-output name=API_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "API_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
       
       - name: Use API image in ECS task definition
         run: |
@@ -112,15 +114,15 @@ jobs:
 
           jq --arg IMAGE "${{ env.SUT_IMAGE }}" \
              --argjson PORT ${{ env.PORT_SUT }} \
-             '(.containerDefinitions[] | select(.name == "sut-container") | .image) = ${{ env.SUT_IMAGE }} |
-              (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].containerPort) = ${{ env.PORT_SUT }} |
+             '(.containerDefinitions[] | select(.name == "sut-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].name) = "sut"' \
              updated-task-definition.json > updated-sut-task.json
 
           jq --arg IMAGE "${{ env.API_IMAGE }}" \
              --argjson PORT ${{ env.PORT_API }} \
-             '(.containerDefinitions[] | select(.name == "api-container") | .image) = ${{ env.API_IMAGE }} |
-              (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = ${{ env.PORT_API }} |
+             '(.containerDefinitions[] | select(.name == "api-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].name) = "api"' \
              updated-sut-task.json > final-task-definition.json
 
