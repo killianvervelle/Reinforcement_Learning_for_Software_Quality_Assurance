@@ -2,7 +2,7 @@
     "family": "my-ecs-task",
     "containerDefinitions": [
         {
-            "name": "container",
+            "name": "api-container",
             "image": "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
             "cpu": 512,
             "memory": 1024,
