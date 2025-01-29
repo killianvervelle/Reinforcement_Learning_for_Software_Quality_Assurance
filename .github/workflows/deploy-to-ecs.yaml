@@ -90,7 +90,7 @@ jobs:
              '(.containerDefinitions[] | select(.name == "api-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].name) = "api"' \
-             updated-sut-task.json > final-task-definition.json
+             updated-task-definition.json > final-task-definition.json
 
           # Output the final task definition for debugging
           cat final-task-definition.json
