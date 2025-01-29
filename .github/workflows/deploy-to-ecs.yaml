@@ -40,11 +40,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: sut
         run: |
-          docker build -f ppo/app/Dockerfile \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            --build-arg PORT=$PORT_SUT ppo/
+          docker build -f ppo/app/sut/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sut-image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
   build-api-image:
     runs-on: ubuntu-latest
@@ -70,11 +69,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: api
         run: |
-          docker build -f ppo/app/Dockerfile \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            --build-arg PORT=$PORT_API ppo/
+          docker build -f ppo/app/api/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ppo/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "api-image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
   deploy-ecs:
     runs-on: ubuntu-latest
@@ -97,14 +95,14 @@ jobs:
         run: |
           cp ${{ env.ECS_TASK_DEFINITION }} updated-task-definition.json
 
-          jq --arg IMAGE "$SUT_IMAGE" \
+          jq --arg IMAGE "${{ needs.build-sut-image.outputs.sut-image }}" \
              --argjson PORT ${{ env.PORT_SUT }} \
              '(.containerDefinitions[] | select(.name == "sut-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "sut-container") | .portMappings[0].name) = "sutPort"' \
              updated-task-definition.json > updated-sut-task.json
 
-          jq --arg IMAGE "$API_IMAGE" \
+          jq --arg IMAGE "${{ needs.build-sut-image.outputs.api-image }}" \
              --argjson PORT ${{ env.PORT_API }} \
              '(.containerDefinitions[] | select(.name == "api-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "api-container") | .portMappings[0].containerPort) = $PORT |
