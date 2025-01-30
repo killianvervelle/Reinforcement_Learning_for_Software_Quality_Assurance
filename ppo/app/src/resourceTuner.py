@@ -123,11 +123,14 @@ def build_dataset() -> pd.DataFrame:
 
         response_time = simulate_cpu_task()
         if response_time > 0:
-            df = df.append(
-                {"cpu": cpu_quota / 1000, "memory": memory /
-                    1000, "responseTime": response_time * 1000},
-                ignore_index=True
-            )
+            new_row = pd.DataFrame([{
+                "cpu": cpu_quota / 1000,
+                "memory": memory / 1000,
+                "responseTime": response_time * 1000
+            }])
+
+            df = pd.concat([df, new_row], ignore_index=True)
+
         else:
             logger.error("Failed to get response time. Skipping sample.")
 
