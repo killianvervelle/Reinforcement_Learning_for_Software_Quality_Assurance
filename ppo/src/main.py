@@ -63,7 +63,7 @@ class Environment:
 if __name__ == "__main__":
     env = Environment()
 
-    utilities = Utilities()
+    utilities = Utilities(logger=None)
 
     model = utilities.load_model()
 
