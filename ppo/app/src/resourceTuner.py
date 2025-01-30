@@ -91,10 +91,8 @@ def adjust_container(cpu_quota: int, memory: int, container: str, image_name: st
 def simulate_cpu_task() -> float:
     try:
         response = requests.post(f"{SUT_URL}cpu_task")
-        print(response.json())
         response.raise_for_status()
-        response_time = response.json().get("responseTime", 0.0)
-        return float(response_time)
+        return response.json()
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Error simulating CPU task: {e}")
@@ -108,7 +106,7 @@ def build_dataset() -> pd.DataFrame:
         logger.error("No active container found. Aborting dataset creation.")
         return pd.DataFrame()
 
-    samples = generate_samples(3)
+    samples = generate_samples(100)
 
     df = pd.DataFrame(columns=["cpu", "memory", "responseTime"])
 
