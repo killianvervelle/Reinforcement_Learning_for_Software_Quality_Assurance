@@ -32,7 +32,6 @@ def adjust_resource_quotas(cpu_quota: int,
             cpu_quota=cpu_quota,
             mem_limit=f"{memory}m",
             memswap_limit=f"{memory * 2}m",
-            oom_kill_disable=True,
             detach=True
         )
 

@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 ECS_CLIENT = boto3.client('ecs', region_name='eu-west-3')
 ECR_CLIENT = boto3.client('ecr', region_name='eu-west-3')
-API_URL = "http://myLoadBalancer-851677411.eu-west-3.elb.amazonaws.com/"
+API_URL = "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8000/"
+SUT_URL = "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8001/"
 REPOSITORY = "my_ecr_repository"
 CLUSTER_NAME = "my_ecs_cluster"
 IMG_NAME = "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:latest"
@@ -54,14 +55,16 @@ def get_container_id(last_task):
 
     containers = response.get('tasks', [])[0].get('containers', [])
 
-    print("containers", containers)
-
     if not containers:
-        print(f"No containers found in task {last_task}.")
+        print(f"No container found in task {last_task}.")
         return None
 
-    container_id = containers[0].get('runtimeId')
-    return container_id
+    for container in containers:
+        if container["name"] == "api-container":
+            return container.get('runtimeId')
+
+    print(f"No container found with the name api-container.")
+    return None
 
 
 def adjust_container(cpu_quota: int, memory: int, container: str, image_name: str) -> bool:
@@ -86,7 +89,7 @@ def adjust_container(cpu_quota: int, memory: int, container: str, image_name: st
 
 def simulate_cpu_task() -> float:
     try:
-        response = requests.post(f"{API_URL}cpu_task")
+        response = requests.post(f"{SUT_URL}cpu_task")
         response.raise_for_status()
         response_time = response.json().get("responseTime", 0.0)
         return float(response_time)
@@ -97,9 +100,7 @@ def simulate_cpu_task() -> float:
 
 def build_dataset() -> pd.DataFrame:
     last_task = get_latest_task()
-    print("last_task", last_task)
     container_id = get_container_id(last_task)
-    print("container_id", container_id)
     if not container_id:
         logger.error("No active container found. Aborting dataset creation.")
         return pd.DataFrame()
@@ -134,7 +135,7 @@ def build_dataset() -> pd.DataFrame:
 if __name__ == "__main__":
     utilities = Utilities(logger)
 
-    logger.info("Starting dataset creation...")
+    """logger.info("Starting dataset creation...")
     dataset = build_dataset()
 
     if not dataset.empty:
@@ -142,4 +143,8 @@ if __name__ == "__main__":
         utilities.save_data(dataset)
         logger.info("Dataset saved successfully.")
     else:
-        logger.warning("Dataset creation failed or returned an empty dataset.")
+        logger.warning("Dataset creation failed or returned an empty dataset.")"""
+    last = get_latest_task()
+    container_id = get_container_id(last)
+    print("container id", container_id)
+    adjust_container(25000, 750, container_id, "None")
