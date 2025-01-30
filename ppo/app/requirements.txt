@@ -1,5 +1,4 @@
 fastapi==0.115.5
-torch==2.5.1
 numpy==1.23.5
 boto3==1.36.5
 pandas==2.2.3
