@@ -378,8 +378,8 @@ class Agent:
                     f"Early stopping at episode {episode} due to reward threshold.")
                 break
 
-        self.plot_train_rewards(train_rewards, reward_threshold)
-        self.plot_test_rewards(test_rewards, reward_threshold)
-        self.plot_losses(policy_losses, value_losses)
+        # self.plot_train_rewards(train_rewards, reward_threshold)
+        # self.plot_test_rewards(test_rewards, reward_threshold)
+        # self.plot_losses(policy_losses, value_losses)
 
         return np.mean(test_rewards[-n_trials:])

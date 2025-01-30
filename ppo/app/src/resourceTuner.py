@@ -106,7 +106,7 @@ def build_dataset() -> pd.DataFrame:
         logger.error("No active container found. Aborting dataset creation.")
         return pd.DataFrame()
 
-    samples = generate_samples(16)
+    samples = generate_samples(100)
 
     df = pd.DataFrame(columns=["cpu", "memory", "responseTime"])
 
