@@ -126,7 +126,8 @@ class Utilities:
             model_data = response["Body"].read()
 
             buffer = io.BytesIO(model_data)
-            model = torch.load(buffer, map_location=torch.device("cpu"))
+            model = torch.load(buffer, map_location=torch.device(
+                "cpu"), weights_only=True)
             model.eval()
 
             self.logger.info(
