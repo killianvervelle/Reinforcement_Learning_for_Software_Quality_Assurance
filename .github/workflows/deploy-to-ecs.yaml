@@ -91,8 +91,8 @@ jobs:
     environment: production
     needs: [build-sut-image, build-api-image] 
     env:
-      PORT_SUT: 8001
-      PORT_API: 8000
+      PORT_SUT: 8080
+      PORT_API: 80
 
     steps:
       - name: Checkout repository
