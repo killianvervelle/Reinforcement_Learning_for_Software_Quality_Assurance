@@ -31,8 +31,7 @@ def adjust_resource_quotas(cpu_quota: int,
             cpu_period=100000,
             cpu_quota=cpu_quota,
             mem_limit=f"{memory}m",
-            memswap_limit=f"{memory * 2}m",
-            detach=True
+            memswap_limit=f"{memory * 2}m"
         )
 
         time.sleep(5)
