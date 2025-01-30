@@ -4,13 +4,13 @@
         {
             "name": "api-container",
             "image": "****.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
-            "cpu": 1024,
+            "cpu": 512,
             "memory": 1024,
             "portMappings": [
                 {
                     "name": "port1",
                     "containerPort": 8000,
-                    "hostPort": 8000,
+                    "hostPort": 80,
                     "protocol": "tcp"
                 }
             ], 
@@ -45,13 +45,13 @@
         {
             "name": "sut-container",
             "image": "****.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
-            "cpu": 1024,
+            "cpu": 512,
             "memory": 1024,
             "portMappings": [
                 {
                     "name": "port2",
                     "containerPort": 8001,
-                    "hostPort": 8001,
+                    "hostPort": 8080,
                     "protocol": "tcp"
                 }
             ], 
@@ -95,7 +95,7 @@
         }
     ],
     "placementConstraints": [],
-    "cpu": "2048",  
+    "cpu": "1024",  
     "memory": "2048",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
