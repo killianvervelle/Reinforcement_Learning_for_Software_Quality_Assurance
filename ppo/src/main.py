@@ -1,6 +1,6 @@
 import numpy as np
-import torch
 import gym
+import logging
 from gym.envs import register
 
 from agent import Agent
@@ -14,6 +14,10 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # bool8 still required by gym for some reason
 np.bool8 = np.bool_
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 class Environment:
@@ -63,7 +67,7 @@ class Environment:
 if __name__ == "__main__":
     env = Environment()
 
-    utilities = Utilities(logger=None)
+    utilities = Utilities(logger=logger)
 
     model = utilities.load_model()
 
