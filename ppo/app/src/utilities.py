@@ -74,7 +74,7 @@ class Utilities:
             response = self.S3_CLIENT.get_object(
                 Bucket=self.BUCKET_NAME, Key=latest_data_key)
 
-            data = pd.read_csv(response["Body"])
+            data = pd.read_csv(response["Body"], delimiter=",")
 
             self.logger.info(
                 f"Data loaded successfully from {latest_data_key}.")

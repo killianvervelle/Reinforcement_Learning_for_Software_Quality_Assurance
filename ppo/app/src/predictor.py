@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     data = utilities.load_data()
 
-    print("data from predictor", data)
+    print("data from predictor", data.describe())
 
     best_model, best_params_ = train_model(data)
 
