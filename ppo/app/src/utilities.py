@@ -125,9 +125,11 @@ class Utilities:
 
             model_data = response["Body"].read()
 
+            checkpoint = torch.load(model_data)
+
             self.logger.info(
                 f"Model loaded successfully from {latest_model_key}.")
-            return model_data
+            return checkpoint
 
         except ClientError as e:
             self.logger.error(f"Error loading model from S3: {e}")
