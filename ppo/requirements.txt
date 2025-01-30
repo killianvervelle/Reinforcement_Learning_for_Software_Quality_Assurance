@@ -8,3 +8,4 @@ pandas==2.2.3
 uvicorn==0.32.1
 docker==7.1.0
 matplotlib==3.9.3
+optuna==4.1.0
