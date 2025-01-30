@@ -38,7 +38,7 @@ def train_model(df):
 
     best_model = grid_search.best_estimator_
     model_bytes = BytesIO()
-    torch.save(best_model, model_bytes)
+    torch.save(best_model.state_dict(), model_bytes)
 
     svm_test_preds = best_model.predict(X_test)
     mse = mean_squared_error(y_test, svm_test_preds)

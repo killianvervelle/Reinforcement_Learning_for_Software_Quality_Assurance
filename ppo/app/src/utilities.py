@@ -95,7 +95,7 @@ class Utilities:
             self.S3_CLIENT.put_object(
                 Bucket=self.BUCKET_NAME,
                 Key=f"models/model_{timestamp}.bin",
-                Body=model_data)
+                Body=model_data.getvalue())
             self.logger.info("Model saved successfully.")
 
         except ClientError as e:
@@ -126,8 +126,7 @@ class Utilities:
             model_data = response["Body"].read()
 
             buffer = io.BytesIO(model_data)
-            model = torch.load(buffer, map_location=torch.device(
-                "cpu"), weights_only=True)
+            model = torch.load(buffer)
             model.eval()
 
             self.logger.info(
