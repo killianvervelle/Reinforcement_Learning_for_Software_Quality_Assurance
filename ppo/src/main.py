@@ -4,8 +4,10 @@ import gym
 from gym.envs import register
 
 from agent import Agent
+from ppo.app.src.utilities import Utilities
 from virtualMachine import VirtualMachine
 from optimizer import Optimizer
+
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -41,14 +43,6 @@ class Environment:
 
         return vm_list
 
-    def load_model(self, path):
-        try:
-            model = torch.load(path)
-            print(f"Model loaded successfully from {path}.")
-            return model
-        except Exception as e:
-            raise RuntimeError(f"Failed to load model from {path}: {e}")
-
     def initialize_env(self, model):
         requirement_res_times = [2500, 2500]
         vms = self.initialize_vms(2, requirement_res_times, model)
@@ -60,7 +54,6 @@ class Environment:
                 entry_point="my_gym.myGym:ResourceStarving"
             )
 
-        # Change model for the model trained on the SUT's data
         env_train = gym.make("Env-v1", vm=vms[0])
         env_test = gym.make("Env-v1", vm=vms[0])
 
@@ -70,8 +63,9 @@ class Environment:
 if __name__ == "__main__":
     env = Environment()
 
-    path = "model/best_model_cpu"
-    model = env.load_model(path=path)
+    utilities = Utilities()
+
+    model = utilities.load_model()
 
     env_train, env_test = env.initialize_env(model)
 

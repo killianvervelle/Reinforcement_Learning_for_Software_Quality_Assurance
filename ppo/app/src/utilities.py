@@ -1,3 +1,8 @@
+import io
+import torch.optim as optim
+import torch.nn as nn
+import torch
+import logging
 import boto3
 import pandas as pd
 from io import StringIO
@@ -8,6 +13,7 @@ from botocore.exceptions import ClientError
 class Utilities:
     BUCKET_NAME = "mybucketingbucket"
     S3_CLIENT = boto3.client("s3", region_name="eu-west-3")
+    MODEL_FOLDER = "models/"
 
     def __init__(self, logger):
         self.logger = logger
@@ -88,7 +94,7 @@ class Utilities:
 
             self.S3_CLIENT.put_object(
                 Bucket=self.BUCKET_NAME,
-                Key=f"model/model_{timestamp}.bin",
+                Key=f"models/model_{timestamp}.bin",
                 Body=model_data)
             self.logger.info("Model saved successfully.")
 
@@ -104,7 +110,7 @@ class Utilities:
                 Prefix=self.MODEL_FOLDER)
 
             list_models = [obj["Key"] for obj in response.get("Contents", [])
-                           if obj["Key"].startswith("model/")]
+                           if obj["Key"].startswith("models/")]
 
             if not list_models:
                 self.logger.error("No models found in the S3 bucket.")

@@ -18,7 +18,6 @@ API_URL = "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8000/"
 SUT_URL = "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8001/"
 REPOSITORY = "my_ecr_repository"
 CLUSTER_NAME = "my_ecs_cluster"
-IMG_NAME = "222656491673.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:latest"
 
 
 def generate_samples(num_samples: int):
@@ -60,7 +59,7 @@ def get_container_id(last_task):
         return None
 
     for container in containers:
-        if container["name"] == "api-container":
+        if container["name"] == "sut-container":
             return container.get('runtimeId')
 
     print(f"No container found with the name api-container.")
@@ -79,9 +78,11 @@ def adjust_container(cpu_quota: int, memory: int, container: str, image_name: st
                 "img_name": image_name
             }
         )
+
         response.raise_for_status()
         logger.info("Container adjusted successfully.")
         return True
+
     except requests.exceptions.RequestException as e:
         logger.error(f"Error adjusting container: {e}")
         return False
@@ -93,6 +94,7 @@ def simulate_cpu_task() -> float:
         response.raise_for_status()
         response_time = response.json().get("responseTime", 0.0)
         return float(response_time)
+
     except requests.exceptions.RequestException as e:
         logger.error(f"Error simulating CPU task: {e}")
         return 0.0
@@ -105,7 +107,8 @@ def build_dataset() -> pd.DataFrame:
         logger.error("No active container found. Aborting dataset creation.")
         return pd.DataFrame()
 
-    samples = generate_samples(100)
+    samples = generate_samples(3)
+
     df = pd.DataFrame(columns=["cpu", "memory", "responseTime"])
 
     for sample in samples:
@@ -113,12 +116,12 @@ def build_dataset() -> pd.DataFrame:
         memory = sample["memory"]
 
         try:
-            adjust_container(cpu_quota, memory, container_id, IMG_NAME)
+            adjust_container(cpu_quota, memory,
+                             container_id, image_name="None")
         except:
             logger.error("Failed to adjust container. Skipping sample.")
             continue
 
-        # Simulate workload and capture response time
         response_time = simulate_cpu_task()
         if response_time > 0:
             df = df.append(
@@ -135,7 +138,7 @@ def build_dataset() -> pd.DataFrame:
 if __name__ == "__main__":
     utilities = Utilities(logger)
 
-    """logger.info("Starting dataset creation...")
+    logger.info("Starting dataset creation...")
     dataset = build_dataset()
 
     if not dataset.empty:
@@ -143,8 +146,4 @@ if __name__ == "__main__":
         utilities.save_data(dataset)
         logger.info("Dataset saved successfully.")
     else:
-        logger.warning("Dataset creation failed or returned an empty dataset.")"""
-    last = get_latest_task()
-    container_id = get_container_id(last)
-    print("container id", container_id)
-    adjust_container(25000, 750, container_id, "None")
+        logger.warning("Dataset creation failed or returned an empty dataset.")
