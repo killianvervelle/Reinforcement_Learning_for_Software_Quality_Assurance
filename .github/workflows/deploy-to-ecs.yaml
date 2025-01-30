@@ -57,7 +57,7 @@ jobs:
           python ppo/app/src/predictor.py  
       - name: Run the PPO framework
         run: |
-          python ppo/app/src/main.py
+          python ppo/src/main.py
 
 
 
