@@ -1,11 +1,7 @@
-import io
-import torch.optim as optim
-import torch.nn as nn
-import torch
-import logging
+import joblib
 import boto3
 import pandas as pd
-from io import StringIO
+from io import BytesIO, StringIO
 from datetime import datetime
 from botocore.exceptions import ClientError
 
@@ -123,11 +119,9 @@ class Utilities:
             response = self.S3_CLIENT.get_object(
                 Bucket=self.BUCKET_NAME, Key=latest_model_key)
 
-            model_data = response["Body"].read()
+            model_bytes = response["Body"].read()
 
-            buffer = io.BytesIO(model_data)
-            model = torch.load(buffer)
-            model.eval()
+            model = joblib.load(BytesIO(model_bytes))
 
             self.logger.info(
                 f"Model loaded successfully from {latest_model_key}.")

@@ -1,13 +1,12 @@
 import logging
 from io import BytesIO
 
+import joblib
 from sklearn.svm import SVR
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
-
-import torch
 
 from ppo.app.src.utilities import Utilities
 
@@ -38,7 +37,7 @@ def train_model(df):
 
     best_model = grid_search.best_estimator_
     model_bytes = BytesIO()
-    torch.save(best_model.state_dict(), model_bytes)
+    joblib.dump(best_model, model_bytes)
 
     svm_test_preds = best_model.predict(X_test)
     mse = mean_squared_error(y_test, svm_test_preds)
@@ -57,6 +56,6 @@ if __name__ == "__main__":
 
     print("data from predictor", data.describe())
 
-    best_model, best_params_ = train_model(data)
+    model_bytes, best_params_ = train_model(data)
 
-    utilities.save_model(best_model)
+    utilities.save_model(model_bytes)
