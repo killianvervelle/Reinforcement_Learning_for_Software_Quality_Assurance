@@ -91,6 +91,7 @@ def adjust_container(cpu_quota: int, memory: int, container: str, image_name: st
 def simulate_cpu_task() -> float:
     try:
         response = requests.post(f"{SUT_URL}cpu_task")
+        print(response)
         response.raise_for_status()
         response_time = response.json().get("responseTime", 0.0)
         return float(response_time)
