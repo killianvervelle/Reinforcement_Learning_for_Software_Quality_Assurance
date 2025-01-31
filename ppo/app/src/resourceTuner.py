@@ -92,7 +92,7 @@ def simulate_cpu_task() -> float:
     try:
         response = requests.post(f"{SUT_URL}cpu_task")
         response.raise_for_status()
-        return int(response.json())
+        return round(response.json(), 3)
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Error simulating CPU task: {e}")
@@ -106,7 +106,7 @@ def build_dataset() -> pd.DataFrame:
         logger.error("No active container found. Aborting dataset creation.")
         return pd.DataFrame()
 
-    samples = generate_samples(100)
+    samples = generate_samples(200)
 
     df = pd.DataFrame(columns=["cpu", "memory", "responseTime"])
 
@@ -122,6 +122,7 @@ def build_dataset() -> pd.DataFrame:
             continue
 
         response_time = simulate_cpu_task()
+        print("Response_time", response_time)
         if response_time > 0:
             new_row = pd.DataFrame([{
                 "cpu": cpu_quota / 1000,
@@ -133,7 +134,6 @@ def build_dataset() -> pd.DataFrame:
 
         else:
             logger.error("Failed to get response time. Skipping sample.")
-    print(df)
     return df
 
 

@@ -1,15 +1,21 @@
-import numpy as np
-import gym
+import sys
+import os
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 import logging
-from gym.envs import register
-
+import gym
+import numpy as np
 from agent import Agent
-from ppo.app.src.utilities import Utilities
-from virtualMachine import VirtualMachine
-from optimizer import Optimizer
-
-
 import warnings
+
+from gym.envs import register
+from optimizer import Optimizer
+from virtualMachine import VirtualMachine
+from ppo.app.src.utilities import Utilities
+
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # bool8 still required by gym for some reason

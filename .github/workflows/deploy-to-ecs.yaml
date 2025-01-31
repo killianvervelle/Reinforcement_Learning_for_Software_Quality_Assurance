@@ -13,9 +13,8 @@ env:
   ECS_TASK_DEFINITION: ppo/app/task-definition.json
 
 jobs:
-
   run_rl_agent:
-    
+
     
     runs-on: ubuntu-latest
     environment: production
@@ -48,6 +47,11 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd):$PYTHONPATH" >> $GITHUB_ENV
 
+
+
+      - name: Run script to train and save the model to S3
+        run: |
+          python ppo/app/src/predictor.py  
 
       - name: Run the PPO framework
         run: |

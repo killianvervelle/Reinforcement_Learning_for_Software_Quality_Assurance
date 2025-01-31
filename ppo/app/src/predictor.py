@@ -1,7 +1,9 @@
+import os
+import sys
+import joblib
 import logging
 from io import BytesIO
 
-import joblib
 from sklearn.svm import SVR
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -9,6 +11,9 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 
 from ppo.app.src.utilities import Utilities
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 
 
 logging.basicConfig(level=logging.INFO,
@@ -27,7 +32,7 @@ def train_model(df):
     y = df["responseTime"]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42)
+        X, y, test_size=0.2, random_state=0)
 
     svm_pipeline = make_pipeline(StandardScaler(), SVR(kernel='rbf'))
 
@@ -53,8 +58,6 @@ if __name__ == "__main__":
     utilities = Utilities(logger)
 
     data = utilities.load_data()
-
-    print("data from predictor", data.describe())
 
     model_bytes, best_params_ = train_model(data)
 
