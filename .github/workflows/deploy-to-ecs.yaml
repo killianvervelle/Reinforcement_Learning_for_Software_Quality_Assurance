@@ -121,7 +121,7 @@ jobs:
   deploy-ecs:
     runs-on: ubuntu-latest
     environment: production
-    needs: [build-sut-image, build-api-image] 
+    needs: [build-sut-image, build-api-image, deploy-lambda] 
     env:
       PORT_SUT: 8001
       PORT_API: 8000
@@ -224,4 +224,5 @@ jobs:
 
 
 
+          
 
