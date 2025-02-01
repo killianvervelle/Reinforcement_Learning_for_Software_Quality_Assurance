@@ -8,7 +8,7 @@ COPY app/src/lambda/main.py ${LAMBDA_TASK_ROOT}
 
 COPY app/src/lambda/requirements.txt ${LAMBDA_TASK_ROOT}
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 CMD ["main.lambda_handler"]
 
