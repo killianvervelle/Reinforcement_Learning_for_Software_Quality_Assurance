@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM public.ecr.aws/lambda/python:3.11
 
 RUN pip install --upgrade pip
 

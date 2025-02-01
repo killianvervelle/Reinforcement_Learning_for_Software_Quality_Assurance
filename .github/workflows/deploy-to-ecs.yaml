@@ -175,54 +175,6 @@ jobs:
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
 
-  run_rl_agent:
-    needs: [deploy-ecs]
-    
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11
-
-      - name: Set up Python environment
-        run: |
-          python3 -m venv venv
-          source ./venv/bin/activate
-      
-      - name: Install dependencies
-        run: |
-          pip install -r ppo/requirements.txt
-      
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$(pwd):$PYTHONPATH" >> $GITHUB_ENV
-
-      #- name: Run script to collect and save dataset to S3
-      #  run: |
-      #    python ppo/app/src/resourceTuner.py  
-
-      - name: Run script to train and save the model to S3
-        run: |
-          python ppo/app/src/predictor.py  
-
-      - name: Run the PPO framework
-        run: |
-          python ppo/src/main.py
-
-
-
-
+  
 
 

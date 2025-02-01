@@ -96,7 +96,7 @@ def lambda_handler(event, context):
     if data.empty:
         return {"statusCode": 500, "body": json.dumps("Failed to load data.")}
 
-    model_bytes, best_params = train_model(data)
+    model_bytes, _ = train_model(data)
 
     save_model(model_bytes)
 
