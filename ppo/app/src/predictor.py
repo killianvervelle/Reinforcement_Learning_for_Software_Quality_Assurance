@@ -1,7 +1,10 @@
+from datetime import datetime
 import joblib
 import logging
 from io import BytesIO
+from botocore.exceptions import ClientError
 
+import pandas as pd
 from sklearn.svm import SVR
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -48,12 +51,59 @@ def train_model(df):
 
     return model_bytes, grid_search.best_params_
 
+def load_data(self) -> pd.DataFrame:
+        try:
+            self.logger.info("Loading the latest data from S3...")
+
+            response = self.S3_CLIENT.list_objects_v2(
+                Bucket=self.BUCKET_NAME,
+                Prefix="data/")
+            list_data_files = [obj["Key"] for obj in response.get("Contents", [])
+                               if obj["Key"].startswith("data/")]
+
+            if not list_data_files:
+                self.logger.error("No data files found in the S3 bucket.")
+                return pd.DataFrame()
+
+            list_data_files.sort(reverse=True)
+
+            latest_data_key = list_data_files[0]
+
+            response = self.S3_CLIENT.get_object(
+                Bucket=self.BUCKET_NAME, Key=latest_data_key)
+
+            data = pd.read_csv(response["Body"], delimiter=",")
+
+            self.logger.info(
+                f"Data loaded successfully from {latest_data_key}.")
+            return data
+
+        except ClientError as e:
+            self.logger.error(f"Error loading data from S3: {e}")
+            return pd.DataFrame()
+    
+def save_model(self, model_data: bytes) -> None:
+    self.create_bucket()
+
+    try:
+        self.logger.info("Saving model to S3...")
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+
+        self.S3_CLIENT.put_object(
+            Bucket=self.BUCKET_NAME,
+            Key=f"models/model_{timestamp}.bin",
+            Body=model_data.getvalue())
+        self.logger.info("Model saved successfully.")
+
+    except ClientError as e:
+        self.logger.error(f"Error saving model to S3: {e}")
+
 
 if __name__ == "__main__":
-    utilities = Utilities(logger)
 
-    data = utilities.load_data()
+    data = load_data()
 
     model_bytes, best_params_ = train_model(data)
 
-    utilities.save_model(model_bytes)
+    save_model(model_bytes)

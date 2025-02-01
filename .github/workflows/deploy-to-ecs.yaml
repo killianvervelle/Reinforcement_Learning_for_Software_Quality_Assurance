@@ -84,7 +84,39 @@ jobs:
       - name: Use API image in ECS task definition
         run: |
           echo "API image: $api_image"
-          
+  
+  deploy-lambda:
+    runs-on: ubuntu-latest 
+    env:
+        IMAGE_TAG: lambda
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push Lambda image to Amazon ECR
+        run: |
+          docker build --no-cache -f ppo/app/src/lambda/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "lambda_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "lambda_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Deploy Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name myLambdaFunction \
+            --image-uri ${{ env.lambda_image }}        
 
   deploy-ecs:
     runs-on: ubuntu-latest
