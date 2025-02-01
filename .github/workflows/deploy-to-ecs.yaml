@@ -115,7 +115,7 @@ jobs:
       - name: Deploy Lambda function
         run: |
           aws lambda update-function-code \
-            --function-name myLambdaFunction \
+            --function-name lambdaFunctionOnS3Put \
             --image-uri ${{ env.lambda_image }}        
 
   deploy-ecs:
