@@ -8,6 +8,10 @@ COPY app/src/lambda/main.py ${LAMBDA_TASK_ROOT}
 
 COPY app/src/lambda/requirements.txt ${LAMBDA_TASK_ROOT}
 
+RUN ls -l /var/task/
+
+RUN ls -l /
+
 RUN pip install -r requirements.txt
 
 CMD ["main.lambda_handler"]
