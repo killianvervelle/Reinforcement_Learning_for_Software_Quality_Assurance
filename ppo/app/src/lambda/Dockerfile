@@ -9,6 +9,6 @@ COPY app/src/lambda/requirements.txt /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["lambda_function.lambda_handler"]
+CMD ["main.lambda_handler"]
 
 
