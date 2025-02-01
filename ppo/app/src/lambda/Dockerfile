@@ -12,7 +12,7 @@ RUN ls -l /var/task/
 
 RUN ls -l /
 
-RUN pip install -r requirements.txt
+RUN pip install -r ${LAMBDA_TASK_ROOT}requirements.txt
 
 CMD ["main.lambda_handler"]
 
