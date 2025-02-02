@@ -309,6 +309,7 @@ class Agent:
         batch_size,
         learning_rate,
         max_grad_norm,
+        plot=False
     ):
         max_episodes = 300
         reward_threshold = 30.0
@@ -377,8 +378,9 @@ class Agent:
                     f"Early stopping at episode {episode} due to reward threshold.")
                 break
 
-        # self.plot_train_rewards(train_rewards, reward_threshold)
-        # self.plot_test_rewards(test_rewards, reward_threshold)
-        # self.plot_losses(policy_losses, value_losses)
+        if plot:
+            self.plot_train_rewards(train_rewards, reward_threshold)
+            self.plot_test_rewards(test_rewards, reward_threshold)
+            self.plot_losses(policy_losses, value_losses)
 
         return np.mean(test_rewards[-n_trials:])

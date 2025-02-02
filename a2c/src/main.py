@@ -1,17 +1,23 @@
 import numpy as np
 import torch
 import gym
+import logging
 from gym.envs import register
 
 from agent import Agent
 from virtualMachine import VirtualMachine
 from optimizer import Optimizer
+from a2c.src.utilities import Utilities
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # bool8 still required by gym for some reason
 np.bool8 = np.bool_
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 class Environment:
@@ -60,7 +66,6 @@ class Environment:
                 entry_point="my_gym.myGym:ResourceStarving"
             )
 
-        # Change model for the model trained on the SUT's data
         env_train = gym.make("Env-v1", vm=vms[0])
         env_test = gym.make("Env-v1", vm=vms[0])
 
@@ -70,8 +75,9 @@ class Environment:
 if __name__ == "__main__":
     env = Environment()
 
-    path = "model/best_model_cpu"
-    model = env.load_model(path=path)
+    utilities = Utilities(logger=logger)
+
+    model = utilities.load_model()
 
     env_train, env_test = env.initialize_env(model)
 
@@ -79,6 +85,7 @@ if __name__ == "__main__":
         env_train=env_train,
         env_test=env_test
     )
+
     agent.run_agent(
         env_train=env_train,
         env_test=env_test,
@@ -88,7 +95,8 @@ if __name__ == "__main__":
         dropout=0.22,
         batch_size=32,
         learning_rate=0.0003,
-        max_grad_norm=10.0
+        max_grad_norm=10.0,
+        plot=True
     )
 
     # optimizer = Optimizer(env=env, agent=agent, model=model)

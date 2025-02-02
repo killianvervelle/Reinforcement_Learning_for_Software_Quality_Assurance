@@ -16,7 +16,7 @@ class Optimizer:
             "entropy_coefficient": trial.suggest_float('entropy_coefficient', 0.01, 0.1),
             "hidden_dimensions": trial.suggest_categorical('hidden_dimensions', [32, 64, 128]),
             "dropout": trial.suggest_float('dropout', 0.2, 0.5),
-            "max_grad_norm": trial.suggest_categorical('max_grad_norm', [1.0, 5.0, 10.0, 50.0])
+            "max_grad_norm": trial.suggest_categorical('max_grad_norm', [1.0, 5.0, 10.0, 50.0]),
         }
 
         env_train, env_test = self.env.initialize_env(self.model)

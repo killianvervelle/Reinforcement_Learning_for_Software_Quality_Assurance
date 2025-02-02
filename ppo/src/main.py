@@ -1,20 +1,19 @@
+import warnings
+from agent import Agent
+import numpy as np
+import torch
+import gym
+import logging
 import sys
 import os
 
+from ppo.app.src.utilities import Utilities
+from virtualMachine import VirtualMachine
+from optimizer import Optimizer
+from gym.envs import register
+
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
-import logging
-import gym
-import numpy as np
-from agent import Agent
-import warnings
-
-from gym.envs import register
-from optimizer import Optimizer
-from virtualMachine import VirtualMachine
-from ppo.app.src.utilities import Utilities
-
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -53,6 +52,14 @@ class Environment:
 
         return vm_list
 
+    def load_model(self, path):
+        try:
+            model = torch.load(path)
+            print(f"Model loaded successfully from {path}.")
+            return model
+        except Exception as e:
+            raise RuntimeError(f"Failed to load model from {path}: {e}")
+
     def initialize_env(self, model):
         requirement_res_times = [2500, 2500]
         vms = self.initialize_vms(2, requirement_res_times, model)
@@ -83,6 +90,7 @@ if __name__ == "__main__":
         env_train=env_train,
         env_test=env_test
     )
+
     agent.run_agent(
         env_train=env_train,
         env_test=env_test,
@@ -93,7 +101,8 @@ if __name__ == "__main__":
         dropout=0.22,
         batch_size=32,
         learning_rate=0.0003,
-        max_grad_norm=10.0
+        max_grad_norm=10.0,
+        plot=True
     )
 
     # optimizer = Optimizer(env=env, agent=agent, model=model)

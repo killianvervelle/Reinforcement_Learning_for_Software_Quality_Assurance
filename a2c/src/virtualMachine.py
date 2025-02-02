@@ -25,7 +25,7 @@ class VirtualMachine:
         return self.ResponseTime
 
     def reset(self):
-        self.VM_CPU_i = random.randint(40, 50)
+        self.VM_CPU_i = random.randint(90, 100)
         self.VM_Mem_i = random.uniform(1.0, 1.2)
         self.VM_CPU_g = self.VM_CPU_i * 0.8
         self.VM_Mem_g = self.VM_Mem_i * 0.8
