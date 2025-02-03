@@ -209,13 +209,9 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd):$PYTHONPATH" >> $GITHUB_ENV
 
-      #- name: Run script to collect and save dataset to S3
-      #  run: |
-      #    python ppo/app/src/resourceTuner.py  
-
-      - name: Run script to train and save the model to S3
+      - name: Run script to collect and save dataset to S3
         run: |
-          python ppo/app/src/predictor.py  
+          python ppo/app/src/resourceTuner.py  
 
       - name: Run the PPO framework
         run: |
