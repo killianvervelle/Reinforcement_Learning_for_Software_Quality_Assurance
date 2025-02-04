@@ -1,13 +1,13 @@
 package performancetest.model;
 
-
 public class VirtualMachine {
+    public int index;
     public double Throughput;
     public double ResponseTime_i;
     public double ResponseTime;
     public double NormalizedResponsetime;
-    public double Requirement_ResTime; //in ms
-    public double Acceptolerance; //in terms of percentage of requirement response time
+    public double Requirement_ResTime; // in ms
+    public double Acceptolerance; // in terms of percentage of requirement response time
     public double VM_CPU_g;
     public double VM_Mem_g;
     public double VM_Disk_g;

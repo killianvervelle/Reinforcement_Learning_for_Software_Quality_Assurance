@@ -32,7 +32,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>3.2.10</version>
 				<configuration>
-					<mainClass>performancetest.main.performancetest.main.PerformanceTest</mainClass>
+					<mainClass>performancetest.main.PerformanceTest</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>

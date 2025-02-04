@@ -54,7 +54,8 @@ Optional: open Docker
 
 Run the project JAR file:
 ```
-java -jar <path-to-project-jar>
+cd Safrel_v1
+java -jar target\my-Safrel-v1.jar
 ```
 
 ### License

@@ -7,8 +7,10 @@ import net.sourceforge.jFuzzyLogic.rule.Variable;
 import performancetest.model.VirtualMachine;
 import performancetest.model.stateAction;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
-
 
 public class ReinforcementLearning {
 
@@ -24,60 +26,72 @@ public class ReinforcementLearning {
     }
 
     public int Learn(int IndexofCurrentState, VirtualMachine VM, float epsilon) {
-        //selecting an action
+        // selecting an action
         int action = 0;
         boolean Success = false;
         while (!Success) {
             action = chooseAnAction(IndexofCurrentState, epsilon);
-            //applying the selected action
+            // applying the selected action
             if (action == 0) {
                 Success = true;
                 System.out.println("Action 0 (nothing) ");
             } else if (action == 1) {
                 Success = ApplyAction1(VM);
-                if (Success) System.out.println("Action 1 ");
+                if (Success)
+                    System.out.println("Action 1 ");
             } else if (action == 2) {
                 Success = ApplyAction2(VM);
-                if (Success) System.out.println("Action 2 ");
+                if (Success)
+                    System.out.println("Action 2 ");
             } else if (action == 3) {
                 Success = ApplyAction3(VM);
-                if (Success) System.out.println("Action 3 ");
+                if (Success)
+                    System.out.println("Action 3 ");
             } else if (action == 4) {
                 Success = ApplyAction4(VM);
-                if (Success) System.out.println("Action 4 ");
+                if (Success)
+                    System.out.println("Action 4 ");
             } else if (action == 5) {
                 Success = ApplyAction5(VM);
-                if (Success) System.out.println("Action 5 ");
+                if (Success)
+                    System.out.println("Action 5 ");
             } else if (action == 6) {
                 Success = ApplyAction6(VM);
-                if (Success) System.out.println("Action 6 ");
+                if (Success)
+                    System.out.println("Action 6 ");
             } else if (action == 7) {
                 Success = ApplyAction7(VM);
-                if (Success) System.out.println("Action 7 ");
+                if (Success)
+                    System.out.println("Action 7 ");
             } else if (action == 8) {
                 Success = ApplyAction8(VM);
-                if (Success) System.out.println("Action 8 ");
+                if (Success)
+                    System.out.println("Action 8 ");
             } else if (action == 9) {
                 Success = ApplyAction9(VM);
-                if (Success) System.out.println("Action 9 ");
+                if (Success)
+                    System.out.println("Action 9 ");
             } else if (action == 10) {
                 Success = ApplyAction10(VM);
-                if (Success) System.out.println("Action 10 ");
+                if (Success)
+                    System.out.println("Action 10 ");
             } else if (action == 11) {
                 Success = ApplyAction11(VM);
-                if (Success) System.out.println("Action 11 ");
+                if (Success)
+                    System.out.println("Action 11 ");
             } else if (action == 12) {
                 Success = ApplyAction12(VM);
-                if (Success) System.out.println("Action 12 ");
+                if (Success)
+                    System.out.println("Action 12 ");
             }
         }
 
-        //detecting the new states
+        // detecting the new states
         List DetectedStates;
         int IndexofDetectedNewState = 0;
         DetectedStates = this.DetectState(VM);
 
-        //extracting the index of the state with the highest membership degree
+        // extracting the index of the state with the highest membership degree
         List FinalDetectedState = new LinkedList();
         double MaxMemdegree = 0.0;
         String[] pair = new String[2];
@@ -144,16 +158,18 @@ public class ReinforcementLearning {
 
         System.out.println("New State after action: " + IndexofDetectedNewState);
 
-        //calculating The Reward
+        // calculating The Reward
         Double Reward;
         Reward = CalculateReward(VM);
 
-        //updating the Qvalue
+        // updating the Qvalue
         double alpha = 0.1;
         double gamma = 0.9;
-        Qtable[IndexofCurrentState][action].Q_value = Double.parseDouble(((String[]) (FinalDetectedState.get(0)))[1]) * ((1 - alpha) * Qtable[IndexofCurrentState][action].Q_value) + alpha * (Reward + gamma * Maximum(IndexofDetectedNewState, false));
+        Qtable[IndexofCurrentState][action].Q_value = Double.parseDouble(((String[]) (FinalDetectedState.get(0)))[1])
+                * ((1 - alpha) * Qtable[IndexofCurrentState][action].Q_value)
+                + alpha * (Reward + gamma * Maximum(IndexofDetectedNewState, false));
 
-        //setting the next state as the current state for the next loop
+        // setting the next state as the current state for the next loop
         return IndexofDetectedNewState;
     }
 
@@ -167,25 +183,26 @@ public class ReinforcementLearning {
 
         List OutputStateDegreePairs;
 
-        OutputStateDegreePairs = FuzzyInference(1.0 / VM.VM_CPUtil, 1.0 / VM.VM_MemUtil, 1.0 / VM.VM_DiskUtil, VM.NormalizedResponsetime);
+        OutputStateDegreePairs = FuzzyInference(1.0 / VM.VM_CPUtil, 1.0 / VM.VM_MemUtil, 1.0 / VM.VM_DiskUtil,
+                VM.NormalizedResponsetime);
 
         return OutputStateDegreePairs;
     }
 
     public List FuzzyInference(Double CPUU, Double MemU, Double DiskU, Double NormalizedRT) {
-//        Engine engine = new Engine();
-//        engine.setName("StateDetection");
-//        engine.setDescription("");
-//        
-//      InputVariable CPUtilImprov = new InputVariable();
-//      CPUtilImprov.setName("CPUtilImprovement");
-//      CPUtilImprov.setDescription("");
-//      CPUtilImprov.setEnabled(true);
-//      CPUtilImprov.setRange(0.000, 1.000);
-//      CPUtilImprov.setLockValueInRange(false);
-//      CPUtilImprov.addTerm(new Ramp("Low", 1.000, 0.000));
-//      CPUtilImprov.addTerm(new Ramp("High", 0.000, 1.000));
-//      engine.addInputVariable(CPUtilImprov);
+        // Engine engine = new Engine();
+        // engine.setName("StateDetection");
+        // engine.setDescription("");
+        //
+        // InputVariable CPUtilImprov = new InputVariable();
+        // CPUtilImprov.setName("CPUtilImprovement");
+        // CPUtilImprov.setDescription("");
+        // CPUtilImprov.setEnabled(true);
+        // CPUtilImprov.setRange(0.000, 1.000);
+        // CPUtilImprov.setLockValueInRange(false);
+        // CPUtilImprov.addTerm(new Ramp("Low", 1.000, 0.000));
+        // CPUtilImprov.addTerm(new Ramp("High", 0.000, 1.000));
+        // engine.addInputVariable(CPUtilImprov);
 
         String fileName = "src/main/java/performancetest/util/StateDetection.fcl.rtf";
         FIS fis = FIS.load(fileName, true);
@@ -200,7 +217,7 @@ public class ReinforcementLearning {
         fis.setVariable("DiskU", DiskU);
         fis.setVariable("RT", NormalizedRT);
 
-        //evaluate
+        // evaluate
         fis.evaluate();
 
         Variable State = fis.getVariable("State");
@@ -213,8 +230,8 @@ public class ReinforcementLearning {
 
         while (iterator.hasNext()) {
             Map.Entry mentry = (Map.Entry) iterator.next();
-            //System.out.print("key is: "+ mentry.getKey() + " & Value is: ");
-            //System.out.println(mentry.getValue());
+            // System.out.print("key is: "+ mentry.getKey() + " & Value is: ");
+            // System.out.println(mentry.getValue());
             OutputLinguisticTerms.add(mentry.getKey());
         }
 
@@ -238,15 +255,16 @@ public class ReinforcementLearning {
         }
 
         for (Object pair : OutputStateDegreePairs) {
-            System.out.println(((String[]) pair)[0] + "  " + Math.round(Double.parseDouble(((String[]) pair)[1]) * 1000) / 1000.0);
+            System.out.println(
+                    ((String[]) pair)[0] + "  " + Math.round(Double.parseDouble(((String[]) pair)[1]) * 1000) / 1000.0);
         }
 
-        //System.out.println(State.toString() );
-        //JFuzzyChart.get().chart(State, State.getDefuzzifier(), true);
-        //JFuzzyChart.get().chart(fis);
+        // System.out.println(State.toString() );
+        // JFuzzyChart.get().chart(State, State.getDefuzzifier(), true);
+        // JFuzzyChart.get().chart(fis);
 
-        //print ruleSet
-        //System.out.println(fis);
+        // print ruleSet
+        // System.out.println(fis);
 
         return OutputStateDegreePairs;
 
@@ -260,14 +278,14 @@ public class ReinforcementLearning {
         while (!choiceIsValid) {
             randomNumber = new Random().nextDouble();
             if (randomNumber < epsilon) {
-                //randomly choose an action connected to the current state.
+                // randomly choose an action connected to the current state.
                 possibleAction = new Random().nextInt(Qtable[0].length);
                 if (Qtable[IndexofCurrentState][possibleAction].Q_value > -1) {
                     choiceIsValid = true;
                     System.out.println("Random action");
                 }
             } else {
-                //choose an action connected to the current state from the learned policy.
+                // choose an action connected to the current state from the learned policy.
                 possibleAction = (int) Maximum(IndexofCurrentState, true);
                 if (Qtable[IndexofCurrentState][possibleAction].Q_value > -1) {
                     choiceIsValid = true;
@@ -279,8 +297,8 @@ public class ReinforcementLearning {
     }
 
     public double Maximum(int IndexofState, final boolean ReturnIndexOnly) {
-        //if ReturnIndexOnly = True, the Q matrix index is returned.
-        //if ReturnIndexOnly = False, the Q matrix value is returned.
+        // if ReturnIndexOnly = True, the Q matrix index is returned.
+        // if ReturnIndexOnly = False, the Q matrix value is returned.
         int winner = 0;
         boolean foundNewWinner = false;
         boolean done = false;
@@ -288,7 +306,7 @@ public class ReinforcementLearning {
         while (!done) {
             foundNewWinner = false;
             for (int i = 0; i < Qtable[0].length; i++) {
-                if (i != winner) {             // Avoid self-comparison.
+                if (i != winner) { // Avoid self-comparison.
                     if (Qtable[IndexofState][i].Q_value > Qtable[IndexofState][winner].Q_value) {
                         winner = i;
                         foundNewWinner = true;
@@ -429,6 +447,15 @@ public class ReinforcementLearning {
         return Success;
     }
 
+    private void saveRewardToCSV(int episode, Double reward) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("rewards.csv", true))) {
+            writer.write(episode + "," + reward);
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error writing to CSV file: " + e.getMessage());
+        }
+    }
+
     public Double CalculateReward(VirtualMachine VM) {
         Double Beta = 0.3;
         Double LowerBoundAcceptReg = VM.Requirement_ResTime - (VM.Acceptolerance * VM.Requirement_ResTime);
@@ -442,18 +469,19 @@ public class ReinforcementLearning {
         else if (VM.ResponseTime > VM.Requirement_ResTime)
             Reward_Part1 = (VM.ResponseTime - VM.Requirement_ResTime) / (UpperBoundAcceptReg - VM.Requirement_ResTime);
 
-        Reward_Part2 = VM.VM_SensitivityValues[0] * VM.VM_CPUtil + VM.VM_SensitivityValues[1] * VM.VM_MemUtil + VM.VM_SensitivityValues[2] * VM.VM_DiskUtil;
+        Reward_Part2 = VM.VM_SensitivityValues[0] * VM.VM_CPUtil + VM.VM_SensitivityValues[1] * VM.VM_MemUtil
+                + VM.VM_SensitivityValues[2] * VM.VM_DiskUtil;
 
         Double Reward = Math.round((Beta * Reward_Part1 + (1 - Beta) * Reward_Part2) * 100.0) / 100.0;
 
         System.out.println("Reward:" + Reward);
 
+        saveRewardToCSV(VM.index, Reward);
+
         return Reward;
     }
 
-
-//*********************************************************************************************************************************
-
+    // *********************************************************************************************************************************
 
     public int Operate(int IndexofCurrentState, VirtualMachine VM, List AppliedEffectiveActions) {
         int action;
@@ -618,7 +646,7 @@ public class ReinforcementLearning {
             possibleAction = (int) Maximum(IndexofCurrentState, true);
             if (Qtable[IndexofCurrentState][possibleAction].Q_value > -1) {
                 choiceIsValid = true;
-                System.out.println("action with maximum Qvalue");
+                System.out.println("action with maximum Qvalue" + possibleAction);
             }
         }
         return possibleAction;

@@ -13,31 +13,31 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-
 public class PerformanceTest {
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        int VmsCap_CPU = 50; //%
-        int VmsCap_Mem = 16; //GB
-        int VmsCap_Disk = 20; //GB
-        double VmsCap_ResTime = 3000.00; //ms
-        Double[] Requirement_ResTimes = {VmsCap_ResTime, VmsCap_ResTime, VmsCap_ResTime};
-        Double[] Initial_ResTimes = {333.0, 205.0, 145.0};
+        int VmsCap_CPU = 50; // %
+        int VmsCap_Mem = 16; // GB
+        int VmsCap_Disk = 20; // GB
+        double VmsCap_ResTime = 3000.00; // ms
+        Double[] Requirement_ResTimes = { VmsCap_ResTime, VmsCap_ResTime, VmsCap_ResTime };
+        Double[] Initial_ResTimes = { 333.0, 205.0, 145.0 };
 
         List VMList = new LinkedList();
 
         List SensitivityCollection = new LinkedList();
 
-        //Sensitivity values {CPU, Memory, Disk util}
-        Double[] SenArray1 = {0.97, 0.03, 0.00};
-        Double[] SenArray2 = {0.95, 0.05, 0.00};
-        Double[] SenArray3 = {0.3, 0.7, 0.0};
+        // Sensitivity values {CPU, Memory, Disk util}
+        Double[] SenArray1 = { 0.97, 0.03, 0.00 };
+        Double[] SenArray2 = { 0.95, 0.05, 0.00 };
+        Double[] SenArray3 = { 0.3, 0.7, 0.0 };
 
         SensitivityCollection.add(SenArray1);
         SensitivityCollection.add(SenArray2);
         SensitivityCollection.add(SenArray3);
 
-        InitializeVms(SensitivityCollection.size(), VmsCap_CPU, VmsCap_Mem, VmsCap_Disk, Requirement_ResTimes, SensitivityCollection, Initial_ResTimes, VMList);
+        InitializeVms(SensitivityCollection.size(), VmsCap_CPU, VmsCap_Mem, VmsCap_Disk, Requirement_ResTimes,
+                SensitivityCollection, Initial_ResTimes, VMList);
 
         System.out.println("VMs with various types of CPU Intensive applications have been initialized");
 
@@ -64,7 +64,7 @@ public class PerformanceTest {
             RL1.InitializingstateActions();
             System.out.println("Initialized RL agent 1.");
 
-            //Detecting the Current State
+            // Detecting the Current State
             List DetectedState_C;
             DetectedState_C = RL1.DetectState(VM);
 
@@ -140,7 +140,8 @@ public class PerformanceTest {
             VM.ResponseTime = VM.ResponseTime_i;
 
             while (VM.Requirement_ResTime > VM.ResponseTime) {
-                System.out.println("Required response time: " + VM.Requirement_ResTime + ", Actual Response time: " + VM.ResponseTime);
+                System.out.println("Required response time: " + VM.Requirement_ResTime + ", Actual Response time: "
+                        + VM.ResponseTime);
                 IndexofCurrentState = RL1.Learn(IndexofCurrentState, VM, epsilon);
                 learningTrialsVar++;
                 i++;
@@ -153,14 +154,14 @@ public class PerformanceTest {
 
             if (i == 99) {
                 System.out.println("The Test agent for VM0 has converged:");
-                System.out.println("Initial external Conditions ->" + " CPU: " + VM.VM_CPU_i + " Memory: " + VM.VM_Mem_i + " Disk: " + VM.VM_Disk_i);
-                System.out.println("Test case: CPU: " + VM.VM_CPU_g + " Mem: " + VM.VM_Mem_g + " Disk: " + VM.VM_Disk_g);
+                System.out.println("Initial external Conditions ->" + " CPU: " + VM.VM_CPU_i + " Memory: " + VM.VM_Mem_i
+                        + " Disk: " + VM.VM_Disk_i);
+                System.out
+                        .println("Test case: CPU: " + VM.VM_CPU_g + " Mem: " + VM.VM_Mem_g + " Disk: " + VM.VM_Disk_g);
                 System.out.println("**************************************************");
                 java.lang.Thread.sleep(1000);
             }
         }
-
-        //WriteToExcel (LearningTrialpEpsilonList,1);
 
         {
             epsilon = (float) 0.8;
@@ -172,14 +173,13 @@ public class PerformanceTest {
             System.out.println("NEW SUT LOADING...");
             System.out.println("----------------------------------------");
 
-
             for (int i = 1; i < VMList.size(); i++) {
                 // Adaptive Epsilon
                 // if (i==1)
-                //   epsilon =(float) 0.85;
+                // epsilon =(float) 0.85;
                 // else
-                //   if (epsilon > 0.2)
-                //      epsilon = ((float) Math.round((epsilon-DecreaseStep)*1000.0)/1000);}
+                // if (epsilon > 0.2)
+                // epsilon = ((float) Math.round((epsilon-DecreaseStep)*1000.0)/1000);}
 
                 float[] LearningTrailsperEpsilon2 = new float[5];
                 float learningTrialsVar2 = 0;
@@ -207,24 +207,35 @@ public class PerformanceTest {
                 VM2.VM_MemUtil = ((VirtualMachine) VMList.get(i)).VM_MemUtil;
                 VM2.VM_DiskUtil = ((VirtualMachine) VMList.get(i)).VM_DiskUtil;
 
-                //measuring similarity between VMs
+                // measuring similarity between VMs
                 Double[] SenArrayA = VM2.VM_SensitivityValues;
                 Double[] SenArrayB = ((VirtualMachine) VMList.get(i - 1)).VM_SensitivityValues;
 
-                Double Similarity1_Part1 = (SenArrayA[0] * SenArrayB[0]) + (SenArrayA[1] * SenArrayB[1]) + (SenArrayA[2] * SenArrayB[2]);
-                Double Similarity1_Part2 = Math.sqrt(Math.pow(SenArrayA[0], 2) + Math.pow(SenArrayA[1], 2) + Math.pow(SenArrayA[2], 2)) * Math.sqrt(Math.pow(SenArrayB[0], 2) + Math.pow(SenArrayB[1], 2) + Math.pow(SenArrayB[2], 2));
+                Double Similarity1_Part1 = (SenArrayA[0] * SenArrayB[0]) + (SenArrayA[1] * SenArrayB[1])
+                        + (SenArrayA[2] * SenArrayB[2]);
+                Double Similarity1_Part2 = Math
+                        .sqrt(Math.pow(SenArrayA[0], 2) + Math.pow(SenArrayA[1], 2) + Math.pow(SenArrayA[2], 2))
+                        * Math.sqrt(Math.pow(SenArrayB[0], 2) + Math.pow(SenArrayB[1], 2) + Math.pow(SenArrayB[2], 2));
                 Similarity1 = (float) (Similarity1_Part1 / Similarity1_Part2);
 
                 if (i > 1) {
                     Double[] SenArrayC = ((VirtualMachine) VMList.get(i - 2)).VM_SensitivityValues;
-                    Double Similarity2_Part1 = (SenArrayA[0] * SenArrayC[0]) + (SenArrayA[1] * SenArrayC[1]) + (SenArrayA[2] * SenArrayC[2]);
-                    Double Similarity2_Part2 = Math.sqrt(Math.pow(SenArrayA[0], 2) + Math.pow(SenArrayA[1], 2) + Math.pow(SenArrayA[2], 2)) * Math.sqrt(Math.pow(SenArrayC[0], 2) + Math.pow(SenArrayC[1], 2) + Math.pow(SenArrayC[2], 2));
+                    Double Similarity2_Part1 = (SenArrayA[0] * SenArrayC[0]) + (SenArrayA[1] * SenArrayC[1])
+                            + (SenArrayA[2] * SenArrayC[2]);
+                    Double Similarity2_Part2 = Math
+                            .sqrt(Math.pow(SenArrayA[0], 2) + Math.pow(SenArrayA[1], 2) + Math.pow(SenArrayA[2], 2))
+                            * Math.sqrt(
+                                    Math.pow(SenArrayC[0], 2) + Math.pow(SenArrayC[1], 2) + Math.pow(SenArrayC[2], 2));
                     Similarity2 = (float) (Similarity2_Part1 / Similarity2_Part2);
 
                     if (i > 2) {
                         Double[] SenArrayD = ((VirtualMachine) VMList.get(i - 3)).VM_SensitivityValues;
-                        Double Similarity3_Part1 = (SenArrayA[0] * SenArrayD[0]) + (SenArrayA[1] * SenArrayD[1]) + (SenArrayA[2] * SenArrayD[2]);
-                        Double Similarity3_Part2 = Math.sqrt(Math.pow(SenArrayA[0], 2) + Math.pow(SenArrayA[1], 2) + Math.pow(SenArrayA[2], 2)) * Math.sqrt(Math.pow(SenArrayD[0], 2) + Math.pow(SenArrayD[1], 2) + Math.pow(SenArrayD[2], 2));
+                        Double Similarity3_Part1 = (SenArrayA[0] * SenArrayD[0]) + (SenArrayA[1] * SenArrayD[1])
+                                + (SenArrayA[2] * SenArrayD[2]);
+                        Double Similarity3_Part2 = Math
+                                .sqrt(Math.pow(SenArrayA[0], 2) + Math.pow(SenArrayA[1], 2) + Math.pow(SenArrayA[2], 2))
+                                * Math.sqrt(Math.pow(SenArrayD[0], 2) + Math.pow(SenArrayD[1], 2)
+                                        + Math.pow(SenArrayD[2], 2));
                         Similarity3 = (float) (Similarity3_Part1 / Similarity3_Part2);
                     }
                 }
@@ -237,15 +248,15 @@ public class PerformanceTest {
 
                 List DetectedState_C;
 
-                //Detecting the Current State
+                // Detecting the Current State
                 ReinforcementLearning RL2 = new ReinforcementLearning(i, VM2);
                 RL2.InitializingstateActions();
                 System.out.println("Initialized RL agent " + i);
 
                 DetectedState_C = RL2.DetectState(VM2);
 
-                //extracting the Index of state with Max Membership degree
-                //finding the Index of Current State in the QTable
+                // extracting the Index of state with Max Membership degree
+                // finding the Index of Current State in the QTable
                 int IndexofCurrentState = 0;
 
                 List FinalDetectedState = new LinkedList();
@@ -328,27 +339,30 @@ public class PerformanceTest {
 
                 if (j == 99) {
                     System.out.println("The Test agent for VM2 has converged:");
-                    System.out.println("Initial external Conditions ->" + " CPU: " + VM2.VM_CPU_i + " Memory: " + VM2.VM_Mem_i + " Disk: " + VM2.VM_Disk_i);
-                    System.out.println("Test case: CPU: " + VM2.VM_CPU_g + " Mem: " + VM2.VM_Mem_g + " Disk: " + VM2.VM_Disk_g);
+                    System.out.println("Initial external Conditions ->" + " CPU: " + VM2.VM_CPU_i + " Memory: "
+                            + VM2.VM_Mem_i + " Disk: " + VM2.VM_Disk_i);
+                    System.out.println(
+                            "Test case: CPU: " + VM2.VM_CPU_g + " Mem: " + VM2.VM_Mem_g + " Disk: " + VM2.VM_Disk_g);
                     System.out.println("**************************************************");
                     java.lang.Thread.sleep(1000);
                 }
 
                 LearningTrialpEpsilonList2.add(LearningTrailsperEpsilon2);
 
-                System.out.println("Initial external Conditions VM" + i + " ->" + " CPU: " + VM2.VM_CPU_i + " Memory: " + VM2.VM_Mem_i + " Disk: " + VM2.VM_Disk_i);
-                System.out.println("Test case: CPU: " + VM2.VM_CPU_g + " Mem: " + VM2.VM_Mem_g + " Disk: " + VM2.VM_Disk_g);
+                System.out.println("Initial external Conditions VM" + i + " ->" + " CPU: " + VM2.VM_CPU_i + " Memory: "
+                        + VM2.VM_Mem_i + " Disk: " + VM2.VM_Disk_i);
+                System.out.println(
+                        "Test case: CPU: " + VM2.VM_CPU_g + " Mem: " + VM2.VM_Mem_g + " Disk: " + VM2.VM_Disk_g);
                 System.out.println("**************************************************");
                 java.lang.Thread.sleep(1000);
 
             }
 
-            //WriteToExcel(LearningTrialpEpsilonList2, 2);
-
         }
     }
 
-    public static void InitializeVms(int n, int VmsCap_CPU, long VmsCap_Mem, long VmsCap_Disk, Double[] Requirement_ResTimes, List SensitivityCollection, Double[] Initial_ResTimes, List VMList) {
+    public static void InitializeVms(int n, int VmsCap_CPU, long VmsCap_Mem, long VmsCap_Disk,
+            Double[] Requirement_ResTimes, List SensitivityCollection, Double[] Initial_ResTimes, List VMList) {
         for (int i = 0; i < n; i++) {
             VirtualMachine VM1 = new VirtualMachine();
             VM1.VM_CPU_i = VmsCap_CPU;
@@ -427,4 +441,3 @@ public class PerformanceTest {
     }
 
 }
-
