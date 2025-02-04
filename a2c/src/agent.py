@@ -238,8 +238,8 @@ class Agent:
     def plot_train_rewards(self, train_rewards, reward_threshold):
         plt.figure(figsize=(6, 3))
         plt.plot(train_rewards, label='Training Reward')
-        plt.xlabel('Episode', fontsize=20)
-        plt.ylabel('Training Reward', fontsize=20)
+        plt.xlabel('Episode', fontsize=12)
+        plt.ylabel('Training Reward', fontsize=12)
         plt.hlines(reward_threshold, 0, len(train_rewards), color='y')
         plt.legend(loc='lower right')
         plt.grid()
@@ -248,8 +248,8 @@ class Agent:
     def plot_test_rewards(self, test_rewards, reward_threshold):
         plt.figure(figsize=(6, 3))
         plt.plot(test_rewards, label='Testing Reward')
-        plt.xlabel('Episode', fontsize=20)
-        plt.ylabel('Testing Reward', fontsize=20)
+        plt.xlabel('Episode', fontsize=12)
+        plt.ylabel('Testing Reward', fontsize=12)
         plt.hlines(reward_threshold, 0, len(test_rewards), color='y')
         plt.legend(loc='lower right')
         plt.grid()

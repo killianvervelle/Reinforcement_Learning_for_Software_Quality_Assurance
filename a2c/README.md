@@ -7,8 +7,7 @@ The A2C Framework implements the Advantage Actor-Critic algorithm, a reinforceme
 #### Key Features:
 - Implements the Advantage Actor-Critic algorithm for reinforcement learning.
 - Trains agents in a custom-defined environment.
-- Uses neural networks for policy optimization and value estimation.
-- Supports dynamic adjustments to the agent's learning process through tunable hyperparameters.
+- Uses neural networks for policy optimization and value estimations.
 
 #### How it works:
 The A2C Framework trains agents to optimize rewards in a reinforcement learning environment. The actor network selects actions based on current states, while the critic network evaluates those actions to guide the actor toward better decisions. 

@@ -8,13 +8,14 @@ The PPO Framework implements the Proximal Policy Optimization (PPO) algorithm, a
 - Implements the Proximal Policy Optimization (PPO) algorithm for reinforcement learning.
 - Trains agents in a custom-defined environment with continuous or discrete action spaces.
 - Uses a policy network for action selection and a value network for estimating value functions.
-- Ensures stable training with the clipped objective function and adaptive learning rate.
+- Ensures stable training with the clipped objective function, adaptive learning rate and batch processing.
 
 #### How it works:
 PPO optimizes the agent's policy using an objective function with a clipping mechanism that ensures updates to the policy do not deviate too far from the previous one. This prevents drastic policy changes and leads to more stable training. The PPO framework trains the agent by:
 - Policy Network (Actor): Determines which actions to take based on the current state of the environment.
 - Value Network (Critic): Estimates the value of the state to guide the policy optimization.
 - Clipped Objective: PPO prevents large updates by clipping the objective function, which ensures the agent does not make overly aggressive policy updates.
+- Batch Processing: PPO processes past trajectories in batches, allowing for more efficient learning and better generalization over multiple episodes, improving the stability and convergence of the training process.
 
 #### Reference: 
 For detailed insights into the PPO algorithm and its implementation, refer to the foundational research:
