@@ -5,8 +5,8 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 
-from backboneNetwork import BackboneNetwork
-from backboneNetwork import ActorCritic
+from backboneNetwork import Network
+from backboneNetwork import ActorCriticModel
 from utils.utilities import Utilities
 
 import warnings
@@ -53,17 +53,17 @@ class Agent:
         CRITIC_OUTPUT_FEATURES = 1
         DROPOUT = dropout
 
-        actor = BackboneNetwork(
+        actor = Network(
             INPUT_FEATURES, HIDDEN_DIMENSIONS, ACTOR_OUTPUT_FEATURES, DROPOUT)
         actor.apply(Utilities.init_xavier_weights)
 
-        critic = BackboneNetwork(
+        critic = Network(
             INPUT_FEATURES, HIDDEN_DIMENSIONS, CRITIC_OUTPUT_FEATURES, DROPOUT)
         critic.apply(Utilities.init_xavier_weights)
 
-        return ActorCritic(actor, critic)
+        return ActorCriticModel(actor, critic)
 
-    def calculate_returns(self, rewards, discount_factor, normalize=True):
+    def compute_returns(self, rewards, discount_factor, normalize=True):
         returns = []
         cumulative_reward = 0.0
 
@@ -80,7 +80,7 @@ class Agent:
 
         return returns
 
-    def calculate_advantages(self, returns, values, normalize=True):
+    def compute_advantages(self, returns, values, normalize=True):
         advantages = returns - values
 
         if normalize:
@@ -89,7 +89,7 @@ class Agent:
 
         return advantages
 
-    def calculate_surrogate_loss(
+    def compute_surrogate_loss(
             self,
             actions_log_probability_old,
             actions_log_probability_new,
@@ -109,7 +109,7 @@ class Agent:
 
         return surrogate_loss
 
-    def calculate_ppo_losses(
+    def compute_ppo_losses(
             self,
             surrogate_loss,
             entropy,
@@ -122,7 +122,7 @@ class Agent:
 
         return policy_loss, value_loss
 
-    def init_training(self):
+    def initialize_training(self):
         states = []
         actions = []
         actions_log_probability = []
@@ -134,7 +134,7 @@ class Agent:
         return states, actions, actions_log_probability, values, rewards, done, episode_reward
 
     def forward_pass(self, env, agent, discount_factor):
-        states, actions, actions_log_probability, values, rewards, done, episode_reward = self.init_training()
+        states, actions, actions_log_probability, values, rewards, done, episode_reward = self.initialize_training()
 
         state = env.reset()
         agent.train()
@@ -160,8 +160,8 @@ class Agent:
         actions_log_probability = torch.cat(actions_log_probability)
         values = torch.cat(values).squeeze(-1)
 
-        returns = self.calculate_returns(rewards, discount_factor)
-        advantages = self.calculate_advantages(returns, values)
+        returns = self.compute_returns(rewards, discount_factor)
+        advantages = self.compute_advantages(returns, values)
 
         return episode_reward, states, actions, actions_log_probability, advantages, returns
 
@@ -214,13 +214,13 @@ class Agent:
                 actions_log_probability_new = probability_distribution_new.log_prob(
                     actions)
 
-                surrogate_loss = self.calculate_surrogate_loss(
+                surrogate_loss = self.compute_surrogate_loss(
                     actions_log_probability_old,
                     actions_log_probability_new,
                     epsilon,
                     advantages)
 
-                policy_loss, value_loss = self.calculate_ppo_losses(
+                policy_loss, value_loss = self.compute_ppo_losses(
                     surrogate_loss,
                     entropy,
                     entropy_coefficient,

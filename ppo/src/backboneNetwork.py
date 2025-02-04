@@ -2,7 +2,7 @@ from torch import nn
 import torch.nn.functional as F
 
 
-class BackboneNetwork(nn.Module):
+class Network(nn.Module):
     """
     Purpose:
         TThis class represents a neural network backbone designed for reinforcement learning agents, specifically for PPO 
@@ -46,7 +46,7 @@ class BackboneNetwork(nn.Module):
         return x
 
 
-class ActorCritic(nn.Module):
+class ActorCriticModel(nn.Module):
     def __init__(self, actor, critic):
         super().__init__()
         self.actor = actor
