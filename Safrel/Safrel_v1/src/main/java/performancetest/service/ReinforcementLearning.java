@@ -190,19 +190,6 @@ public class ReinforcementLearning {
     }
 
     public List FuzzyInference(Double CPUU, Double MemU, Double DiskU, Double NormalizedRT) {
-        // Engine engine = new Engine();
-        // engine.setName("StateDetection");
-        // engine.setDescription("");
-        //
-        // InputVariable CPUtilImprov = new InputVariable();
-        // CPUtilImprov.setName("CPUtilImprovement");
-        // CPUtilImprov.setDescription("");
-        // CPUtilImprov.setEnabled(true);
-        // CPUtilImprov.setRange(0.000, 1.000);
-        // CPUtilImprov.setLockValueInRange(false);
-        // CPUtilImprov.addTerm(new Ramp("Low", 1.000, 0.000));
-        // CPUtilImprov.addTerm(new Ramp("High", 0.000, 1.000));
-        // engine.addInputVariable(CPUtilImprov);
 
         String fileName = "src/main/java/performancetest/util/StateDetection.fcl.rtf";
         FIS fis = FIS.load(fileName, true);
@@ -253,18 +240,6 @@ public class ReinforcementLearning {
             }
 
         }
-
-        for (Object pair : OutputStateDegreePairs) {
-            System.out.println(
-                    ((String[]) pair)[0] + "  " + Math.round(Double.parseDouble(((String[]) pair)[1]) * 1000) / 1000.0);
-        }
-
-        // System.out.println(State.toString() );
-        // JFuzzyChart.get().chart(State, State.getDefuzzifier(), true);
-        // JFuzzyChart.get().chart(fis);
-
-        // print ruleSet
-        // System.out.println(fis);
 
         return OutputStateDegreePairs;
 

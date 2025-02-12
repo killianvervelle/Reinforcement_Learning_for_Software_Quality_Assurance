@@ -31,46 +31,12 @@ public class SUT {
         transactions = new Transaction[12];
         qualityMeasures = new QualityMeasures(0, 0) {
 
-            @Override
-            public boolean isSkipped() {
-                return false;
-            }
-
-            @Override
-            public INDArray getData() {
-                return Nd4j.createFromArray(toArray());
-            }
-
-            @Override
-            public Encodable dup() {
-                return null;
-            }
-        };
 
         transactions[0] = new Transaction("Test1", initialWorkLoadPerTransaction);
         transactions[1] = new Transaction("RegisterPage", initialWorkLoadPerTransaction);
         transactions[2] = new Transaction("RegisterUser", initialWorkLoadPerTransaction);
-        transactions[3] = new Transaction("BrowsePage", initialWorkLoadPerTransaction);
-        transactions[4] = new Transaction("BrowseInCategory", initialWorkLoadPerTransaction);
-        transactions[5] = new Transaction("BrowseInRegion", initialWorkLoadPerTransaction);
-        transactions[6] = new Transaction("SellPage", initialWorkLoadPerTransaction);
-        transactions[7] = new Transaction("SellItem", initialWorkLoadPerTransaction);
-        transactions[8] = new Transaction("AboutMePage", initialWorkLoadPerTransaction);
-        transactions[9] = new Transaction("AboutMeUser", initialWorkLoadPerTransaction);
-        transactions[10] = new Transaction("BidOnItem", initialWorkLoadPerTransaction);
-        transactions[11] = new Transaction("SellItem", initialWorkLoadPerTransaction);
+                .......
 
-    }
-
-    public void applyAction_base() {
-        boolean success = false;
-        while (!success) {
-            try {
-                success = executeTestPlan();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void applyAction(int action) {  

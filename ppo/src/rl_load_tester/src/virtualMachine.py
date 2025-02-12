@@ -1,4 +1,6 @@
 import random
+from dotenv import load_dotenv
+import os
 
 
 class VirtualMachine:
@@ -9,7 +11,7 @@ class VirtualMachine:
 
     """
 
-    def __init__(self, Requirement_ResTime, model):
+    def __init__(self, Requirement_ResTime):
         self.VM_CPU_i = 0
         self.VM_Mem_i = 0.0
         self.VM_CPU_g = self.VM_CPU_i
@@ -17,12 +19,10 @@ class VirtualMachine:
         self.ResponseTime_i = 0
         self.Requirement_ResTime = Requirement_ResTime
         self.ResponseTime = 0
-        self.model = model
 
-    def predict_responsetime(self):
-        self.ResponseTime = int(self.model.predict(
-            [[self.VM_CPU_g, self.VM_Mem_g]])[0])
-        return self.ResponseTime
+        self.threads = int(os.getenv("THREADS", 20))
+        self.rampup = int(os.getenv("RAMP_UP", 1))
+        self.loops = int(os.getenv("LOOPS", 20))
 
     def reset(self):
         self.VM_CPU_i = random.randint(90, 100)
@@ -31,3 +31,7 @@ class VirtualMachine:
         self.VM_Mem_g = self.VM_Mem_i * 0.8
         self.ResponseTime_i = self.predict_responsetime()
         self.ResponseTime = self.ResponseTime_i
+
+        self.threads = int(os.getenv("THREADS", 20))
+        self.rampup = int(os.getenv("RAMP_UP", 1))
+        self.loops = int(os.getenv("LOOPS", 20))

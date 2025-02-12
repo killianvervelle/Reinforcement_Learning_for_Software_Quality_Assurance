@@ -7,7 +7,7 @@ import logging
 import sys
 import os
 
-from ppo.app.src.utilities import Utilities
+from ppo.src.utilities import Utilities
 from virtualMachine import VirtualMachine
 from optimizer import Optimizer
 from gym.envs import register
@@ -60,9 +60,9 @@ class Environment:
         except Exception as e:
             raise RuntimeError(f"Failed to load model from {path}: {e}")
 
-    def initialize_env(self, model):
+    def initialize_env(self):
         requirement_res_times = [2500, 2500]
-        vms = self.initialize_vms(2, requirement_res_times, model)
+        vms = self.initialize_vms(2, requirement_res_times)
         print(f"Initialized {len(vms)} VMs.")
 
         if "Env-v1" not in gym.envs.registry:
@@ -82,13 +82,12 @@ if __name__ == "__main__":
 
     utilities = Utilities(logger=logger)
 
-    model = utilities.load_model()
-
-    env_train, env_test = env.initialize_env(model)
+    env_train, env_test = env.initialize_env()
 
     agent = Agent(
         env_train=env_train,
         env_test=env_test
+
     )
 
     agent.run_agent(

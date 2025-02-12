@@ -1,6 +1,9 @@
 import pygame
-import random
 import numpy as np
+from fastapi import requests
+
+from dotenv import load_dotenv
+import os
 
 import gym
 import gym.spaces as Space
@@ -23,25 +26,27 @@ class ResourceStarving(gym.Env):
         None: Initializes the environment's parameters.
     """
 
-    def __init__(self, vm, render_mode=None) -> None:
+    def __init__(self, vm, jmeter_agent, docker_agent, render_mode=None) -> None:
         super(ResourceStarving, self).__init__()
+
+        load_dotenv(".env")
 
         self.metadata = {
             "render_modes": ["human", "rgb_array"],
             "render_fps": 20
         }
         self.window_size = 500
+
         self.vm = vm
+
+        self.api_url = os.getenv("API_URL", "")
 
         high = np.array([1.0, 1.0, 1.0], dtype=np.float32)
         low = np.array([0.0, 0.0, 0.0], dtype=np.float32)
         self.observation_space = gym.spaces.Box(low, high, dtype=np.float32)
 
-        # Action Space: 4 discrete actions
-        # 0: Decrease CPU, 1: Increase CPU, 2: Decrease Memory, 3: Increase Memory
         self.action_space = gym.spaces.Discrete(4)
 
-        # Map actions to adjustments
         self.action_to_adjustment = [
             (-1, 0),  # Decrease CPU
             (1, 0),   # Increase CPU
@@ -70,8 +75,13 @@ class ResourceStarving(gym.Env):
         if mem_adjustment != 0:
             self.vm.VM_Mem_g = max(0.1, self.vm.VM_Mem_g + mem_adjustment)
 
-        # Computing the system's theoritical response time after the adjustement has been applied
-        self.vm.predict_responsetime()
+        self.adjust_container_resources(cpu=self.vm.VM_CPU_g,
+                                        memory=self.vm.VM_Mem_g)
+
+        # Computing the system's resonse time by executing Jmeter's test plan
+        self.vm.ResponseTime = self.run_jmeter_test_plan(threads=self.vm.threads,
+                                                         rampup=self.vm.rampup,
+                                                         loops=self.vm.loops)
 
         # Computing the system's resource utilization ratios
         cpu_util = self.vm.VM_CPU_g / self.vm.VM_CPU_i
@@ -132,6 +142,42 @@ class ResourceStarving(gym.Env):
 
             pygame.display.flip()
             self.clock.tick(self.metadata["render_fps"])
+
+    def adjust_container_resources(self, cpu: int, memory: int) -> bool:
+        try:
+            response = requests.post(
+                f"{self.api_url}adjust_container_resources/",
+                params={
+                    "cpu": cpu,
+                    "memory": memory
+                }
+            )
+
+            response.raise_for_status()
+            return True
+
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return False
+
+    def run_jmeter_test_plan(self, threads: int, rampup: int, loops: int) -> int:
+        try:
+            response = requests.post(
+                f"{self.api_url}run_jmeter_test_plan/",
+                params={
+                    "threads": threads,
+                    "rampup": rampup,
+                    "loops": loops
+                }
+            )
+
+            response.raise_for_status()
+            data = response.json()
+            return data.get("response_time", -1)
+
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return -1
 
     def reset(self, seed=None, options=None):
         self.vm.reset()

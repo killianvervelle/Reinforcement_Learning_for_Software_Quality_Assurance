@@ -42,14 +42,54 @@
             }
         },
         {
-            "name": "sut-container",
+            "name": "sut-api-container",
             "image": "****.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
             "cpu": 512,
             "memory": 1024,
             "portMappings": [
                 {
-                    "containerPort": 8001,
-                    "hostPort": 8001,
+                    "containerPort": 8002,
+                    "hostPort": 8002,
+                    "protocol": "tcp"
+                }
+            ], 
+            "essential": true,
+            "environment": [
+                {
+                    "name": "environment",
+                    "value": "production"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "docker-socket",
+                    "containerPath": "/var/run/docker.sock",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/my-ecs-task",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "eu-west-3",
+                    "awslogs-stream-prefix": "ecs"
+                } 
+            }
+        },
+        {
+            "name": "sut-app-container",
+            "image": "****.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
+            "cpu": 512,
+            "memory": 1024,
+            "portMappings": [
+                {
+                    "containerPort": 3000,
+                    "hostPort": 3000,
                     "protocol": "tcp"
                 }
             ], 
@@ -93,8 +133,8 @@
         }
     ],
     "placementConstraints": [],
-    "cpu": "1024",  
-    "memory": "2048",
+    "cpu": "2048",  
+    "memory": "3072",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
