@@ -4,7 +4,7 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY app/src/api/main.py /app/
+COPY src/api/main.py /app/
 COPY app/requirements.txt /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
