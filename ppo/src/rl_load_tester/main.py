@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-load_dotenv("/src/.env")
+load_dotenv(".env")
 
 ECS_CLIENT = boto3.client('ecs', region_name='eu-west-3')
 CLUSTER_NAME = os.getenv("CLUSTER_NAME", "")

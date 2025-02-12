@@ -29,7 +29,7 @@ class ResourceStarving(gym.Env):
     def __init__(self, vm, jmeter_agent, docker_agent, render_mode=None) -> None:
         super(ResourceStarving, self).__init__()
 
-        load_dotenv(".env")
+        load_dotenv("../.env")
 
         self.metadata = {
             "render_modes": ["human", "rgb_array"],
