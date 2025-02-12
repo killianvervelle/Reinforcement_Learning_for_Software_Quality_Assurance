@@ -12,7 +12,7 @@ RUN ls -l /app  # List the files in /app
 
 RUN pip list
 
-ENV PYTHONPATH=/app/
+ENV PYTHONPATH=/app
 
 EXPOSE 8000
 
