@@ -10,7 +10,7 @@ env:
   ECR_REPOSITORY: my_ecr_repository           
   ECS_SERVICE: my_ecs_service                 
   ECS_CLUSTER: my_ecs_cluster                 
-  ECS_TASK_DEFINITION: ppo/task-definition.json
+  ECS_TASK_DEFINITION: ppo/src/task-definition.json
 
 jobs:
   build-sut-app-image:
