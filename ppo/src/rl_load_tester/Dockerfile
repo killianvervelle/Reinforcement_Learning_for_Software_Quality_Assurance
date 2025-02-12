@@ -4,11 +4,9 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY src/rl_load_tester/main.py ./
+COPY src/rl_load_tester /app/
 
-COPY src/rl_load_tester/requirements.txt ./
-
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 EXPOSE 8000
 
