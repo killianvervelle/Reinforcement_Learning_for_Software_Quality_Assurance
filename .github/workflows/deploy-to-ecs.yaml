@@ -19,7 +19,7 @@ jobs:
     env:
         IMAGE_TAG: sut-app
     outputs:
-      output: ${{ steps.build-sut.outputs.sut_app_image }}
+      output: ${{ steps.build-sut_app.outputs.sut_app_image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
     env:
         IMAGE_TAG: sut_api
     outputs:
-      output: ${{ steps.build-api.outputs.sut_api_image }}
+      output: ${{ steps.build-sut-api.outputs.sut_api_image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
     env:
         IMAGE_TAG: agent-api
     outputs:
-      output: ${{ steps.build-api.outputs.agent_api_image }}
+      output: ${{ steps.build-agent-api.outputs.agent_api_image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
