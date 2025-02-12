@@ -158,14 +158,14 @@ jobs:
              '(.containerDefinitions[] | select(.name == "sut-app-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "sut-app-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "sut-app-container") | .portMappings[0].name) = "sut-app"' \
-             updated-sut-task.json > final-task-definition.json
+             updated-sut-task.json > updated2-sut-task.json
           
           jq --arg IMAGE "$ECR_REGISTRY/$SUT_API_IMAGE" \
              --argjson PORT ${{ env.PORT_SUT_API }} \
              '(.containerDefinitions[] | select(.name == "sut-api-container") | .image) = $IMAGE |
               (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].containerPort) = $PORT |
               (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].name) = "sut-api"' \
-             updated-sut-task.json > final-task-definition.json
+             updated2-sut-task.json > final-task-definition.json
 
           # Output the final task definition for debugging
           cat final-task-definition.json
