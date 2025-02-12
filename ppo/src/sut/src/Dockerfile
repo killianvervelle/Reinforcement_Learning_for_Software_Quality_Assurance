@@ -4,9 +4,11 @@ WORKDIR /app
 
 COPY src/sut/src/ /app/
 
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir --force-reinstall -r /app/requirements.txt
 
 RUN ls -l /app  # List the files in /app
+
+RUN pip list
 
 EXPOSE 8002
 
