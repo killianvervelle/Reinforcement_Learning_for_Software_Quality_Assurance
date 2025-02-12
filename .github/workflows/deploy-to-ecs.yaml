@@ -103,6 +103,8 @@ jobs:
 
       - name: Build, tag, and push API image to Amazon ECR
         id: build-agent-api
+        env:
+          IMAGE_TAG: agent-api
         run: |
           docker build --no-cache -f ppo/src/rl_load_tester/Dockerfile \
             -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
