@@ -4,8 +4,9 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY src/api/main.py /app/
-COPY app/requirements.txt /app/
+COPY src/rl_load_tester/main.py /app/
+
+COPY src/rl_load_tester/requirements.txt /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
 
