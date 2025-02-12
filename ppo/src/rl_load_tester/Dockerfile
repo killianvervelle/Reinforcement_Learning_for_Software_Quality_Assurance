@@ -4,7 +4,7 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY src/rl_load_tester /app/
+COPY ppo/src/rl_load_tester /app/
 
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
