@@ -6,7 +6,7 @@ COPY src/sut/showcase/ /app/
 
 RUN npm install
 
-RUN npm start
+RUN npm run build
 
 EXPOSE 3000
 
