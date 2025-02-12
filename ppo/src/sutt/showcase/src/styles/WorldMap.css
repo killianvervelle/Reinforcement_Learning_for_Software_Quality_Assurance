@@ -1,0 +1,130 @@
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+.map-container {
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome {
+  width: 550px;
+  height: 550px;
+  padding: 10px;
+  position: absolute;
+  top: 120px;
+  left: 70px;
+  border: 2px solid #ccc;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  justify-content: center;
+}
+
+.popup {
+  width: 250px;
+  height: 250px;
+  padding: 10px;
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  border: 2px solid #ccc;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  justify-content: center;
+}
+
+.zoom-buttons {
+  position: absolute;
+  top: 275px;
+  left: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.zoom-button {
+  margin: 5px;
+  padding: 10px;
+  width: 40px; 
+  height: 40px;
+  font-size: 18px;
+  background-color: #fff; 
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.zoom-button:hover {
+  background-color: #f5f5f5; 
+}
+
+.popup button {
+  display: block;
+  margin: 10px auto; 
+  padding: 8px 16px;
+  margin-top: 10px; 
+  background-color: #2ab6c5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  background-color: #037d8e; 
+}
+
+.close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 10px;
+  color: #555;
+}
+
+.country{
+  fill: #d0d0d0;   /* country colour */
+  stroke: #2A2C39; /* country border colour */
+  stroke-width: 1; /* country border width */
+}
+.country-on{
+  fill: #4B5358;   /* highlight colour for selected country */
+}
+.countryLabel{
+  display: none;   /* hide all country labels by default */
+}
+.countryName{
+  fill: #FFFAFF;   /* country label text colour */
+}
+.countryLabelBg{
+  fill: #30BCED;   /* country label background colour */
+}
+
+.dropdown-container {
+  padding: 8px;
+  background-color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.styled-dropdown:hover {
+  border-color: #007bff;
+}

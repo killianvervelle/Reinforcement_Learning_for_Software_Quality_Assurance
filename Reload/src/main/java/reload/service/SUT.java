@@ -8,7 +8,6 @@ import reload.model.QualityMeasures;
 import reload.model.SUTstate;
 import reload.model.Transaction;
 
-
 public class SUT {
 
     public LoadTester loadTester;
@@ -18,7 +17,8 @@ public class SUT {
     private int initialWorkLoadPerTransaction;
     private double workLoadIncreasingStepRatio;
 
-    public SUT() {Initialize();
+    public SUT() {
+        Initialize();
     }
 
     public void Initialize() {
@@ -35,13 +35,12 @@ public class SUT {
         transactions[0] = new Transaction("Test1", initialWorkLoadPerTransaction);
         transactions[1] = new Transaction("RegisterPage", initialWorkLoadPerTransaction);
         transactions[2] = new Transaction("RegisterUser", initialWorkLoadPerTransaction);
-                .......
 
     }
 
-    public void applyAction(int action) {  
+    public void applyAction(int action) {
         boolean success = false;
-        //modifying the load of transactions
+        // modifying the load of transactions
         int prevWorkLoad = transactions[action].workLoad;
         transactions[action].workLoad = (int) (prevWorkLoad * workLoadIncreasingStepRatio);
 
@@ -68,7 +67,8 @@ public class SUT {
 
     public int GetTotalWorkLoad() {
         int totalWorkLoad = 0;
-        for (Transaction t : transactions) totalWorkLoad += t.workLoad;
+        for (Transaction t : transactions)
+            totalWorkLoad += t.workLoad;
         return totalWorkLoad;
     }
 
@@ -79,7 +79,5 @@ public class SUT {
     public SUTstate getSUTState() {
         return new SUTstate(qualityMeasures, GetTotalWorkLoad(), transactions);
     }
-    
+
 }
-
-

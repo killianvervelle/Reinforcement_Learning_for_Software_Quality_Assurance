@@ -1,0 +1,181 @@
+name: RL Workflow
+
+on: 
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: eu-west-3
+  ECR_REPOSITORY: my_ecr_repository           
+  ECS_SERVICE: my_ecs_service                 
+  ECS_CLUSTER: my_ecs_cluster                 
+  ECS_TASK_DEFINITION: ppo/task-definition.json
+
+jobs:
+  build-sut-app-image:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+        IMAGE_TAG: sut-app
+    outputs:
+      output: ${{ steps.build-sut.outputs.sut_app_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push SUT image to Amazon ECR
+        id: build-sut_app
+        env:
+          IMAGE_TAG: sut_app
+        run: |
+          docker build --no-cache -f ppo/src/sut/showcase/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "sut_app_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sut_app_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  build-sut-api-image:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+        IMAGE_TAG: sut_api
+    outputs:
+      output: ${{ steps.build-api.outputs.sut_api_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push SUT image to Amazon ECR
+        id: build-sut-api
+        env:
+          IMAGE_TAG: sut_api
+        run: |
+          docker build --no-cache -f ppo/src/sut/src/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "sut_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sut_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  build-agent-api-image:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+        IMAGE_TAG: agent-api
+    outputs:
+      output: ${{ steps.build-api.outputs.agent_api_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push API image to Amazon ECR
+        id: build-agent-api
+        run: |
+          docker build --no-cache -f ppo/src/api/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  deploy-ecs:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [build-sut-api-image, build-sut-app-image, build-agent-api-image] 
+    env:
+      PORT_AGENT_API: 8000
+      PORT_SUT_APP: 3000
+      PORT_SUT_API: 8002
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+  
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Update ECS task definition
+        id: update-task-def 
+        run: |
+          cp ${{ env.ECS_TASK_DEFINITION }} updated-task-definition.json
+
+          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+          SUT_API_IMAGE="${{ needs.build-sut-api-image.outputs.output }}"
+          SUT_APP_IMAGE="${{ needs.build-sut-app-image.outputs.output }}"
+          AGENT_API_IMAGE="${{ needs.build-agent-api-image.outputs.output }}"
+
+          jq --arg IMAGE "$ECR_REGISTRY/$AGENT_API_IMAGE" \
+             --argjson PORT ${{ env.PORT_AGENT_API }} \
+             '(.containerDefinitions[] | select(.name == "agent-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].containerPort) = $PORT |
+              (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].name) = "agent"' \
+             updated-task-definition.json > updated-sut-task.json
+
+          jq --arg IMAGE "$ECR_REGISTRY/$SUT_APP_IMAGE" \
+             --argjson PORT ${{ env.PORT_SUT_APP }} \
+             '(.containerDefinitions[] | select(.name == "sut-app-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "sut-app-container") | .portMappings[0].containerPort) = $PORT |
+              (.containerDefinitions[] | select(.name == "sut-app-container") | .portMappings[0].name) = "sut-app"' \
+             updated-sut-task.json > final-task-definition.json
+          
+          jq --arg IMAGE "$ECR_REGISTRY/$SUT_API_IMAGE" \
+             --argjson PORT ${{ env.PORT_SUT_API }} \
+             '(.containerDefinitions[] | select(.name == "sut-api-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].containerPort) = $PORT |
+              (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].name) = "sut-api"' \
+             updated-sut-task.json > final-task-definition.json
+
+          # Output the final task definition for debugging
+          cat final-task-definition.json
+
+      - name: Deploy updated ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: final-task-definition.json
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+
+
+

@@ -1,0 +1,22 @@
+.about-container {
+    padding: 10px 50px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+  }
+
+.image-container,
+.name-container {
+  text-align: center;
+}
+
+img {
+  max-height: 200px;
+  object-fit: cover;
+  width: 100%;
+  margin-bottom: 10px;
+}
