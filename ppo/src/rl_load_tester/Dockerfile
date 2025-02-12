@@ -4,7 +4,7 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY src/rl_load_tester/main.py /app/
+COPY src/rl_load_tester/main.py ./
 
 COPY src/rl_load_tester/requirements.txt /app/
 

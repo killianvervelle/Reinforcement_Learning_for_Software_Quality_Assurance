@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY src/sut/showcase/ /app/
+COPY src/sut/showcase/ ./
 
 RUN npm install
 
