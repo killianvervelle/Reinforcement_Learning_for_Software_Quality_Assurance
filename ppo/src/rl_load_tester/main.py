@@ -159,7 +159,7 @@ def get_container_id(last_task):
 
 
 def build_test_plan(threads, rampup, loops):
-    timer = UniformRandomTimer(200, 1000)
+    timer = UniformRandomTimer(250, 1000)
 
     http_sampler1 = HttpSampler(
         "echo_get_request", f"{SUT_API_URL}"+"food-supply")
