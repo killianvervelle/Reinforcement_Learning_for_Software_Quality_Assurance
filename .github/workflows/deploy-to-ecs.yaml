@@ -86,7 +86,6 @@ jobs:
     needs: [build-sut-api-image, build-agent-api-image] 
     env:
       PORT_AGENT_API: 8000
-      PORT_SUT_APP: 3000
       PORT_SUT_API: 8002
 
     steps:
@@ -120,20 +119,20 @@ jobs:
               (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].name) = "agent"' \
              updated-task-definition.json > updated-sut-task.json
 
-          jq --arg IMAGE "$ECR_REGISTRY/$SUT_APP_IMAGE" \
-             --argjson PORT ${{ env.PORT_SUT_APP }} \
-             '(.containerDefinitions[] | select(.name == "sut-app-container") | .image) = $IMAGE |
-              (.containerDefinitions[] | select(.name == "sut-app-container") | .portMappings[0].containerPort) = $PORT |
-              (.containerDefinitions[] | select(.name == "sut-app-container") | .portMappings[0].name) = "sut-app"' \
-             updated-sut-task.json > final.json
+          jq --arg IMAGE "$ECR_REGISTRY/$SUT_API_IMAGE" \
+             --argjson PORT ${{ env.PORT_SUT_API }} \
+             '(.containerDefinitions[] | select(.name == "sut-api-container") | .image) = $IMAGE |
+              (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].containerPort) = $PORT |
+              (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].name) = "sut-api"' \
+             updated-sut-task.json > final-task-definition.json
 
           # Output the final task definition for debugging
-          cat final.json
+          cat final-task-definition.json
 
       - name: Deploy updated ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: final.json
+          task-definition: final-task-definition.json
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
