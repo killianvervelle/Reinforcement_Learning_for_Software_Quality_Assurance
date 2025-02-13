@@ -4,8 +4,8 @@ RUN pip install --upgrade pip
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-jdk \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt install -y curl
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
