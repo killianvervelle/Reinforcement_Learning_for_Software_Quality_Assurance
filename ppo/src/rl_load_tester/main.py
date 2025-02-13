@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 import docker
@@ -25,6 +26,10 @@ load_dotenv(".env")
 ECS_CLIENT = boto3.client('ecs', region_name='eu-west-3')
 CLUSTER_NAME = os.getenv("CLUSTER_NAME", "")
 SUT_APP_URL = os.getenv("SUT_APP_URL", "")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "")
+
 
 latest_task_arn = ""
 container_id = ""
@@ -32,7 +37,11 @@ container_id = ""
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    latest_task_arn = get_latest_task()
+    latest_task_arn = ""
+    while not latest_task_arn:
+        logger.info("Polling ECS for latest task ARN...")
+        await asyncio.sleep(20)
+        latest_task_arn = get_latest_task()
     container_id = get_container_id(latest_task_arn)
     logger.info(
         f"Initialized: latest_task_arn={latest_task_arn}, container_id={container_id}")
@@ -42,11 +51,12 @@ async def lifespan(app: FastAPI):
     container_id = ""
     logger.info("Cleanup: Reset latest_task_arn and container_id")
 
+
 app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
-def read_root():
+def health_check():
     return {"message": "Health check successfull."}
 
 
