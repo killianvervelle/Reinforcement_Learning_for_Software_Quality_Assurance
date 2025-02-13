@@ -159,31 +159,29 @@ def get_container_id(last_task):
 
 
 def build_test_plan(threads, rampup, loops):
-    html_reporter = HtmlReporter()
-
     timer = UniformRandomTimer(200, 1000)
 
-    http_sampler_1 = HttpSampler(
-        "echo_get_request", f"{SUT_API_URL}"+"food-supply", timer)
-    thread_group_1 = ThreadGroupWithRampUpAndHold(
-        threads, rampup, loops, http_sampler_1)
+    http_sampler1 = HttpSampler(
+        "echo_get_request", f"{SUT_API_URL}"+"food-supply")
+    thread_group_main = ThreadGroupWithRampUpAndHold(
+        threads, rampup, loops, http_sampler1, timer)
 
-    http_sampler_2 = HttpSampler(
-        "echo_get_request", f"{SUT_API_URL}"+"undernourishement-data", timer)
-    thread_group_2 = ThreadGroupWithRampUpAndHold(
-        threads, rampup, loops, http_sampler_2)
+    http_sampler2 = HttpSampler(
+        "echo_get_request", f"{SUT_API_URL}"+"undernourishement-data")
+    thread_group_main2 = ThreadGroupWithRampUpAndHold(
+        threads, rampup, loops, http_sampler2, timer)
 
-    http_sampler_3 = HttpSampler(
-        "echo_get_request", f"{SUT_API_URL}"+"nutritional-data-country/usa", timer)
-    thread_group_3 = ThreadGroupWithRampUpAndHold(
-        threads, rampup, loops, http_sampler_3)
+    http_sampler3 = HttpSampler(
+        "echo_get_request", f"{SUT_API_URL}"+"nutritional-data-country/usa")
+    thread_group_main3 = ThreadGroupWithRampUpAndHold(
+        threads, rampup, loops, http_sampler3, timer)
 
-    http_sampler_4 = HttpSampler(
-        "echo_get_request", f"{SUT_API_URL}"+"utilization-data/usa/Production", timer)
-    thread_group_4 = ThreadGroupWithRampUpAndHold(
-        threads, rampup, loops, http_sampler_4)
+    http_sampler4 = HttpSampler(
+        "echo_get_request", f"{SUT_API_URL}"+"utilization-data/usa/Production")
+    thread_group_main4 = ThreadGroupWithRampUpAndHold(
+        threads, rampup, loops, http_sampler4, timer)
 
-    return TestPlan([thread_group_1, thread_group_2, thread_group_3, thread_group_4], html_reporter)
+    return TestPlan(thread_group_main, thread_group_main2, thread_group_main3, thread_group_main4)
 
 
 def execute_test_plan(test_plan):
