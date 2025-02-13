@@ -33,6 +33,9 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/my-ecs-task",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
                     "awslogs-region": "eu-west-3",
                     "awslogs-stream-prefix": "ecs"
                 } 
@@ -70,6 +73,9 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/my-ecs-task",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
                     "awslogs-region": "eu-west-3",
                     "awslogs-stream-prefix": "ecs"
                 } 
@@ -107,6 +113,9 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/my-ecs-task",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
                     "awslogs-region": "eu-west-3",
                     "awslogs-stream-prefix": "ecs"
                 }
