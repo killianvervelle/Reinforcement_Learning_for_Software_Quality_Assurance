@@ -17,6 +17,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV JVM_PATH=/usr/lib/jvm/default-java/lib/server/libjvm.so
 ENV PATH=$JAVA_HOME/bin:$PATH
 ENV PYTHONPATH=/app
+ENV JVM_ARGS="-Xms256m -Xmx2048m"
 
 EXPOSE 8000
 

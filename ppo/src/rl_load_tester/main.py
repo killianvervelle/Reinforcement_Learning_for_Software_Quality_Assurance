@@ -172,12 +172,12 @@ def build_test_plan(threads, rampup, loops):
         threads, rampup, loops, http_sampler2, timer)
 
     http_sampler3 = HttpSampler(
-        "echo_get_request", f"{SUT_API_URL}"+"nutritional-data-country/usa")
+        "echo_get_request", f"{SUT_API_URL}"+"nutritional-data-country/USA")
     thread_group_main3 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler3, timer)
 
     http_sampler4 = HttpSampler(
-        "echo_get_request", f"{SUT_API_URL}"+"utilization-data/usa/Production")
+        "echo_get_request", f"{SUT_API_URL}"+"utilization-data/USA/Production")
     thread_group_main4 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler4, timer)
 
