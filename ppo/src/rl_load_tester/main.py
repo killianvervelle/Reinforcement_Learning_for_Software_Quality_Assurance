@@ -35,24 +35,7 @@ latest_task_arn = ""
 container_id = ""
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    latest_task_arn = ""
-    while not latest_task_arn:
-        logger.info("Polling ECS for latest task ARN...")
-        await asyncio.sleep(20)
-        latest_task_arn = get_latest_task()
-    container_id = get_container_id(latest_task_arn)
-    logger.info(
-        f"Initialized: latest_task_arn={latest_task_arn}, container_id={container_id}")
-    yield
-
-    latest_task_arn = ""
-    container_id = ""
-    logger.info("Cleanup: Reset latest_task_arn and container_id")
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 
 @app.get("/")
