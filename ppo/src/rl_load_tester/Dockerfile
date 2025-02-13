@@ -11,7 +11,7 @@ WORKDIR /app
 
 COPY src/rl_load_tester/ ./
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --force-reinstall -r requirements.txt
 
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV JVM_PATH=/usr/lib/jvm/default-java/lib/server/libjvm.so
