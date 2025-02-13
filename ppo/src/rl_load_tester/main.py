@@ -72,7 +72,7 @@ def run_load_test():
 
 @app.post("/adjust_container_resources/")
 def adjust_container_resources(cpu: int,
-                               memory: int) -> None:
+                               memory: int):
     try:
         client = docker.from_env()
         container = client.containers.get(container_id)
@@ -104,7 +104,7 @@ def adjust_container_resources(cpu: int,
 @app.post("/run_jmeter_test_plan/")
 def run_jmeter_test_plan(threads: int,
                          rampup: int,
-                         loops: int) -> int:
+                         loops: int):
     try:
         test_plan = build_test_plan(
             threads=threads,
