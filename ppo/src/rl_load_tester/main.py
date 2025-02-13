@@ -35,7 +35,7 @@ latest_task_arn = ""
 container_id = ""
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 
 @app.get("/")
