@@ -25,7 +25,7 @@ load_dotenv(".env")
 
 ECS_CLIENT = boto3.client('ecs', region_name='eu-west-3')
 CLUSTER_NAME = os.getenv("CLUSTER_NAME", "")
-SUT_APP_URL = os.getenv("SUT_APP_URL", "")
+SUT_API_URL = os.getenv("SUT_API_URL", "")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
 AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "")
@@ -164,22 +164,22 @@ def build_test_plan(threads, rampup, loops):
     timer = UniformRandomTimer(200, 1000)
 
     http_sampler_1 = HttpSampler(
-        "echo_get_request", f"{SUT_APP_URL}"+"food-supply", timer)
+        "echo_get_request", f"{SUT_API_URL}"+"food-supply", timer)
     thread_group_1 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler_1)
 
     http_sampler_2 = HttpSampler(
-        "echo_get_request", f"{SUT_APP_URL}"+"undernourishement-data", timer)
+        "echo_get_request", f"{SUT_API_URL}"+"undernourishement-data", timer)
     thread_group_2 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler_2)
 
     http_sampler_3 = HttpSampler(
-        "echo_get_request", f"{SUT_APP_URL}"+"nutritional-data-country/usa", timer)
+        "echo_get_request", f"{SUT_API_URL}"+"nutritional-data-country/usa", timer)
     thread_group_3 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler_3)
 
     http_sampler_4 = HttpSampler(
-        "echo_get_request", f"{SUT_APP_URL}"+"utilization-data/usa/Production", timer)
+        "echo_get_request", f"{SUT_API_URL}"+"utilization-data/usa/Production", timer)
     thread_group_4 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler_4)
 
