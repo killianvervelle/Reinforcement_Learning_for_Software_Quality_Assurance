@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY src/sut/src /app/.
+COPY src/sut/src/ /app/
 
 RUN pip install --upgrade pip
 
