@@ -162,22 +162,22 @@ def build_test_plan(threads, rampup, loops):
     timer = UniformRandomTimer(250, 1000)
 
     http_sampler1 = HttpSampler(
-        "echo_get_request", f"{API_URL}"+"food-supply")
+        "echo_get_request", f"{SUT_API_URL}"+"food-supply")
     thread_group_main = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler1, timer)
 
     http_sampler2 = HttpSampler(
-        "echo_get_request", f"{API_URL}"+"undernourishement-data")
+        "echo_get_request", f"{SUT_API_URL}"+"undernourishement-data")
     thread_group_main2 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler2, timer)
 
     http_sampler3 = HttpSampler(
-        "echo_get_request", f"{API_URL}"+"nutritional-data-country/USA")
+        "echo_get_request", f"{SUT_API_URL}"+"nutritional-data-country/USA")
     thread_group_main3 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler3, timer)
 
     http_sampler4 = HttpSampler(
-        "echo_get_request", f"{API_URL}"+"utilization-data/USA/Production")
+        "echo_get_request", f"{SUT_API_URL}"+"utilization-data/USA/Production")
     thread_group_main4 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler4, timer)
 
