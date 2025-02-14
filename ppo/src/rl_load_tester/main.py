@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
     logger.info("Cleanup: Reset latest_task_arn and container_id")
 
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
