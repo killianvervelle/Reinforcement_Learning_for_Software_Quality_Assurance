@@ -29,7 +29,8 @@
             ],
             "volumesFrom": [],
             "linuxParameters": {
-                "maxSwap": 2048
+                "maxSwap": 2048,
+                "swappiness": 60
             },
             "ulimits": [],
             "logConfiguration": {
@@ -72,7 +73,8 @@
             ],
             "volumesFrom": [],
             "linuxParameters": {
-                "maxSwap": 2048
+                "maxSwap": 2048,
+                "swappiness": 60
             },
             "ulimits": [],
             "logConfiguration": {
