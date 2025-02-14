@@ -1,14 +1,10 @@
 import pygame
 import numpy as np
-from fastapi import requests
-
-from dotenv import load_dotenv
+import requests
 import os
 
 import gym
 import gym.spaces as Space
-
-from asset.gauge import Gauge
 
 
 class ResourceStarving(gym.Env):
@@ -26,20 +22,15 @@ class ResourceStarving(gym.Env):
         None: Initializes the environment's parameters.
     """
 
-    def __init__(self, vm, jmeter_agent, docker_agent, render_mode=None) -> None:
+    def __init__(self, vm, render_mode=None) -> None:
         super(ResourceStarving, self).__init__()
 
-        load_dotenv("../.env")
-
-        self.metadata = {
-            "render_modes": ["human", "rgb_array"],
-            "render_fps": 20
-        }
         self.window_size = 500
 
         self.vm = vm
 
-        self.api_url = os.getenv("API_URL", "")
+        self.api_url = os.getenv(
+            "API_URL", "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8003/")
 
         high = np.array([1.0, 1.0, 1.0], dtype=np.float32)
         low = np.array([0.0, 0.0, 0.0], dtype=np.float32)
@@ -97,8 +88,8 @@ class ResourceStarving(gym.Env):
 
         terminated = bool(
             response_time_norm > 1.1 or
-            cpu_util > 1.0 or cpu_util < 0.1 or
-            mem_util > 1.0 or mem_util < 0.1
+            cpu_util > 1.2 or cpu_util < 0.1 or
+            mem_util > 1.2 or mem_util < 0.1
         )
 
         # Setting the termination conditions of an episode
@@ -109,39 +100,6 @@ class ResourceStarving(gym.Env):
             reward = 1.0 - abs(response_time_norm - 1.0)
 
         return np.array(self.state, dtype=np.float32), reward, terminated, False, {}
-
-    def render(self):
-        if self.render_mode == "rgb_array":
-            return self.render_frame()
-
-    def render_frame(self):
-        if self.window is None:
-            pygame.init()
-            self.window = pygame.display.set_mode(
-                (self.window_size, self.window_size))
-            self.clock = pygame.time.Clock()
-
-        if self.render_mode == "rgb_array":
-            self.window.fill((255, 255, 255))
-
-            FONT = pygame.font.SysFont('Arial', 30)
-            my_gauge = Gauge(
-                screen=self.window,
-                FONT=FONT,
-                x_cord=self.window_size / 2,
-                y_cord=self.window_size / 2,
-                thickness=30,
-                radius=150,
-                circle_colour=(128, 128, 128),
-                glow=False
-            )
-
-            percent = (self.vm.ResponseTime /
-                       int(1.1 * self.vm.Requirement_ResTime)) * 100
-            my_gauge.draw(percent)
-
-            pygame.display.flip()
-            self.clock.tick(self.metadata["render_fps"])
 
     def adjust_container_resources(self, cpu: int, memory: int) -> bool:
         try:
@@ -173,7 +131,7 @@ class ResourceStarving(gym.Env):
 
             response.raise_for_status()
             data = response.json()
-            return data.get("response_time", -1)
+            return data["response_time"]
 
         except requests.exceptions.RequestException as e:
             print(f"Request failed: {e}")
@@ -181,6 +139,9 @@ class ResourceStarving(gym.Env):
 
     def reset(self, seed=None, options=None):
         self.vm.reset()
+        self.vm.ResponseTime = self.run_jmeter_test_plan(threads=self.vm.threads,
+                                                         rampup=self.vm.rampup,
+                                                         loops=self.vm.loops)
         cpu_util = self.vm.VM_CPU_g / self.vm.VM_CPU_i
         mem_util = self.vm.VM_Mem_g / self.vm.VM_Mem_i
         response_time_norm = self.vm.ResponseTime / self.vm.Requirement_ResTime

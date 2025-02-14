@@ -71,6 +71,11 @@ def run_load_test():
     pass
 
 
+@app.get("/get_container_id")
+def get_container_id():
+    return {"Container id": container_id}
+
+
 @app.post("/adjust_container_resources/")
 def adjust_container_resources(cpu: int,
                                memory: int):

@@ -63,6 +63,7 @@ jobs:
           echo "THREADS=${{ vars.THREADS }}" >> $GITHUB_ENV
           echo "RAMPUP=${{ vars.RAMPUP }}" >> $GITHUB_ENV
           echo "LOOPS=${{ vars.LOOPS }}" >> $GITHUB_ENV
+          echo "API_URL=${{ secrets.API_URL }}" >> $GITHUB_ENV
           echo "SUT_API_URL=${{ secrets.SUT_API_URL }}" >> $GITHUB_ENV
           echo "REPOSITORY=${{ vars.REPOSITORY }}" >> $GITHUB_ENV
           echo "CLUSTER_NAME=${{ vars.CLUSTER_NAME }}" >> $GITHUB_ENV
