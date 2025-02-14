@@ -40,13 +40,12 @@ class Environment:
     def __init__(self):
         pass
 
-    def initialize_vms(self, n, requirement_res_times, model):
+    def initialize_vms(self, n, requirement_res_times):
         vm_list = []
 
         for i in range(n):
             vm = VirtualMachine(
-                Requirement_ResTime=requirement_res_times[i],
-                model=model
+                Requirement_ResTime=requirement_res_times[i]
             )
             vm_list.append(vm)
 
@@ -68,7 +67,7 @@ class Environment:
         if "Env-v1" not in gym.envs.registry:
             register(
                 id="Env-v1",
-                entry_point="my_gym.myGym:ResourceStarving"
+                entry_point="my_gym.myGymStress:ResourceStarving"
             )
 
         env_train = gym.make("Env-v1", vm=vms[0])

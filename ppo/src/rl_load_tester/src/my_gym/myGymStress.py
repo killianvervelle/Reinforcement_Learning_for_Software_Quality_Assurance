@@ -33,16 +33,20 @@ class ResourceStarving(gym.Env):
             "API_URL", "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8003/")
 
         high = np.array([1.0, 1.0, 1.0], dtype=np.float32)
-        low = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+        low = np.array([0.1, 0.6, 0.1], dtype=np.float32)
         self.observation_space = gym.spaces.Box(low, high, dtype=np.float32)
 
-        self.action_space = gym.spaces.Discrete(4)
+        self.action_space = gym.spaces.Discrete(8)
 
         self.action_to_adjustment = [
-            (-1, 0),  # Decrease CPU
-            (1, 0),   # Increase CPU
-            (0, -0.1),  # Decrease Memory
-            (0, 0.1)    # Increase Memory
+            (-5, 0),
+            (5, 0),
+            (-1, 0),
+            (1, 0),
+            (0, -0.1),
+            (0, 0.1),
+            (0, -0.2),
+            (0, 0.2)
         ]
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
@@ -89,7 +93,7 @@ class ResourceStarving(gym.Env):
         terminated = bool(
             response_time_norm > 1.1 or
             cpu_util > 1.2 or cpu_util < 0.1 or
-            mem_util > 1.2 or mem_util < 0.1
+            mem_util > 1.2 or mem_util < 0.7
         )
 
         # Setting the termination conditions of an episode

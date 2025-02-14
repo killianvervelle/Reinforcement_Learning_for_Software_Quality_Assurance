@@ -28,10 +28,6 @@
                 }
             ],
             "volumesFrom": [],
-            "linuxParameters": {
-                "maxSwap": 2048,
-                "swappiness": 60
-            },
             "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
@@ -50,6 +46,7 @@
             "image": "****.dkr.ecr.eu-west-3.amazonaws.com/my_ecr_repository:PLACEHOLDER_TAG",
             "cpu": 512,
             "memory": 1024,
+            "memoryReservation": 512,
             "portMappings": [
                 {
                     "containerPort": 8002,
@@ -73,7 +70,7 @@
             ],
             "volumesFrom": [],
             "linuxParameters": {
-                "maxSwap": 2048,
+                "maxSwap": 4096,
                 "swappiness": 60
             },
             "ulimits": [],
