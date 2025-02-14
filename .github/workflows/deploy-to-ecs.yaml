@@ -57,6 +57,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Set up environment variables
+        run: |
+          echo "THREADS=${{ vars.THREADS }}" >> $GITHUB_ENV
+          echo "RAMPUP=${{ vars.RAMPUP }}" >> $GITHUB_ENV
+          echo "LOOPS=${{ vars.LOOPS }}" >> $GITHUB_ENV
+          echo "SUT_API_URL=${{ secrets.SUT_API_URL }}" >> $GITHUB_ENV
+          echo "REPOSITORY=${{ vars.REPOSITORY }}" >> $GITHUB_ENV
+          echo "CLUSTER_NAME=${{ vars.CLUSTER_NAME }}" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -75,6 +84,13 @@ jobs:
           IMAGE_TAG: agent-api
         run: |
           docker build --no-cache -f ppo/src/rl_load_tester/Dockerfile \
+            --build-arg THREADS=$THREADS \
+            --build-arg RAMPUP=$RAMPUP \
+            --build-arg LOOPS=$LOOPS \
+            --build-arg API_URL=$API_URL \
+            --build-arg SUT_API_URL=$SUT_API_URL \
+            --build-arg REPOSITORY=$REPOSITORY \
+            --build-arg CLUSTER_NAME=$CLUSTER_NAME \
             -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
           docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
           echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV

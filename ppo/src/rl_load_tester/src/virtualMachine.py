@@ -21,7 +21,7 @@ class VirtualMachine:
         self.ResponseTime = 0
 
         self.threads = int(os.getenv("THREADS", 20))
-        self.rampup = int(os.getenv("RAMP_UP", 1))
+        self.rampup = int(os.getenv("RAMPUP", 1))
         self.loops = int(os.getenv("LOOPS", 20))
 
     def reset(self):
@@ -33,5 +33,5 @@ class VirtualMachine:
         self.ResponseTime = self.ResponseTime_i
 
         self.threads = int(os.getenv("THREADS", 20))
-        self.rampup = int(os.getenv("RAMP_UP", 1))
+        self.rampup = int(os.getenv("RAMPUP", 1))
         self.loops = int(os.getenv("LOOPS", 20))

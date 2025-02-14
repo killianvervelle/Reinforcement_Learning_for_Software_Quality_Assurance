@@ -3,7 +3,6 @@ import os
 import time
 import docker
 import logging
-from dotenv import load_dotenv
 
 import boto3
 from fastapi import FastAPI
@@ -21,7 +20,6 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-load_dotenv(".env")
 
 ECS_CLIENT = boto3.client('ecs', region_name='eu-west-3')
 CLUSTER_NAME = os.getenv("CLUSTER_NAME", "")
@@ -30,6 +28,9 @@ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
 AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "")
 
+THREADS = os.getenv("THREADS", "")
+RAMPUP = os.getenv("RAMPUP", "")
+LOOPS = os.getenv("LOOPS", "")
 
 latest_task_arn = ""
 container_id = ""
