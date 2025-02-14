@@ -122,6 +122,7 @@ def run_jmeter_test_plan(threads: int,
         )
 
         response_time = execute_test_plan(test_plan)
+        print(f"response_time: {response_time}")
 
         return {"response_time": response_time}
 
@@ -169,7 +170,6 @@ def get_container_id(last_task):
 
 def build_test_plan(threads, rampup, loops):
     timer = UniformRandomTimer(250, 1000)
-    print(threads, rampup, loops, f"{SUT_API_URL}"+"food-supply")
     http_sampler1 = HttpSampler(
         "echo_get_request", f"{SUT_API_URL}"+"food-supply")
     thread_group_main = ThreadGroupWithRampUpAndHold(
