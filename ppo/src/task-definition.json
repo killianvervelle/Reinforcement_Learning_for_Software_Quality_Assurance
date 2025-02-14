@@ -70,7 +70,8 @@
             ],
             "volumesFrom": [],
             "linuxParameters": {
-                "maxSwap": 4096,
+                "oomKillDisable": true,
+                "maxSwap": 2048,
                 "swappiness": 60
             },
             "ulimits": [],

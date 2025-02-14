@@ -3,6 +3,7 @@ import os
 import time
 import docker
 import logging
+import gc
 
 import boto3
 from fastapi import FastAPI
@@ -83,6 +84,7 @@ def get_container_id():
 def adjust_container_resources(cpu: int,
                                memory: float):
     try:
+        gc.collect()
         client = docker.from_env()
         container = client.containers.get(container_id)
         logger.info(f"Container {container} found. Updating resources...")
