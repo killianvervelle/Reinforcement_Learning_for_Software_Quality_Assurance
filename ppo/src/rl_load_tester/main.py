@@ -43,14 +43,17 @@ async def lifespan(app: FastAPI):
         logger.info("Polling ECS for latest task ARN...")
         await asyncio.sleep(20)
         latest_task_arn = get_latest_task()
+        logger.info(f"Fetched latest_task_arn={latest_task_arn}")
+
+    if not latest_task_arn:
+        logger.error("Failed to fetch latest_task_arn")
+        yield
+
     container_id = get_container_id(latest_task_arn)
     logger.info(
         f"Initialized: latest_task_arn={latest_task_arn}, container_id={container_id}")
-    yield
 
-    latest_task_arn = ""
-    container_id = ""
-    logger.info("Cleanup: Reset latest_task_arn and container_id")
+    yield
 
 
 app = FastAPI(lifespan=lifespan)
