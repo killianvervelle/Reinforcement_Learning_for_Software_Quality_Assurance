@@ -38,7 +38,7 @@ container_id = ""
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    latest_task_arn = ""
+    global latest_task_arn, container_id
     while not latest_task_arn:
         logger.info("Polling ECS for latest task ARN...")
         await asyncio.sleep(20)
