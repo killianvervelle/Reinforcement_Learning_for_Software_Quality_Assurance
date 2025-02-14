@@ -81,7 +81,7 @@ def get_container_id():
 
 @app.post("/adjust_container_resources/")
 def adjust_container_resources(cpu: int,
-                               memory: int):
+                               memory: float):
     try:
         client = docker.from_env()
         container = client.containers.get(container_id)
