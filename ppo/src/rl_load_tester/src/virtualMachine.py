@@ -32,6 +32,6 @@ class VirtualMachine:
         self.ResponseTime_i = 0
         self.ResponseTime = self.ResponseTime_i
 
-        self.threads = int(os.getenv("THREADS", 3))
-        self.rampup = int(os.getenv("RAMPUP", 5))
+        self.threads = int(os.getenv("THREADS", 5))
+        self.rampup = int(os.getenv("RAMPUP", 1))
         self.loops = int(os.getenv("LOOPS", 5))
