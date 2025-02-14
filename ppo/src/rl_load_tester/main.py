@@ -195,5 +195,4 @@ def build_test_plan(threads, rampup, loops):
 
 def execute_test_plan(test_plan):
     stats = test_plan.run()
-
     return stats.sample_time_mean_milliseconds
