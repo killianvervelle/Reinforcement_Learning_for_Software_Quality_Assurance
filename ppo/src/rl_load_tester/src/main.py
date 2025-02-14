@@ -17,7 +17,6 @@ sys.path.append(
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-# bool8 still required by gym for some reason
 np.bool8 = np.bool_
 
 logging.basicConfig(level=logging.INFO,
