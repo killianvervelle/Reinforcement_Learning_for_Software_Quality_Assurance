@@ -28,6 +28,9 @@
                 }
             ],
             "volumesFrom": [],
+            "linuxParameters": {
+                "maxSwap": 2048
+            },
             "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
@@ -68,6 +71,9 @@
                 }
             ],
             "volumesFrom": [],
+            "linuxParameters": {
+                "maxSwap": 2048
+            },
             "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
