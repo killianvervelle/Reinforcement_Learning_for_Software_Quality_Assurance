@@ -91,7 +91,7 @@ def adjust_container_resources(cpu: int,
             cpu_period=100000,
             cpu_quota=cpu * 1000,
             mem_limit=f"{memory * 1000}m",
-            memswap_limit=f"{memory * 1000 * 2}m"
+            memswap_limit=f"{1024 * 2}m"
         )
 
         time.sleep(5)
