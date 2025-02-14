@@ -151,16 +151,16 @@ def get_container_id(last_task):
         return None
 
     for container in containers:
-        if container["name"] == "sut-app-container":
+        if container["name"] == "sut-api-container":
             return container.get('runtimeId')
 
-    print(f"No container found with the name api-container.")
+    print(f"No container found with the name sut-api-container.")
     return None
 
 
 def build_test_plan(threads, rampup, loops):
     timer = UniformRandomTimer(250, 1000)
-
+    print(threads, rampup, loops, f"{SUT_API_URL}"+"food-supply")
     http_sampler1 = HttpSampler(
         "echo_get_request", f"{SUT_API_URL}"+"food-supply")
     thread_group_main = ThreadGroupWithRampUpAndHold(
