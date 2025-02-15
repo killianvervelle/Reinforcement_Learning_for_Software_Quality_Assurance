@@ -36,7 +36,7 @@ class ResourceStarving(gym.Env):
         low = np.array([0.1, 0.6, 0.1], dtype=np.float32)
         self.observation_space = gym.spaces.Box(low, high, dtype=np.float32)
 
-        self.action_space = gym.spaces.Discrete(8)
+        self.action_space = gym.spaces.Discrete(4)
 
         self.action_to_adjustment = [
             (-3, 0),
