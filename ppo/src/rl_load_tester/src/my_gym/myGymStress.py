@@ -44,9 +44,7 @@ class ResourceStarving(gym.Env):
             (-1, 0),
             (1, 0),
             (0, -0.1),
-            (0, 0.1),
-            (0, -0.2),
-            (0, 0.2)
+            (0, 0.1)
         ]
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
@@ -68,7 +66,7 @@ class ResourceStarving(gym.Env):
         if cpu_adjustment != 0:
             self.vm.VM_CPU_g = max(1, self.vm.VM_CPU_g + cpu_adjustment)
         if mem_adjustment != 0:
-            self.vm.VM_Mem_g = max(0.1, self.vm.VM_Mem_g + mem_adjustment)
+            self.vm.VM_Mem_g = max(0.7c, self.vm.VM_Mem_g + mem_adjustment)
 
         self.adjust_container_resources(cpu=self.vm.VM_CPU_g,
                                         memory=round(self.vm.VM_Mem_g, 1))
