@@ -39,12 +39,8 @@ class ResourceStarving(gym.Env):
         self.action_space = gym.spaces.Discrete(8)
 
         self.action_to_adjustment = [
-            (-5, 0),
-            (5, 0),
-            (-1, 0),
-            (1, 0),
-            (0, -0.1),
-            (0, 0.1),
+            (-3, 0),
+            (3, 0),
             (0, -0.05),
             (0, 0.05),
         ]
@@ -92,8 +88,8 @@ class ResourceStarving(gym.Env):
 
         terminated = bool(
             response_time_norm > 1.1 or
-            cpu_util > 1.2 or cpu_util < 0.1 or
-            mem_util > 1.2 or mem_util < 0.6
+            cpu_util > 1.0 or cpu_util < 0.1 or
+            mem_util > 1.0 or mem_util < 0.6
         )
 
         # Setting the termination conditions of an episode

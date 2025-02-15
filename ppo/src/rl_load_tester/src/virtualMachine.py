@@ -25,8 +25,8 @@ class VirtualMachine:
         self.loops = int(os.getenv("LOOPS", 5))
 
     def reset(self):
-        self.VM_CPU_i = 100
-        self.VM_Mem_i = 2.0
+        self.VM_CPU_i = 0.9
+        self.VM_Mem_i = 1.6
         self.VM_CPU_g = self.VM_CPU_i
         self.VM_Mem_g = self.VM_Mem_i
         self.ResponseTime_i = 0
