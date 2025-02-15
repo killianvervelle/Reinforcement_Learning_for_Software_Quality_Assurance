@@ -67,7 +67,7 @@ class ResourceStarving(gym.Env):
             self.vm.VM_Mem_g = max(0.5, self.vm.VM_Mem_g + mem_adjustment)
 
         self.adjust_container_resources(cpu=self.vm.VM_CPU_g,
-                                        memory=round(self.vm.VM_Mem_g, 1))
+                                        memory=round(self.vm.VM_Mem_g, 2))
 
         # Computing the system's resonse time by executing Jmeter's test plan
         self.vm.ResponseTime = self.run_jmeter_test_plan(threads=self.vm.threads,
