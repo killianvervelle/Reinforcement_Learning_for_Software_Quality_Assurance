@@ -68,7 +68,7 @@ class ResourceStarving(gym.Env):
         if cpu_adjustment != 0:
             self.vm.VM_CPU_g = max(1, self.vm.VM_CPU_g + cpu_adjustment)
         if mem_adjustment != 0:
-            self.vm.VM_Mem_g = max(0.7, self.vm.VM_Mem_g + mem_adjustment)
+            self.vm.VM_Mem_g = max(0.5, self.vm.VM_Mem_g + mem_adjustment)
 
         self.adjust_container_resources(cpu=self.vm.VM_CPU_g,
                                         memory=round(self.vm.VM_Mem_g, 1))
@@ -93,7 +93,7 @@ class ResourceStarving(gym.Env):
         terminated = bool(
             response_time_norm > 1.1 or
             cpu_util > 1.2 or cpu_util < 0.1 or
-            mem_util > 1.2 or mem_util < 0.7
+            mem_util > 1.2 or mem_util < 0.6
         )
 
         # Setting the termination conditions of an episode

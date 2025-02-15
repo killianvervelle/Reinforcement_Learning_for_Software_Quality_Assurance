@@ -92,8 +92,8 @@ def adjust_container_resources(cpu: int,
         container.update(
             cpu_period=100000,
             cpu_quota=cpu * 1000,
-            mem_limit=f"{memory * 1000}m",
-            memswap_limit=f"{1024 * 2}m"
+            mem_limit=f"{round(memory * 1024)}m",
+            # memswap_limit=f"{1024 * 2}m"
         )
 
         time.sleep(5)
@@ -101,7 +101,7 @@ def adjust_container_resources(cpu: int,
         container.reload()
 
         logger.info(
-            f"Container resources updated: CPU quota={cpu*1000}, Memory={memory*1000}MB")
+            f"Container resources updated: CPU quota={cpu*1000}, Memory={round(memory * 1024)}MB")
 
     except docker.errors.NotFound:
         logger.error(f"Container {container} not found.")
