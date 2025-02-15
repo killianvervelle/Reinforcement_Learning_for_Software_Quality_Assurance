@@ -88,8 +88,8 @@ class ResourceStarving(gym.Env):
 
         terminated = bool(
             response_time_norm > 1.1 or
-            cpu_util > 1.0 or cpu_util < 0.1 or
-            mem_util > 1.0 or mem_util < 0.6
+            cpu_util > 1.1 or cpu_util < 0.1 or
+            mem_util > 1.1 or mem_util < 0.6
         )
 
         # Setting the termination conditions of an episode
