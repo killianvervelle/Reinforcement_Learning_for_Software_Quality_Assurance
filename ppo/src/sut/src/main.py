@@ -1,3 +1,4 @@
+import gc
 import os
 import logging
 import pandas as pd
@@ -72,6 +73,7 @@ class CountryDataResponse(BaseModel):
 
 
 async def startup_event():
+    gc.enable()
     return None
 
 app.add_event_handler("startup", startup_event)
@@ -101,7 +103,8 @@ def utilization_data(country_iso: str, category: str):
         filtered_nutritional = filtered_nutritional.sort_values(
             by="value", ascending=False)
         json_data = filtered_nutritional.to_json(orient='records')
-        return JSONResponse(content={'data': json_data})
+        # return JSONResponse(content={'data': json_data})
+        return JSONResponse(content={'return': "Success"})
     except FileNotFoundError:
         return {"error": "CSV file not found. Please ensure the file path is correct."}
 
@@ -159,7 +162,8 @@ def nutritional_data_country(country_iso: str):
             food_supply_kcal=filter_df(
                 filtered_nutrional, "Food supply (kcal/capita/day)")
         )
-        response_data = CountryDataResponse(country=country_data)
+        # response_data = CountryDataResponse(country=country_data)
+        response_data = JSONResponse(content={'return': "Success"})
         return response_data
     except FileNotFoundError:
         return {"error": "CSV file not found. Please ensure the file path is correct."}

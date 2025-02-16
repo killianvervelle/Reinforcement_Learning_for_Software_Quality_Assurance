@@ -36,6 +36,8 @@ LOOPS = os.getenv("LOOPS", "")
 latest_task_arn = ""
 container_id = ""
 
+os.environ["JVM_ARGS"] = "-Dlog_level.jmeter=OFF"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -84,7 +86,7 @@ def get_container_id():
 def adjust_container_resources(cpu: int,
                                memory: float):
     try:
-        gc.collect()
+        gc.enable()
         client = docker.from_env()
         container = client.containers.get(container_id)
         logger.info(f"Container {container} found. Updating resources...")
@@ -173,6 +175,7 @@ def get_container_id(last_task):
 def build_test_plan(threads, rampup, loops):
     http_sampler3 = HttpSampler(
         "echo_get_request", f"{SUT_API_URL}"+"nutritional-data-country/USA")
+    http_sampler3.save_response_output = False
     thread_group_main3 = ThreadGroupWithRampUpAndHold(
         threads, rampup, loops, http_sampler3)
 

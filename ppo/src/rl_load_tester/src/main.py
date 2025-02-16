@@ -23,6 +23,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+os.environ["JVM_ARGS"] = "-Dlog_level.jmeter=OFF"
 
 class Environment:
     """
