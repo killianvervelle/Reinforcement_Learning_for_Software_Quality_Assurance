@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 os.environ["JVM_ARGS"] = "-Dlog_level.jmeter=OFF"
 
+
 class Environment:
     """
     Purpose:
@@ -60,7 +61,7 @@ class Environment:
             raise RuntimeError(f"Failed to load model from {path}: {e}")
 
     def initialize_env(self):
-        requirement_res_times = [3000, 3000]
+        requirement_res_times = [2500, 2500]
         vms = self.initialize_vms(2, requirement_res_times)
         print(f"Initialized {len(vms)} VMs.")
 

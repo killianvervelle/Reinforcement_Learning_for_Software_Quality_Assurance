@@ -139,9 +139,7 @@ class Agent:
         state = env.reset()
         agent.train()
 
-        for _ in range(15):
-            if done:
-                break
+        while not done:
             state = state[0] if isinstance(state, tuple) else state
             state = torch.FloatTensor(state).unsqueeze(0).view(1, -1)
             states.append(state)
