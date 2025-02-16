@@ -18,9 +18,9 @@ class VirtualMachine:
         self.Requirement_ResTime = Requirement_ResTime
         self.ResponseTime = 0
 
-        self.threads = int(os.getenv("THREADS", 5))
+        self.threads = int(os.getenv("THREADS", 2))
         self.rampup = int(os.getenv("RAMPUP", 1))
-        self.loops = int(os.getenv("LOOPS", 5))
+        self.loops = int(os.getenv("LOOPS", 1))
 
     def reset(self):
         self.VM_CPU_i = 90
@@ -30,6 +30,6 @@ class VirtualMachine:
         self.ResponseTime_i = 0
         self.ResponseTime = self.ResponseTime_i
 
-        self.threads = int(os.getenv("THREADS", 5))
+        self.threads = int(os.getenv("THREADS", 2))
         self.rampup = int(os.getenv("RAMPUP", 1))
-        self.loops = int(os.getenv("LOOPS", 5))
+        self.loops = int(os.getenv("LOOPS", 1))
