@@ -96,9 +96,9 @@ def adjust_container_resources(cpu: int,
             # memswap_limit=f"{1024 * 2}m"
         )
 
-        time.sleep(5)
-
         container.reload()
+
+        time.sleep(3)
 
         logger.info(
             f"Container resources updated: CPU quota={cpu*1000}, Memory={round(memory * 1024)}MB")
