@@ -10,7 +10,7 @@ COPY ppo/src/rl_load_tester/requirements.txt requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-COPY ppo/src/rl_load_tester/src/ .  
+COPY ppo/src/rl_load_tester/src/ ./  
 
 ENTRYPOINT ["python", "/app/main.py"]
 
