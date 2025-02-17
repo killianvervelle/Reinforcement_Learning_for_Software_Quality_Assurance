@@ -6,8 +6,9 @@ import gym
 import logging
 import sys
 import os
+import argparse
 
-from ppo.src.utilities import Utilities
+from utils.utilities import Utilities
 from virtualMachine import VirtualMachine
 from optimizer import Optimizer
 from gym.envs import register
@@ -78,6 +79,19 @@ class Environment:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--discount_factor", type=float, default=0.90)
+    parser.add_argument("--epsilon", type=float, default=0.31)
+    parser.add_argument("--entropy_coefficient", type=float, default=0.08)
+    parser.add_argument("--hidden_dimensions", type=int, default=64)
+    parser.add_argument("--dropout", type=float, default=0.22)
+    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--learning_rate", type=float, default=0.0003)
+    parser.add_argument("--max_grad_norm", type=float, default=10.0)
+    parser.add_argument("--model-dir", type=str,
+                        default=os.environ["SM_MODEL_DIR"])
+    args = parser.parse_args()
+
     env = Environment()
 
     utilities = Utilities(logger=logger)
@@ -87,22 +101,25 @@ if __name__ == "__main__":
     agent = Agent(
         env_train=env_train,
         env_test=env_test
-
     )
 
     agent.run_agent(
         env_train=env_train,
         env_test=env_test,
-        discount_factor=0.90,
-        epsilon=0.31,
-        entropy_coefficient=0.08,
-        hidden_dimensions=64,
-        dropout=0.22,
-        batch_size=32,
-        learning_rate=0.0003,
-        max_grad_norm=10.0,
-        plot=True
+        discount_factor=args.discount_factor,
+        epsilon=args.epsilon,
+        entropy_coefficient=args.entropy_coefficient,
+        hidden_dimensions=args.hidden_dimensions,
+        dropout=args.dropout,
+        batch_size=args.batch_size,
+        learning_rate=args.learning_rate,
+        max_grad_norm=args.max_grad_norm,
+        plot=False
     )
+
+    model_path = os.path.join(args.model_dir, "ppo_trained_model.pth")
+    torch.save(agent, model_path)
+    print(f"Model saved to {model_path}")
 
     # optimizer = Optimizer(env=env, agent=agent, model=model)
     # optimizer.optimize_hyperparameters()

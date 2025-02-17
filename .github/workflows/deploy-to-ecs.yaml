@@ -46,6 +46,39 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
           echo "sut_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
           echo "sut_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+  
+  build-sage-rl-image:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+        IMAGE_TAG: sage_rl
+    outputs:
+      output: ${{ steps.build-sage-rl.outputs.sage_rl_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push SUT image to Amazon ECR
+        id: build-sage-rl
+        env:
+          IMAGE_TAG: sage_rl
+        run: |
+          docker build --no-cache -f ppo/src/rl_load_tester/src/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "sage_rl_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sage_rl_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   build-agent-api-image:
     runs-on: ubuntu-latest
@@ -96,14 +129,27 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
           echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
           echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+  
+  remove_old_images:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [build-sut-api-image, build-agent-api-image, build-sage-rl-image]
+    steps:
+      - name: clean unused images
+        id: clean_images
+        run: |
+          IMAGES_TO_DELETE=$( aws ecr list-images --repository-name $ECR_REPOSITORY --filter "tagStatus=UNTAGGED" --output json )
+          echo $IMAGES_TO_DELETE | jq length
+          aws ecr batch-delete-image --repository-name $ECR_REPO --image-ids "$IMAGES_TO_DELETE" --profile qa || true
 
   deploy-ecs:
     runs-on: ubuntu-latest
     environment: production
-    needs: [build-sut-api-image, build-agent-api-image] 
+    needs: [remove_old_images] 
     env:
       PORT_AGENT_API: 8000
       PORT_SUT_API: 8002
+      PORT_SAGE_RL: 8004
 
     steps:
       - name: Checkout repository
@@ -119,6 +165,15 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+      
+      - name: Download task definition
+        id: download-task
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
+            --query taskDefinition > task-definition.json
+
+          echo "revision=$(($(cat task-definition.json | jq .revision)))" >> $GITHUB_OUTPUT
 
       - name: Update ECS task definition
         id: update-task-def 
@@ -128,20 +183,25 @@ jobs:
           ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
           SUT_API_IMAGE="${{ needs.build-sut-api-image.outputs.output }}"
           AGENT_API_IMAGE="${{ needs.build-agent-api-image.outputs.output }}"
+          SAGE_RL_IMAGE="${{ needs.build-sage-rl-image.outputs.output }}"
 
-          jq --arg IMAGE "$ECR_REGISTRY/$AGENT_API_IMAGE" \
-             --argjson PORT ${{ env.PORT_AGENT_API }} \
-             '(.containerDefinitions[] | select(.name == "agent-container") | .image) = $IMAGE |
-              (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].containerPort) = $PORT |
-              (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].name) = "agent"' \
-             updated-task-definition.json > updated-sut-task.json
-
-          jq --arg IMAGE "$ECR_REGISTRY/$SUT_API_IMAGE" \
-             --argjson PORT ${{ env.PORT_SUT_API }} \
-             '(.containerDefinitions[] | select(.name == "sut-api-container") | .image) = $IMAGE |
-              (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].containerPort) = $PORT |
-              (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].name) = "sut-api"' \
-             updated-sut-task.json > final-task-definition.json
+          jq --arg ECR_REGISTRY "$ECR_REGISTRY" \
+              --arg AGENT_API_IMAGE "$AGENT_API_IMAGE" \
+              --arg SAGE_RL_IMAGE "$SAGE_RL_IMAGE" \
+              --arg SUT_API_IMAGE "$SUT_API_IMAGE" \
+              --argjson PORT_AGENT ${{ env.PORT_AGENT_API }} \
+              --argjson PORT_SUT ${{ env.PORT_SUT_API }} \
+              --argjson PORT_SAGE_RL ${{ env.PORT_SAGE_RL }} \
+              '(.containerDefinitions[] | select(.name == "agent-container") | .image) = ($ECR_REGISTRY + "/" + $AGENT_API_IMAGE) |
+                (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].containerPort) = $PORT_AGENT |
+                (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].name) = "agent" |
+                (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .image) = ($ECR_REGISTRY + "/" + $SAGE_RL_IMAGE) |
+                (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .portMappings[0].containerPort) = $PORT_SAGE_RL |
+                (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .portMappings[0].name) = "sage_rl" |
+                (.containerDefinitions[] | select(.name == "sut-api-container") | .image) = ($ECR_REGISTRY + "/" + $SUT_API_IMAGE) |
+                (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].containerPort) = $PORT_SUT |
+                (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].name) = "sut-api"' \
+              updated-task-definition.json > final-task-definition.json
 
           # Output the final task definition for debugging
           cat final-task-definition.json
@@ -153,7 +213,12 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
-
+      
+      - name: De-register (latest-1) revision
+        if: ${{ steps.download-task.outputs.revision > 0 }}
+        run: |
+          aws ecs deregister-task-definition \
+            --task-definition  ${{ env.ECS_TASK_DEFINITION }}:${{ steps.download-task.outputs.revision }}
 
 
 
