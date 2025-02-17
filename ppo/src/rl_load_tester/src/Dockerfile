@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 
 COPY src/rl_load_tester/src/ . 
 
-ENTRYPOINT ["python", "/app/main.py"]
+CMD ["python", "/app/main.py"]

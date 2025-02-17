@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     env = Environment()
 
-    utilities = Utilities(logger=logger)
+    utilities = Utilities()
 
     env_train, env_test = env.initialize_env()
 
