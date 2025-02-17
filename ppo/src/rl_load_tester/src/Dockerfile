@@ -9,7 +9,7 @@ COPY src/rl_load_tester/src/  /opt/ml/code/
 
 # Install dependencies
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install -r /opt/ml/code/requirements.txt
 
 # Set entrypoint for SageMaker
 ENTRYPOINT ["python", "/opt/ml/code/main.py"]
