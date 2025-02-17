@@ -11,6 +11,7 @@ env:
   ECS_SERVICE: my_ecs_service                 
   ECS_CLUSTER: my_ecs_cluster                 
   ECS_TASK_DEFINITION: ppo/src/task-definition.json
+  TASK_DEFINITION: my-ecs-task
 
 jobs:
 
@@ -145,11 +146,11 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        
+
       - name: clean unused images
         id: clean_images
         run: |
-          IMAGES_TO_DELETE=$( aws ecr list-images --repository-name $ECR_REPOSITORY --filter "tagStatus=UNTAGGED" --output json )
+          IMAGES_TO_DELETE=$( aws ecr list-images --repository-name ${{env.ECR_REPOSITORY}} --filter "tagStatus=UNTAGGED" --output json )
           echo $IMAGES_TO_DELETE | jq length
           aws ecr batch-delete-image --repository-name $ECR_REPO --image-ids "$IMAGES_TO_DELETE" --profile qa || true
 
@@ -229,7 +230,7 @@ jobs:
         if: ${{ steps.download-task.outputs.revision > 0 }}
         run: |
           aws ecs deregister-task-definition \
-            --task-definition  ${{ env.ECS_TASK_DEFINITION }}:${{ steps.download-task.outputs.revision }}
+            --task-definition  ${{ env.TASK_DEFINITION }}:${{ steps.download-task.outputs.revision }}
 
 
 
