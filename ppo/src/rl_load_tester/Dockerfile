@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 COPY src/rl_load_tester/main.py /main.py
+COPY src/rl_load_tester/requirements.txt /requirements.txt
 
 RUN pip install --no-cache-dir --force-reinstall -r requirements.txt
 

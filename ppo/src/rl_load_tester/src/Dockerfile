@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y python3.11 python3-pip
 RUN ln -sf /usr/bin/python3.11 /usr/bin/python3
 
 # Copy training script
-COPY ./src/  /opt/ml/code/
+COPY src/rl_load_tester/src/  /opt/ml/code/
 
 # Install dependencies
 RUN pip install --upgrade pip
