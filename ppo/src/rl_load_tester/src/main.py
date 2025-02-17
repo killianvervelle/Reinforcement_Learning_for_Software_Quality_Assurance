@@ -89,7 +89,7 @@ if __name__ == "__main__":
     parser.add_argument("--learning_rate", type=float, default=0.0003)
     parser.add_argument("--max_grad_norm", type=float, default=10.0)
     parser.add_argument("--model-dir", type=str,
-                        default=os.environ["SM_MODEL_DIR"], default="/app/model")
+                        default=os.environ.get("SM_MODEL_DIR", "/app/model"))
     args = parser.parse_args()
 
     env = Environment()
