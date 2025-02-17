@@ -130,45 +130,11 @@ jobs:
           docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
           echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
           echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
-  
-  remove_old_images:
-    runs-on: ubuntu-latest
-    environment: production
-    needs: [build-sut-api-image, build-agent-api-image, build-sage-rl-image]
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: clean unused images
-        id: clean_images
-        run: |
-          IMAGES_TO_DELETE=$(aws ecr list-images --repository-name ${{ env.ECR_REPOSITORY }} \
-              --filter "tagStatus=UNTAGGED" \
-              --query 'imageIds[*].imageDigest' \
-              --output json)
-
-          IMAGE_COUNT=$(echo "$IMAGES_TO_DELETE" | jq length)
-
-          if [[ "$IMAGE_COUNT" -gt 0 ]]; then
-            echo "Found $IMAGE_COUNT untagged images. Deleting..."
-            JSON_PAYLOAD=$(echo "$IMAGES_TO_DELETE" | jq -c '[.[] | {imageDigest: .}]')
-            aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids "$JSON_PAYLOAD" || true
-          else
-            echo "No untagged images found."
-          fi
 
   deploy-ecs:
     runs-on: ubuntu-latest
     environment: production
-    needs: [remove_old_images] 
+    needs: [build-sut-api-image, build-agent-api-image, build-sage-rl-image]
     env:
       PORT_AGENT_API: 8000
       PORT_SUT_API: 8002
@@ -242,6 +208,31 @@ jobs:
         run: |
           aws ecs deregister-task-definition \
             --task-definition  ${{ env.TASK_DEFINITION }}:${{ steps.download-task.outputs.revision }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: clean unused images
+        id: clean_images
+        run: |
+          IMAGES_TO_DELETE=$(aws ecr list-images --repository-name ${{ env.ECR_REPOSITORY }} \
+              --filter "tagStatus=UNTAGGED" \
+              --query 'imageIds[*].imageDigest' \
+              --output json)
+
+          IMAGE_COUNT=$(echo "$IMAGES_TO_DELETE" | jq length)
+
+          if [[ "$IMAGE_COUNT" -gt 0 ]]; then
+            echo "Found $IMAGE_COUNT untagged images. Deleting..."
+            JSON_PAYLOAD=$(echo "$IMAGES_TO_DELETE" | jq -c '[.[] | {imageDigest: .}]')
+            aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids "$JSON_PAYLOAD" || true
+          else
+            echo "No untagged images found."
+          fi
 
 
 
