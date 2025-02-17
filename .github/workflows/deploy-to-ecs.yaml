@@ -150,9 +150,20 @@ jobs:
       - name: clean unused images
         id: clean_images
         run: |
-          IMAGES_TO_DELETE=$( aws ecr list-images --repository-name ${{env.ECR_REPOSITORY}} --filter "tagStatus=UNTAGGED" --output json )
-          echo $IMAGES_TO_DELETE | jq length
-          aws ecr batch-delete-image --repository-name ${{env.ECR_REPOSITORY}} --image-ids "$IMAGES_TO_DELETE" || true
+          IMAGES_TO_DELETE=$(aws ecr list-images --repository-name ${{ env.ECR_REPOSITORY }} \
+              --filter "tagStatus=UNTAGGED" \
+              --query 'imageIds[*].imageDigest' \
+              --output json)
+
+          IMAGE_COUNT=$(echo "$IMAGES_TO_DELETE" | jq length)
+
+          if [[ "$IMAGE_COUNT" -gt 0 ]]; then
+            echo "Found $IMAGE_COUNT untagged images. Deleting..."
+            JSON_PAYLOAD=$(echo "$IMAGES_TO_DELETE" | jq -c '[.[] | {imageDigest: .}]')
+            aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids "$JSON_PAYLOAD" || true
+          else
+            echo "No untagged images found."
+          fi
 
   deploy-ecs:
     runs-on: ubuntu-latest
