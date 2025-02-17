@@ -94,8 +94,7 @@ def adjust_container_resources(cpu: int,
         container.update(
             cpu_period=100000,
             cpu_quota=cpu * 1000,
-            mem_limit=f"{round(memory * 1024)}m",
-            # memswap_limit=f"{1024 * 2}m"
+            mem_limit=f"{round(memory * 1024)}m"
         )
 
         container.reload()
