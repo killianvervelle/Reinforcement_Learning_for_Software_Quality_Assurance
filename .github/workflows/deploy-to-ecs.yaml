@@ -152,7 +152,7 @@ jobs:
         run: |
           IMAGES_TO_DELETE=$( aws ecr list-images --repository-name ${{env.ECR_REPOSITORY}} --filter "tagStatus=UNTAGGED" --output json )
           echo $IMAGES_TO_DELETE | jq length
-          aws ecr batch-delete-image --repository-name ${{env.ECR_REPOSITORY}} --image-ids "$IMAGES_TO_DELETE" --profile qa || true
+          aws ecr batch-delete-image --repository-name ${{env.ECR_REPOSITORY}} --image-ids "$IMAGES_TO_DELETE" || true
 
   deploy-ecs:
     runs-on: ubuntu-latest
