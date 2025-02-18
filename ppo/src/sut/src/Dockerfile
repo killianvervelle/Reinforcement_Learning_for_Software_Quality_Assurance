@@ -6,7 +6,7 @@ COPY src/sut/src/ ./
 
 RUN pip install --upgrade pip
 
-RUN pip install --no-cache-dir --force-reinstall -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN ls -l /app  # List the files in /app
 
