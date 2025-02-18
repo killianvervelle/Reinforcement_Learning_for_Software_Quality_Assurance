@@ -1,13 +1,8 @@
-fastapi==0.115.5
 python-dotenv==1.0.1
 numpy==1.23.5
 gym==0.26.2
-scikit-learn==1.6.1
-boto3==1.36.5
 pandas==2.2.3
-uvicorn==0.32.1
 docker==7.1.0
 matplotlib==3.9.3
 optuna==4.1.0
-install-jdk==1.1.0
 torch==2.5.1
