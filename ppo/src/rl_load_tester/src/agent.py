@@ -17,8 +17,8 @@ warnings.filterwarnings(
 class Agent:
     """
     Purpose:
-        This class represents a reinforcement learning agent capable of training and evaluating on a specified environment. 
-        It implements an actor-critic method with PPO optimizations and supports training with reward calculation, 
+        This class represents a reinforcement learning agent capable of training and evaluating on a specified environment.
+        It implements an actor-critic method with PPO optimizations and supports training with reward calculation,
         policy update, and evaluation.
 
     Methods:
@@ -309,13 +309,13 @@ class Agent:
         batch_size,
         learning_rate,
         max_grad_norm,
+        reward_threshold,
+        ppo_steps,
         plot=False
     ):
-        max_episodes = 300
-        reward_threshold = 30.0
+        max_episodes = 70
         min_reward_threshold = -20
         print_interval = 10
-        ppo_steps = 8
         n_trials = 20
 
         train_rewards = []

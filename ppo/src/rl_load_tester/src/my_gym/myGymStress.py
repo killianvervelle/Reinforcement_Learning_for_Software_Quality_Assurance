@@ -21,25 +21,22 @@ class ResourceStarving(gym.Env):
         None: Initializes the environment's parameters.
     """
 
-    def __init__(self, vm, render_mode=None) -> None:
+    def __init__(self, vm, model, render_mode=None) -> None:
         super(ResourceStarving, self).__init__()
 
         self.window_size = 500
-
         self.vm = vm
-
-        self.api_url = os.getenv(
-            "API_URL", "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8003/")
+        self.model = model
 
         high = np.array([1.0, 1.0, 1.0], dtype=np.float32)
-        low = np.array([0.1, 0.6, 0.1], dtype=np.float32)
+        low = np.array([0.1, 0.1, 0.1], dtype=np.float32)
         self.observation_space = gym.spaces.Box(low, high, dtype=np.float32)
 
         self.action_space = gym.spaces.Discrete(4)
 
         self.action_to_adjustment = [
-            (-3, 0),
-            (3, 0),
+            (-1, 0),
+            (1, 0),
             (0, -0.05),
             (0, 0.05),
         ]
@@ -61,17 +58,13 @@ class ResourceStarving(gym.Env):
 
         # Adjusting the system's resources
         if cpu_adjustment != 0:
-            self.vm.VM_CPU_g = max(1, self.vm.VM_CPU_g + cpu_adjustment)
+            self.vm.VM_CPU_g = self.vm.VM_CPU_g + cpu_adjustment
         if mem_adjustment != 0:
-            self.vm.VM_Mem_g = max(0.5, self.vm.VM_Mem_g + mem_adjustment)
-
-        self.adjust_container_resources(cpu=self.vm.VM_CPU_g,
-                                        memory=round(self.vm.VM_Mem_g, 2))
+            self.vm.VM_Mem_g = self.vm.VM_Mem_g + mem_adjustment
 
         # Computing the system's resonse time by executing Jmeter's test plan
-        self.vm.ResponseTime = self.run_jmeter_test_plan(threads=self.vm.threads,
-                                                         rampup=self.vm.rampup,
-                                                         loops=self.vm.loops)
+        self.vm.ResponseTime = int(self.model.predict(
+            [[self.vm.VM_CPU_g, self.vm.VM_Mem_g]])[0])
 
         # Computing the system's resource utilization ratios
         cpu_util = self.vm.VM_CPU_g / self.vm.VM_CPU_i
@@ -80,15 +73,15 @@ class ResourceStarving(gym.Env):
 
         # Setting the new system state
         self.state = (
-            cpu_util,
-            mem_util,
-            response_time_norm
+            round(cpu_util, 2),
+            round(mem_util, 2),
+            round(response_time_norm, 2)
         )
 
         terminated = bool(
             response_time_norm > 1.0 or
-            cpu_util > 1.1 or cpu_util < 0.1 or
-            mem_util > 1.1 or mem_util < 0.6
+            cpu_util > 1.1 or cpu_util < 0.4 or
+            mem_util > 1.1 or mem_util < 0.4
         )
 
         # Setting the termination conditions of an episode
@@ -100,47 +93,11 @@ class ResourceStarving(gym.Env):
 
         return np.array(self.state, dtype=np.float32), reward, terminated, False, {}
 
-    def adjust_container_resources(self, cpu: int, memory: int) -> bool:
-        try:
-            response = requests.post(
-                f"{self.api_url}adjust_container_resources/",
-                params={
-                    "cpu": cpu,
-                    "memory": memory
-                }
-            )
-
-            response.raise_for_status()
-            return True
-
-        except requests.exceptions.RequestException as e:
-            print(f"Request failed: {e}")
-            return False
-
-    def run_jmeter_test_plan(self, threads: int, rampup: int, loops: int) -> int:
-        try:
-            response = requests.post(
-                f"{self.api_url}run_jmeter_test_plan/",
-                params={
-                    "threads": threads,
-                    "rampup": rampup,
-                    "loops": loops
-                }
-            )
-
-            response.raise_for_status()
-            data = response.json()
-            return data["response_time"]
-
-        except requests.exceptions.RequestException as e:
-            print(f"Request failed: {e}")
-            return -1
-
     def reset(self, seed=None, options=None):
         self.vm.reset()
-        self.vm.ResponseTime = self.run_jmeter_test_plan(threads=self.vm.threads,
-                                                         rampup=self.vm.rampup,
-                                                         loops=self.vm.loops)
+        self.vm.ResponseTime = int(self.model.predict(
+            [[self.vm.VM_CPU_g, self.vm.VM_Mem_g]])[0])
+
         cpu_util = self.vm.VM_CPU_g / self.vm.VM_CPU_i
         mem_util = self.vm.VM_Mem_g / self.vm.VM_Mem_i
         response_time_norm = self.vm.ResponseTime / self.vm.Requirement_ResTime

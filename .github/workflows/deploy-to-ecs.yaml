@@ -142,7 +142,6 @@ jobs:
     env:
       PORT_AGENT_API: 8000
       PORT_SUT_API: 8002
-      PORT_SAGE_RL: 8004
 
     steps:
       - name: Checkout repository
@@ -168,14 +167,6 @@ jobs:
 
           echo "revision-main=$(($(cat task-main.json | jq .revision)))" >> $GITHUB_OUTPUT
           
-      - name: Download task definition
-        id: download-torch
-        run: |
-          aws ecs describe-task-definition \
-            --task-definition ${{ env.TASK_DEFINITION_TORCH }} \
-            --query taskDefinition > task-torch.json
-
-          echo "revision-torch=$(($(cat task-torch.json | jq .revision)))" >> $GITHUB_OUTPUT
 
       - name: Update ECS task definition for main
         id: update-task-def-main
@@ -200,24 +191,6 @@ jobs:
               updated-task-main.json > final-task-main.json
 
           cat final-task-main.json
-    
-      - name: Update ECS task definition for PyTorch RL
-        id: update-task-def-pytorch
-        run: |
-          cp ${{ env.ECS_TASK_DEFINITION_TORCH }} updated-task-pytorch.json
-
-          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
-          SAGE_RL_IMAGE="${{ needs.build-sage-rl-image.outputs.output }}"
-
-          jq --arg ECR_REGISTRY "$ECR_REGISTRY" \
-              --arg SAGE_RL_IMAGE "$SAGE_RL_IMAGE" \
-              --argjson PORT_SAGE_RL ${{ env.PORT_SAGE_RL }} \
-              '(.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .image) = ($ECR_REGISTRY + "/" + $SAGE_RL_IMAGE) |
-                (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .portMappings[0].containerPort) = $PORT_SAGE_RL |
-                (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .portMappings[0].name) = "sage_rl"' \
-              updated-task-pytorch.json > final-task-pytorch.json
-
-          cat final-task-pytorch.json
       
       - name: clean unused images
         id: clean_images
@@ -245,25 +218,11 @@ jobs:
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
       
-      - name: Deploy updated ECS task definition torch
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: final-task-pytorch.json
-          service: ${{ env.ECS_SERVICE_TORCH }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
-      
       - name: De-register (latest-1) revision
         if: ${{ steps.download-main.outputs.revision > 0 }}
         run: |
           aws ecs deregister-task-definition \
             --task-definition  ${{ env.TASK_DEFINITION_MAIN }}:${{ steps.download-main.outputs.revision }}
-      
-      - name: De-register (latest-1) revision
-        if: ${{ steps.download-torch.outputs.revision > 0 }}
-        run: |
-          aws ecs deregister-task-definition \
-            --task-definition  ${{ env.TASK_DEFINITION_TORCH }}:${{ steps.download-torch.outputs.revision }}
 
 
 

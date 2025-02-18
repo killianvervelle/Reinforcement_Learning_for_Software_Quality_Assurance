@@ -6,12 +6,14 @@ import logging
 import sys
 import os
 import argparse
+import boto3
 
 from utils.utilities import Utilities
 from virtualMachine import VirtualMachine
 from optimizer import Optimizer
 from gym.envs import register
 from agent import Agent
+from sampler import Sampler
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -53,16 +55,8 @@ class Environment:
 
         return vm_list
 
-    def load_model(self, path):
-        try:
-            model = torch.load(path)
-            print(f"Model loaded successfully from {path}.")
-            return model
-        except Exception as e:
-            raise RuntimeError(f"Failed to load model from {path}: {e}")
-
-    def initialize_env(self):
-        requirement_res_times = [2500, 2500]
+    def initialize_env(self, model):
+        requirement_res_times = [3000, 3000]
         vms = self.initialize_vms(2, requirement_res_times)
         print(f"Initialized {len(vms)} VMs.")
 
@@ -72,8 +66,8 @@ class Environment:
                 entry_point="my_gym.myGymStress:ResourceStarving"
             )
 
-        env_train = gym.make("Env-v1", vm=vms[0])
-        env_test = gym.make("Env-v1", vm=vms[0])
+        env_train = gym.make("Env-v1", vm=vms[0], model=model)
+        env_test = gym.make("Env-v1", vm=vms[0], model=model)
 
         return env_train, env_test
 
@@ -81,22 +75,40 @@ class Environment:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--discount_factor", type=float, default=0.90)
-    parser.add_argument("--epsilon", type=float, default=0.31)
+    parser.add_argument("--epsilon", type=float, default=0.35)
     parser.add_argument("--entropy_coefficient", type=float, default=0.08)
     parser.add_argument("--hidden_dimensions", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0.22)
-    parser.add_argument("--batch_size", type=int, default=32)
-    parser.add_argument("--learning_rate", type=float, default=0.0003)
+    parser.add_argument("--batch_size", type=int, default=64)
+    parser.add_argument("--learning_rate", type=float, default=0.0008)
     parser.add_argument("--max_grad_norm", type=float, default=10.0)
-    parser.add_argument("--model-dir", type=str,
-                        default=os.environ.get("SM_MODEL_DIR", "/app/model"))
+    parser.add_argument("--reward_threshold", type=float, default=30.0)
+    parser.add_argument("--ppo_steps", type=float, default=12)
     args = parser.parse_args()
 
     env = Environment()
 
-    utilities = Utilities()
+    utilities = Utilities(logger=logger)
 
-    env_train, env_test = env.initialize_env()
+    trained_model = utilities.load_model()
+
+    data = utilities.load_data()
+
+    sampler = Sampler()
+
+    if not trained_model:
+        if data is not None and not data.empty:
+            trained_model = sampler.train_model(data)
+            utilities.save_model(trained_model)
+
+        else:
+            data = sampler.generate_dataset()
+            utilities.save_data(data)
+
+            trained_model = sampler.train_model(data)
+            utilities.save_model(trained_model)
+
+    env_train, env_test = env.initialize_env(model=trained_model)
 
     agent = Agent(
         env_train=env_train,
@@ -114,12 +126,11 @@ if __name__ == "__main__":
         batch_size=args.batch_size,
         learning_rate=args.learning_rate,
         max_grad_norm=args.max_grad_norm,
-        plot=False
+        reward_threshold=args.reward_threshold,
+        ppo_steps=args.ppo_steps,
+        plot=True
     )
 
-    model_path = os.path.join(args.model_dir, "ppo_trained_model.pth")
-    torch.save(agent, model_path)
-    print(f"Model saved to {model_path}")
-
-    # optimizer = Optimizer(env=env, agent=agent, model=model)
-    # optimizer.optimize_hyperparameters()
+    """
+    optimizer = Optimizer(env=env, agent=agent, model=trained_model)
+    optimizer.optimize_hyperparameters()"""

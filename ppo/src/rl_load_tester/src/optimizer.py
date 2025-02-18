@@ -17,6 +17,7 @@ class Optimizer:
             "hidden_dimensions": trial.suggest_categorical('hidden_dimensions', [32, 64, 128]),
             "dropout": trial.suggest_float('dropout', 0.2, 0.5),
             "max_grad_norm": trial.suggest_categorical('max_grad_norm', [1.0, 5.0, 10.0, 50.0]),
+            "ppo_steps": trial.suggest_categorical('ppo_steps', [5, 8, 10, 15])
         }
 
         env_train, env_test = self.env.initialize_env(self.model)
@@ -31,7 +32,9 @@ class Optimizer:
             dropout=params["dropout"],
             batch_size=params["batch_size"],
             learning_rate=params["learning_rate"],
-            max_grad_norm=params["max_grad_norm"]
+            max_grad_norm=params["max_grad_norm"],
+            reward_threshold=30,
+            ppo_steps=params["ppo_steps"],
         )
 
         return n_test_rewards
@@ -39,7 +42,7 @@ class Optimizer:
     def optimize_hyperparameters(self):
         study = optuna.create_study(direction='maximize')
 
-        study.optimize(self.objective, n_trials=10)
+        study.optimize(self.objective, n_trials=50)
 
         print("Best hyperparameters: ", study.best_params)
         print("Best test reward: ", study.best_value)
