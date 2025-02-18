@@ -212,7 +212,7 @@ jobs:
               --arg SAGE_RL_IMAGE "$SAGE_RL_IMAGE" \
               --argjson PORT_SAGE_RL ${{ env.PORT_SAGE_RL }} \
               '(.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .image) = ($ECR_REGISTRY + "/" + $SAGE_RL_IMAGE) |
-                (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .portMappings[0].containerPort) = $PORT_SAGE_RL' |
+                (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .portMappings[0].containerPort) = $PORT_SAGE_RL |
                 (.containerDefinitions[] | select(.name == "custom-pytorch-rl") | .portMappings[0].name) = "sage_rl"' \
               updated-task-pytorch.json > final-task-pytorch.json
 
