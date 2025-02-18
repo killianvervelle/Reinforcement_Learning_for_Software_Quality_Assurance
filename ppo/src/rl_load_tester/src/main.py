@@ -1,5 +1,4 @@
 import warnings
-from agent import Agent
 import numpy as np
 import torch
 import gym
@@ -12,6 +11,7 @@ from utils.utilities import Utilities
 from virtualMachine import VirtualMachine
 from optimizer import Optimizer
 from gym.envs import register
+from agent import Agent
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
