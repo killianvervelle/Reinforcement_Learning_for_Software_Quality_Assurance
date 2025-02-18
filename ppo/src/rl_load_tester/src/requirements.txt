@@ -6,3 +6,4 @@ docker==7.1.0
 matplotlib==3.9.3
 optuna==4.1.0
 torch==2.5.1
+boto3==1.36.5
