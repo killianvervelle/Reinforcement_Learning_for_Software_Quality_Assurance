@@ -8,7 +8,8 @@ on:
 env:
   AWS_REGION: eu-west-3
   ECR_REPOSITORY: my_ecr_repository           
-  ECS_SERVICE: my_ecs_service                 
+  ECS_SERVICE: my_ecs_service
+  ECS_SERVICE_TORCH: my_ecs_service_torch 
   ECS_CLUSTER: my_ecs_cluster                 
   ECS_TASK_DEFINITION_MAIN: ppo/src/ecs-task-main.json
   ECS_TASK_DEFINITION_TORCH: ppo/src/ecs-task-pytorch.json
@@ -248,7 +249,7 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: final-task-pytorch.json
-          service: ${{ env.ECS_SERVICE }}
+          service: ${{ env.ECS_SERVICE_TORCH }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
       
