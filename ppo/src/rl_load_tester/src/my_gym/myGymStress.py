@@ -1,4 +1,3 @@
-import pygame
 import numpy as np
 import requests
 import os
@@ -149,8 +148,3 @@ class ResourceStarving(gym.Env):
         self.state = np.array(
             [cpu_util, mem_util, response_time_norm], dtype=np.float32)
         return self.state, {}
-
-    def close(self):
-        if self.window is not None:
-            pygame.display.quit()
-            pygame.quit()
