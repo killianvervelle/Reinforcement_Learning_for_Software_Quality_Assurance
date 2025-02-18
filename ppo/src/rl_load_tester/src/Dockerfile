@@ -13,4 +13,4 @@ COPY src/rl_load_tester/src/ .
 ARG API_URL
 ENV API_URL=$API_URL
 
-CMD ["python", "/app/main.py"]
+CMD ["python", "/app/train.py"]
