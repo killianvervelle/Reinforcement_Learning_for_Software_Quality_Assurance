@@ -13,13 +13,7 @@
                     "protocol": "tcp"
                 }
             ], 
-            "essential": true,
-            "placementConstraints": [
-                    {
-                        "type": "memberOf",
-                        "expression": "attribute:custom-pytorch-host == true"
-                    }
-                ],    
+            "essential": true,   
             "environment": [
                 {
                     "name": "environment",
@@ -60,6 +54,12 @@
                 }
             ], 
             "essential": true,
+            "placementConstraints": [
+                    {
+                        "type": "memberOf",
+                        "expression": "attribute:custom-pytorch-host == true"
+                    }
+                ], 
             "environment": [
                 {
                     "name": "environment",
