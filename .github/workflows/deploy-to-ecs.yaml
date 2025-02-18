@@ -196,7 +196,7 @@ jobs:
                 (.containerDefinitions[] | select(.name == "sut-api-container") | .image) = ($ECR_REGISTRY + "/" + $SUT_API_IMAGE) |
                 (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].containerPort) = $PORT_SUT |
                 (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].name) = "sut-api"' \
-              updated-task-definition.json > final-task-main.json
+              updated-task-main.json > final-task-main.json
 
           cat final-task-main.json
     
