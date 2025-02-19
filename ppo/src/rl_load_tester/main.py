@@ -80,7 +80,6 @@ def run_stress_test():
     )
 
     inference_result = endpoint_response['Body'].read()
-    print(inference_result)
 
 
 @app.post("/load_test/")
