@@ -222,7 +222,7 @@ jobs:
         if: ${{ steps.download-main.outputs.revision > 0 }}
         run: |
           aws ecs deregister-task-definition \
-            --task-definition  ${{ env.TASK_DEFINITION_MAIN }}:${{ steps.download-main.outputs.revision }}
+            --task-definition  my-ecs-task:${{ steps.download-main.outputs.revision-main }}
 
 
 
