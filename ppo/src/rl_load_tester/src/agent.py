@@ -45,6 +45,8 @@ class Agent:
     def __init__(self, env_train, env_test):
         self.env_train = env_train
         self.env_test = env_test
+        self.trained_actor = None
+        self.trained_critic = None
 
     def create_agent(self, hidden_dimensions, dropout):
         INPUT_FEATURES = self.env_train.observation_space.shape[0]
@@ -324,6 +326,7 @@ class Agent:
         value_losses = []
 
         agent = self.create_agent(hidden_dimensions, dropout)
+
         optimizer = torch.optim.Adam(agent.parameters(), lr=learning_rate)
         scheduler = torch.optim.lr_scheduler.StepLR(
             optimizer, step_size=100, gamma=0.999)
@@ -382,5 +385,8 @@ class Agent:
             self.plot_train_rewards(train_rewards, reward_threshold)
             self.plot_test_rewards(test_rewards, reward_threshold)
             self.plot_losses(policy_losses, value_losses)
+
+        self.trained_actor = agent.actor
+        self.trained_critic = agent.critic
 
         return np.mean(test_rewards[-n_trials:])

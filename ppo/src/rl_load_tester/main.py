@@ -38,6 +38,9 @@ container_id = ""
 
 os.environ["JVM_ARGS"] = "-Dlog_level.jmeter=OFF"
 
+sagemaker_runtime = boto3.client("sagemaker-runtime")
+endpoint_name = "last-ppo-trained-model-endpoint"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -69,7 +72,15 @@ def health_check():
 
 @app.post("/stress_test/")
 def run_stress_test():
-    pass
+    runtime_client = boto3.client('sagemaker-runtime')
+    endpoint_response = runtime_client.invoke_endpoint(
+        EndpointName=endpoint_name,
+        ContentType='application/json',
+        Body='{"data": "your-data"}'
+    )
+
+    inference_result = endpoint_response['Body'].read()
+    print(inference_result)
 
 
 @app.post("/load_test/")

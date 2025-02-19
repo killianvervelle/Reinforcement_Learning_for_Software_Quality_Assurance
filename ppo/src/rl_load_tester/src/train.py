@@ -133,8 +133,12 @@ if __name__ == "__main__":
         plot=True
     )
 
-    torch.save(agent, model_path)
-    print(f"Model saved to {model_path}")
+    torch.save({
+        'actor_state_dict': agent.trained_actor.state_dict(),
+        'critic_state_dict': agent.trained_critic.state_dict()
+    }, model_path)
+
+    print("Actor and Critic models have been saved.")
 
     """
     optimizer = Optimizer(env=env, agent=agent, model=trained_model)
