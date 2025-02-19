@@ -6,7 +6,6 @@ import logging
 import sys
 import os
 import argparse
-import boto3
 
 from utils.utilities import Utilities
 from virtualMachine import VirtualMachine
@@ -27,6 +26,9 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 os.environ["JVM_ARGS"] = "-Dlog_level.jmeter=OFF"
+
+model_dir = os.environ.get("SM_MODEL_DIR", "/opt/ml/model/")
+model_path = os.path.join(model_dir, "ppo_trained_model.pth")
 
 
 class Environment:
@@ -130,6 +132,9 @@ if __name__ == "__main__":
         ppo_steps=args.ppo_steps,
         plot=True
     )
+
+    torch.save(agent, model_path)
+    print(f"Model saved to {model_path}")
 
     """
     optimizer = Optimizer(env=env, agent=agent, model=trained_model)
