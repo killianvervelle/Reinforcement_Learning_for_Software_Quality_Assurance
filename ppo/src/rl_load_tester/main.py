@@ -38,7 +38,7 @@ container_id = ""
 
 os.environ["JVM_ARGS"] = "-Dlog_level.jmeter=OFF"
 
-sagemaker_runtime = boto3.client("sagemaker-runtime")
+sagemaker_runtime = boto3.client("sagemaker-runtime", region_name='eu-west-3')
 endpoint_name = "last-ppo-trained-model-endpoint"
 
 
