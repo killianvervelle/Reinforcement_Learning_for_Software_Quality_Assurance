@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import torch
 import gym
@@ -5,7 +6,6 @@ import logging
 import sys
 import os
 import argparse
-import warnings
 
 from utils.utilities import Utilities
 from virtualMachine import VirtualMachine
