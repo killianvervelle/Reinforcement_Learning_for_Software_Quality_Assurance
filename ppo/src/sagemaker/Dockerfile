@@ -2,7 +2,7 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-COPY ppo/src/sagemaker/requirements.txt requirements.txt
+COPY src/sagemaker/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.11-slim
@@ -13,12 +13,12 @@ RUN pip install --upgrade pip
 
 WORKDIR /app
 
-COPY ppo/src/rl_load_tester/src/my_gym my_gym
-COPY ppo/src/rl_load_tester/src/agent.py agent.py
-COPY ppo/src/rl_load_tester/src/backboneNetwork.py backboneNetwork.py
-COPY ppo/src/rl_load_tester/src/virtualMachine.py virtualMachine.py
-COPY ppo/src/rl_load_tester/src/utils/utilities.py utilities.py
-COPY ppo/src/sagemaker/inference.py inference.py
+COPY src/rl_load_tester/src/my_gym my_gym
+COPY src/rl_load_tester/src/agent.py agent.py
+COPY src/rl_load_tester/src/backboneNetwork.py backboneNetwork.py
+COPY src/rl_load_tester/src/virtualMachine.py virtualMachine.py
+COPY src/rl_load_tester/src/utils/utilities.py utilities.py
+COPY src/sagemaker/inference.py inference.py
 
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
