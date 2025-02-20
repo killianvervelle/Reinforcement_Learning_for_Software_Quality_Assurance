@@ -109,6 +109,11 @@ model = ActorCriticModel(actor=agent.trained_actor,
 model.eval()
 
 
+@app.get("/ping")
+def health_check():
+    return {"status": "ok"}
+
+
 @app.post("/predict")
 def predict():
     total_reward = 0

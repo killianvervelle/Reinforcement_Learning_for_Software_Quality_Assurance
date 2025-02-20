@@ -7,7 +7,7 @@ from torch.utils.data import TensorDataset, DataLoader
 
 from backboneNetwork import Network
 from backboneNetwork import ActorCriticModel
-from utils.utilities import Utilities
+from utilities import Utilities
 
 import warnings
 warnings.filterwarnings(
