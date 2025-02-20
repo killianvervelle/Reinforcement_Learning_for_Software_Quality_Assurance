@@ -224,5 +224,3 @@ jobs:
           aws ecs deregister-task-definition \
             --task-definition  my-ecs-task:${{ steps.download-main.outputs.revision-main }}
 
-
-
