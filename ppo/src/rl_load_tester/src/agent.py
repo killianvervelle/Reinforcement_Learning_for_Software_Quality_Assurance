@@ -15,33 +15,6 @@ warnings.filterwarnings(
 
 
 class Agent:
-    """
-    Purpose:
-        This class represents a reinforcement learning agent capable of training and evaluating on a specified environment.
-        It implements an actor-critic method with PPO optimizations and supports training with reward calculation,
-        policy update, and evaluation.
-
-    Methods:
-        create_agent: Builds an Actor-Critic agent with configurable hidden dimensions and dropout.
-        calculate_returns: Computes the discounted returns for the agent using rewards from the environment.
-        calculate_advantages: Calculates the advantages based on the difference between returns and value predictions.
-        calculate_surrogate_loss: Computes the surrogate loss for PPO based on the old and new log probabilities.
-        calculate_ppo_losses: Computes policy and value losses using the surrogate loss and entropy bonus.
-        init_training: Initializes and returns empty lists for training-related variables.
-        forward_pass: Runs a forward pass through the environment, collects states, actions, and rewards, and computes returns and advantages.
-        update_policy: Updates the agent's policy using PPO losses by performing optimization steps.
-        evaluate: Evaluates the agent's performance on a given environment and returns the total reward for the episode.
-        plot_train_rewards: Plots the training rewards over the course of episodes and compares with the reward threshold.
-        plot_test_rewards: Plots the testing rewards over the course of episodes and compares with the reward threshold.
-        plot_losses: Plots both policy and value losses during training to visualize convergence.
-        run_agent: Executes the full training and evaluation cycle, including policy updates, evaluation, and reward tracking.
-
-    Attributes:
-        env_train: The training environment where the agent interacts and learns.
-        env_test: The testing environment used to evaluate the agent's performance during training.
-        utilities: A utility class providing helper functions like weight initialization and gradient clipping.
-    """
-
     def __init__(self, env_train, env_test):
         self.env_train = env_train
         self.env_test = env_test
