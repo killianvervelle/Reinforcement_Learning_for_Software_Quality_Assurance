@@ -9,8 +9,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY src/rl_load_tester/main.py main.py
-COPY src/rl_load_tester/requirements.txt requirements.txt
+COPY src/rl_load_tester/agent.py agent.py
+COPY src/rl_load_tester/backboneNetwork.py backboneNetwork.py
+COPY src/rl_load_tester/virtualMachine.py virtualMachine.py
+COPY src/rl_load_tester/agent.py agent.py
+COPY src/rl_load_tester/utils/utilities.txt utilities.txt
 
 RUN pip install --no-cache-dir --force-reinstall -r requirements.txt
 
@@ -40,5 +43,3 @@ ENV CLUSTER_NAME=$CLUSTER_NAME
 EXPOSE 8000
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-
