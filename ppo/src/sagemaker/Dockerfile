@@ -28,6 +28,8 @@ ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
-EXPOSE 8005
+EXPOSE 8080
 
-ENTRYPOINT ["python", "-m", "uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "8005"]
+#ENTRYPOINT ["python", "-m", "uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "8080"]
+
+CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "8080"]
