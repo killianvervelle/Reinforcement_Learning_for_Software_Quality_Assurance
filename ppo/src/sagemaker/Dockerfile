@@ -30,4 +30,4 @@ ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
 EXPOSE 8080
 
-ENTRYPOINT ["python", "-m", "uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "8080"]
+ENTRYPOINT ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "8080"]
