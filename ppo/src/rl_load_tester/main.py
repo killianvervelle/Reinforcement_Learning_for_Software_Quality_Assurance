@@ -58,7 +58,6 @@ async def lifespan(app: FastAPI):
     container_id = get_container_id(latest_task_arn)
     logger.info(
         f"Initialized: latest_task_arn={latest_task_arn}, container_id={container_id}")
-
     yield
 
 
@@ -71,24 +70,17 @@ def health_check():
 
 
 @app.post("/stress_test/")
-def run_stress_test():
-    runtime_client = boto3.client('sagemaker-runtime')
-    endpoint_response = runtime_client.invoke_endpoint(
-        EndpointName=endpoint_name,
-        ContentType='application/json',
-        Body='{"data": "your-data"}'
-    )
-
-    inference_result = endpoint_response['Body'].read()
+async def run_stress_test():
+    pass
 
 
 @app.post("/load_test/")
-def run_load_test():
+async def run_load_test():
     pass
 
 
 @app.get("/get_container_id")
-def get_container_id():
+async def get_container_id():
     return {"Container id": container_id}
 
 

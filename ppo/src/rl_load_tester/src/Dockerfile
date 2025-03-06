@@ -1,7 +1,5 @@
 FROM python:3.11-slim AS builder
-
 WORKDIR /app
-
 COPY src/rl_load_tester/src/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

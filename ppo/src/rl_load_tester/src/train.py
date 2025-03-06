@@ -32,17 +32,6 @@ model_path = os.path.join(model_dir, "ppo_trained_model.pth")
 
 
 class Environment:
-    """
-    Purpose:
-        This class manages the simulation of virtual machines (VMs) and reinforcement learning environments. 
-        It initializes VMs, registers the custom environment, and runs the simulation loop involving an agent.
-
-    Methods:
-        initialize_vms: Initializes a set of virtual machines with specific characteristics.
-        initialize_env: Creates training and testing environments for reinforcement learning.
-        load_model: Loads the model model used to predict the system's response time.
-    """
-
     def __init__(self):
         pass
 

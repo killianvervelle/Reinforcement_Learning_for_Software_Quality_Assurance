@@ -3,24 +3,6 @@ from torch import nn
 
 
 class Utilities:
-    """
-    Purpose:
-        This class contains utility functions used during the training of reinforcement learning models. 
-        These utilities include methods for initializing network weights, clipping gradients, and normalizing rewards. 
-        They help stabilize and improve the convergence of the learning process.
-
-    Notes:
-        - Xavier Initialization: Ensures stable gradients by using Xavier uniform initialization for the network weights.
-        - Gradient Clipping: Helps prevent exploding or vanishing gradients during backpropagation by clipping gradients.
-        - Scheduler: A learning rate scheduler dynamically adjusts the learning rate to facilitate better training convergence.
-        - Entropy Coefficient: Used as regularization to encourage exploration, preventing the policy from becoming deterministic too early.
-
-    Methods:
-        - init_xavier_weights: Applies Xavier uniform initialization to the weights of linear layers.
-        - clip_grad_norm_: Clips gradients during backpropagation to prevent exploding gradients.
-        - clip_logits: Clips logits to a specific range. 
-        - normalize_rewards: Normalizes a batch of rewards by subtracting the mean and dividing by the standard deviation.
-    """
 
     def __init__(self):
         pass

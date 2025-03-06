@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7,7 +8,7 @@ from torch.utils.data import TensorDataset, DataLoader
 
 from backboneNetwork import Network
 from backboneNetwork import ActorCriticModel
-from utilities import Utilities
+from utils.utilities import Utilities
 
 import warnings
 warnings.filterwarnings(

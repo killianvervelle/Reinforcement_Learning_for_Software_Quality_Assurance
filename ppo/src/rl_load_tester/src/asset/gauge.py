@@ -47,39 +47,3 @@ class Gauge:
         pertext_rect = pertext.get_rect(
             center=(int(self.x_cord), int(self.y_cord)))
         self.screen.blit(pertext, pertext_rect)
-
-        for i in range(0, self.thickness):
-            pygame.gfxdraw.arc(self.screen, int(self.x_cord), int(
-                self.y_cord), self.radius - i, -225, 270 - 225, self.circle_colour)
-            if percent > 4:
-                pygame.gfxdraw.arc(self.screen, int(self.x_cord), int(
-                    self.y_cord), self.radius - i, -225, fill_angle - 225 - 8, ac)
-
-        if percent < 4:
-            return
-
-        if self.glow:
-            for i in range(0, 15):
-                ac[3] = int(150 - i * 10)
-                pygame.gfxdraw.arc(self.screen, int(self.x_cord), int(
-                    self.y_cord), self.radius + i, -225, fill_angle - 225 - 8, ac)
-
-            for i in range(0, 15):
-                ac[3] = int(150 - i * 10)
-                pygame.gfxdraw.arc(self.screen, int(self.x_cord), int(
-                    self.y_cord), self.radius - self.thickness - i, -225, fill_angle - 225 - 8, ac)
-
-            angle_r = math.radians(fill_angle - 225 - 8)
-            lx, ly = int((self.radius - self.thickness / 2) * math.cos(angle_r)
-                         ), int((self.radius - self.thickness / 2) * math.sin(angle_r))
-            ac[3] = 255
-            lx = int(lx + self.x_cord)
-            ly = int(ly + self.y_cord)
-
-            pygame.draw.circle(self.screen, ac, (lx, ly),
-                               int(self.thickness / 2), 0)
-
-            for i in range(0, 10):
-                ac[3] = int(150 - i * 15)
-                pygame.gfxdraw.arc(self.screen, int(lx), int(
-                    ly), (self.thickness // 2) + i, fill_angle - 225 - 10, fill_angle - 225 - 180 - 10, ac)

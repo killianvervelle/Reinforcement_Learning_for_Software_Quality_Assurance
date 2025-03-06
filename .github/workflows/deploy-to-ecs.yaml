@@ -19,13 +19,13 @@ env:
 
 jobs:
 
-  build-image:
+  build-sut-api-image:
     runs-on: ubuntu-latest
     environment: production
     env:
-        IMAGE_TAG: endpoint
+        IMAGE_TAG: sut_api
     outputs:
-      output: ${{ steps.build.outputs.sut_api_image }}
+      output: ${{ steps.build-sut-api.outputs.sut_api_image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,13 +42,186 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push SUT image to Amazon ECR
-        id: build
+        id: build-sut-api
         env:
-          IMAGE_TAG: endpoint
+          IMAGE_TAG: sut_api
         run: |
-          docker build --no-cache -f ppo/src/sagemaker/Dockerfile \
+          docker build --no-cache -f ppo/src/sut/src/Dockerfile \
             -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
           docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
-         
+          echo "sut_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sut_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+  
+  build-sage-rl-image:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+        IMAGE_TAG: sage_rl
+    outputs:
+      output: ${{ steps.build-sage-rl.outputs.sage_rl_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push SUT image to Amazon ECR
+        id: build-sage-rl
+        env:
+          IMAGE_TAG: sage_rl
+        run: |
+          docker build --no-cache -f ppo/src/rl_load_tester/src/Dockerfile \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "sage_rl_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "sage_rl_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  build-agent-api-image:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+        IMAGE_TAG: agent-api
+    outputs:
+      output: ${{ steps.build-agent-api.outputs.agent_api_image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: |
+          echo "THREADS=${{ vars.THREADS }}" >> $GITHUB_ENV
+          echo "RAMPUP=${{ vars.RAMPUP }}" >> $GITHUB_ENV
+          echo "LOOPS=${{ vars.LOOPS }}" >> $GITHUB_ENV
+          echo "API_URL=${{ secrets.API_URL }}" >> $GITHUB_ENV
+          echo "SUT_API_URL=${{ secrets.SUT_API_URL }}" >> $GITHUB_ENV
+          echo "REPOSITORY=${{ vars.REPOSITORY }}" >> $GITHUB_ENV
+          echo "CLUSTER_NAME=${{ vars.CLUSTER_NAME }}" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push API image to Amazon ECR
+        id: build-agent-api
+        env:
+          IMAGE_TAG: agent-api
+        run: |
+          docker build --no-cache -f ppo/src/rl_load_tester/Dockerfile \
+            --build-arg THREADS=$THREADS \
+            --build-arg RAMPUP=$RAMPUP \
+            --build-arg LOOPS=$LOOPS \
+            --build-arg API_URL=$API_URL \
+            --build-arg SUT_API_URL=$SUT_API_URL \
+            --build-arg REPOSITORY=$REPOSITORY \
+            --build-arg CLUSTER_NAME=$CLUSTER_NAME \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG ppo/
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{env.ECR_REPOSITORY}}:$IMAGE_TAG
+          echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "agent_api_image=${{env.ECR_REPOSITORY}}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  deploy-ecs:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [build-sut-api-image, build-agent-api-image, build-sage-rl-image]
+    env:
+      PORT_AGENT_API: 8000
+      PORT_SUT_API: 8002
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Download task definition
+        id: download-main
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.TASK_DEFINITION_MAIN }} \
+            --query taskDefinition > task-main.json
+
+          echo "revision-main=$(($(cat task-main.json | jq .revision)))" >> $GITHUB_OUTPUT
+          
+
+      - name: Update ECS task definition for main
+        id: update-task-def-main
+        run: |
+          cp ${{ env.ECS_TASK_DEFINITION_MAIN }} updated-task-main.json
+
+          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+          SUT_API_IMAGE="${{ needs.build-sut-api-image.outputs.output }}"
+          AGENT_API_IMAGE="${{ needs.build-agent-api-image.outputs.output }}"
+
+          jq --arg ECR_REGISTRY "$ECR_REGISTRY" \
+              --arg AGENT_API_IMAGE "$AGENT_API_IMAGE" \
+              --arg SUT_API_IMAGE "$SUT_API_IMAGE" \
+              --argjson PORT_AGENT ${{ env.PORT_AGENT_API }} \
+              --argjson PORT_SUT ${{ env.PORT_SUT_API }} \
+              '(.containerDefinitions[] | select(.name == "agent-container") | .image) = ($ECR_REGISTRY + "/" + $AGENT_API_IMAGE) |
+                (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].containerPort) = $PORT_AGENT |
+                (.containerDefinitions[] | select(.name == "agent-container") | .portMappings[0].name) = "agent" |
+                (.containerDefinitions[] | select(.name == "sut-api-container") | .image) = ($ECR_REGISTRY + "/" + $SUT_API_IMAGE) |
+                (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].containerPort) = $PORT_SUT |
+                (.containerDefinitions[] | select(.name == "sut-api-container") | .portMappings[0].name) = "sut-api"' \
+              updated-task-main.json > final-task-main.json
+
+          cat final-task-main.json
+      
+      - name: clean unused images
+        id: clean_images
+        run: |
+          IMAGES_TO_DELETE=$(aws ecr list-images --repository-name ${{ env.ECR_REPOSITORY }} \
+              --filter "tagStatus=UNTAGGED" \
+              --query 'imageIds[*].imageDigest' \
+              --output json)
+
+          IMAGE_COUNT=$(echo "$IMAGES_TO_DELETE" | jq length)
+
+          if [[ "$IMAGE_COUNT" -gt 0 ]]; then
+            echo "Found $IMAGE_COUNT untagged images. Deleting..."
+            JSON_PAYLOAD=$(echo "$IMAGES_TO_DELETE" | jq -c '[.[] | {imageDigest: .}]')
+            aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids "$JSON_PAYLOAD" || true
+          else
+            echo "No untagged images found."
+          fi
+
+      - name: Deploy updated ECS task definition main
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: final-task-main.json
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      - name: De-register (latest-1) revision
+        if: ${{ steps.download-main.outputs.revision > 0 }}
+        run: |
+          aws ecs deregister-task-definition \
+            --task-definition  my-ecs-task:${{ steps.download-main.outputs.revision-main }}
 
   

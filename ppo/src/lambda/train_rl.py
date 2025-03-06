@@ -1,8 +1,3 @@
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
-from sklearn.svm import SVR
 from botocore.exceptions import ClientError
 from datetime import datetime
 from io import BytesIO
@@ -12,6 +7,13 @@ import logging
 import boto3
 import json
 import sys
+
+from sklearn.svm import SVR
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
 
 sys.path.append("/opt")
 
@@ -41,9 +43,12 @@ def load_data():
         response = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key=latest_file)
         data = pd.read_csv(response["Body"], delimiter=",")
         logger.info(f"Data loaded successfully from {latest_file}.")
+
         return data
+
     except ClientError as e:
         logger.error(f"Error loading data from S3: {e}")
+
         return pd.DataFrame()
 
 
@@ -74,6 +79,7 @@ def train_model(df):
     r2 = r2_score(y_test, predictions)
 
     logger.info(f"Trained SVM Regression\nMSE: {mse:.2f}\nR-squared: {r2:.2f}")
+
     return model_bytes, grid_search.best_params_
 
 

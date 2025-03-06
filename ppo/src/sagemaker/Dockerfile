@@ -30,4 +30,6 @@ ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 
 EXPOSE 8080
 
+ENV SAGEMAKER_PROGRAM inference.py
+
 ENTRYPOINT ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "8080"]

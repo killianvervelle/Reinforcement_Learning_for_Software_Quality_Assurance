@@ -4,14 +4,13 @@ import joblib
 import logging
 from io import BytesIO
 
-import joblib
 from sklearn.svm import SVR
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 
-from ppo.src.utilities import Utilities
+from ppo.src.rl_load_tester.src.utils.utilities import Utilities
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))

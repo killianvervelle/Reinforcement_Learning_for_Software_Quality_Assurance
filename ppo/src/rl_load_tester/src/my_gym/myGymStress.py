@@ -1,9 +1,13 @@
+from matplotlib import pyplot as plt
 import numpy as np
+import pygame
 import requests
 import os
 
 import gym
 import gym.spaces as Space
+
+from ppo.src.rl_load_tester.src.asset.gauge import Gauge
 
 
 class ResourceStarving(gym.Env):
@@ -24,7 +28,10 @@ class ResourceStarving(gym.Env):
     def __init__(self, vm, model, render_mode=None) -> None:
         super(ResourceStarving, self).__init__()
 
-        self.window_size = 500
+        print("Available render modes:", self.metadata.get("render_modes"))
+        print("Render mode received:", render_mode)
+
+        self.window_size = 700
         self.vm = vm
         self.model = model
 
@@ -43,8 +50,26 @@ class ResourceStarving(gym.Env):
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
+
+        pygame.init()
+        self.screen = pygame.display.set_mode((600, 300))  # Window size
+        pygame.display.set_caption("Resource Utilization Gauges")
+        self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font(None, 36)
+
+        # Define three gauges for CPU, Memory, and Response Time
+        self.cpu_gauge = Gauge(
+            self.screen, self.font, 150, 150, 20, 50, (255, 255, 255), glow=True)
+        self.mem_gauge = Gauge(
+            self.screen, self.font, 300, 150, 20, 50, (255, 255, 255), glow=True)
+        self.rt_gauge = Gauge(self.screen, self.font,
+                              450, 150, 20, 50, (255, 255, 255), glow=True)
+
+        self.bars = None
+
         self.window = None
-        self.clock = None
+        self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font(None, 36)
 
     def step(self, action):
         """
@@ -105,3 +130,34 @@ class ResourceStarving(gym.Env):
         self.state = np.array(
             [cpu_util, mem_util, response_time_norm], dtype=np.float32)
         return self.state, {}
+
+    def render(self):
+        self.screen.fill((0, 0, 0))
+
+        pygame.event.pump()
+
+        cpu_util, mem_util, response_time_norm = self.state
+
+        print(
+            f"Rendering Gauges -> CPU: {cpu_util:.2f}%, Mem: {mem_util:.2f}%, Response Time: {response_time_norm:.2f}%")
+        self.cpu_gauge.draw(cpu_util)
+        self.mem_gauge.draw(mem_util)
+        self.rt_gauge.draw(response_time_norm)
+
+        # Draw text labels
+        label_cpu = self.font.render("CPU", True, (255, 255, 255))
+        label_mem = self.font.render(
+            "Memory", True, (255, 255, 255))
+        label_rt = self.font.render("Response Time", True, (255, 255, 255))
+
+        self.screen.blit(label_cpu, (120, 220))
+        self.screen.blit(label_mem, (270, 220))
+        self.screen.blit(label_rt, (420, 220))
+
+        # Update the display
+        pygame.display.flip()
+        self.clock.tick(30)  # Limit to 30 FPS
+
+    def close(self):
+        if self.render_mode:
+            pygame.quit()

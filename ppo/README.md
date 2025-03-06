@@ -1,12 +1,12 @@
 ### PPO Framework: Proximal Policy Optimization for Reinforcement Learning
 The PPO Framework implements the Proximal Policy Optimization (PPO) algorithm, a state-of-the-art reinforcement learning approach that optimizes policies while maintaining a balance between exploration and exploitation. PPO is a more stable and efficient version of policy gradient methods, which uses clipped objective functions to ensure reliable updates during training. 
 <div align="center">
-  <img src="../img/ppo_diag.png" alt="Alt text" width="550">
+  <img src="../img/ppo_diag.png" alt="Alt text" width="800">
 </div>
 
 #### Key Features:
 - Implements the Proximal Policy Optimization (PPO) algorithm for reinforcement learning.
-- Trains agents in a custom-defined environment with continuous or discrete action spaces.
+- Trains agents in a custom-defined environment with a discrete action space.
 - Uses a policy network for action selection and a value network for estimating value functions.
 - Ensures stable training with the clipped objective function, adaptive learning rate and batch processing.
 
@@ -17,9 +17,10 @@ PPO optimizes the agent's policy using an objective function with a clipping mec
 - Clipped Objective: PPO prevents large updates by clipping the objective function, which ensures the agent does not make overly aggressive policy updates.
 - Batch Processing: PPO processes past trajectories in batches, allowing for more efficient learning and better generalization over multiple episodes, improving the stability and convergence of the training process.
 
-#### Reference: 
-For detailed insights into the PPO algorithm and its implementation, refer to the foundational research:
-https://arxiv.org/abs/1707.06347
+#### Implementation: 
+<div align="center">
+  <img src="../img/image-1.png" alt="Alt text" width="800">
+</div>
 
 #### Setting Up the Framework
 #### Prerequisites
@@ -35,11 +36,13 @@ git clone https://github.com/killianvervelle/Reinforcement_Learning_for_Software
 ```
 Set Up the Environment:
 ```
-cd Reinforcement_Learning_for_Software_Quality_Assurance/ppo
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
 ```
 Run the PPO Framework:
 ```
+cd Reinforcement_Learning_for_Software_Quality_Assurance/ppo
 python src/main.py
 ```
 
@@ -51,3 +54,7 @@ Graphs and metrics summarizing the agent's performance can be visualized using T
   <br><br>
   <img src="../img/ppo_loss.png" alt="Alt text" width="500">
 </div>
+
+#### Reference: 
+For detailed insights into the PPO algorithm, refer to the foundational research:
+https://arxiv.org/abs/1707.06347

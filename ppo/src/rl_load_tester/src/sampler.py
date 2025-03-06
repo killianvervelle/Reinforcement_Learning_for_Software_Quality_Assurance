@@ -3,17 +3,18 @@ import random
 import time
 import pandas as pd
 import requests
+
+from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 from sklearn.pipeline import Pipeline
-from xgboost import XGBRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
 
 
 class Sampler:
     BASE_URL = os.getenv(
-        "API_URL", "http://my-load-balancer-978472547.eu-west-3.elb.amazonaws.com:8003")
+        "API_URL", "")
 
     def __init__(self):
         self.num_samples = 150

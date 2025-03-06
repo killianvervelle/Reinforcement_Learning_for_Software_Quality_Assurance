@@ -16,32 +16,6 @@ warnings.filterwarnings(
 
 
 class Agent:
-    """
-    Purpose:
-        This class represents a reinforcement learning agent capable of training and evaluating on a specified environment. 
-        It implements an actor-critic method with A2C optimizations and supports training with reward calculation, 
-        policy update, and evaluation.
-
-    Methods:
-        create_agent: Creates an Actor-Critic agent with the specified network configuration.
-        calculate_returns: Calculates discounted returns for the agent from a list of rewards.
-        calculate_advantages: Calculates the advantage for each time step.
-        calculate_a2c_losses: Computes the policy loss and value loss based on the agent's predictions.
-        init_training: Initializes necessary lists for storing states, actions, rewards, etc.
-        forward_pass: Executes a forward pass through the environment, collecting training data.
-        update_policy: Updates the agent's policy using PPO and A2C losses.
-        evaluate: Evaluates the agent's performance on a given environment.
-        plot_train_rewards: Plots the training rewards over episodes.
-        plot_test_rewards: Plots the testing rewards over episodes.
-        plot_losses: Plots the policy and value losses over training.
-        run_agent: Runs the training loop for the agent, including policy updates and evaluation.
-
-    Attributes:
-        env_train: The training environment for the agent.
-        env_test: The testing environment for the agent.
-        utilities: An instance of a utility class for helper functions (e.g., weight initialization).
-    """
-
     def __init__(self, env_train, env_test):
         self.env_train = env_train
         self.env_test = env_test

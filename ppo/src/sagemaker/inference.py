@@ -20,11 +20,11 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-model_uri = "s3://mybucketingbucket/sagemaker/  #ppo-training-1739957781/output/model.tar.gz"
-bucket_name = "mybucketingbucket"
-prefix = "sagemaker/ppo-training-"
-s3_model_path = "sagemaker/"
-local_model_path = "sagemaker/model.tar.gz"
+model_uri = ""
+bucket_name = ""
+prefix = ""
+s3_model_path = ""
+local_model_path = ""
 
 s3_client = boto3.client('s3')
 utils = Utilities(logger=logger)

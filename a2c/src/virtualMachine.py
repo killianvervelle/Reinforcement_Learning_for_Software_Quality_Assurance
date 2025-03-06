@@ -2,13 +2,6 @@ import random
 
 
 class VirtualMachine:
-    """
-    Purpose:
-        This class represents a virtual machine (VM) with specified hardware resources and sensitivity values.
-        It provides functionality to calculate throughput and response time based on CPU, memory, and disk resources.
-
-    """
-
     def __init__(self, Requirement_ResTime, model):
         self.VM_CPU_i = 0
         self.VM_Mem_i = 0.0
