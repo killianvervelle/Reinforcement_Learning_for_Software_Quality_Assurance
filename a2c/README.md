@@ -14,7 +14,7 @@ The A2C Framework trains agents to optimize rewards in a reinforcement learning 
 
 #### Implementation: 
 <div align="center">
-  <img src="../img/image-2.png" alt="Alt text" width="800">
+  <img src="../img/image-2.png" alt="Alt text" width="1200">
 </div>
 
 #### Setting Up the Framework
@@ -47,7 +47,7 @@ Graphs and metrics summarizing the agent's performance can be visualized using T
   <img src="../img/a2c_train.png" alt="Alt text" width="500">
   <img src="../img/a2c_test.png" alt="Alt text" width="498">
   <br><br>
-  <img src="../img/a2c_loss.png" alt="Alt text" width="500">
+  <img src="../img/a2c_loss.png" alt="Alt text" width="600">
 </div>
 
 #### Reference: 

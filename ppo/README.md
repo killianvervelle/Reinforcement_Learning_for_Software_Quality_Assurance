@@ -19,7 +19,7 @@ PPO optimizes the agent's policy using an objective function with a clipping mec
 
 #### Implementation: 
 <div align="center">
-  <img src="../img/image-1.png" alt="Alt text" width="800">
+  <img src="../img/image-1.png" alt="Alt text" width="1200">
 </div>
 
 #### Setting Up the Framework
@@ -52,7 +52,7 @@ Graphs and metrics summarizing the agent's performance can be visualized using T
   <img src="../img/ppo_train.png" alt="Alt text" width="500">
   <img src="../img/ppo_test.png" alt="Alt text" width="493">
   <br><br>
-  <img src="../img/ppo_loss.png" alt="Alt text" width="500">
+  <img src="../img/ppo_loss.png" alt="Alt text" width="600">
 </div>
 
 #### Reference: 
